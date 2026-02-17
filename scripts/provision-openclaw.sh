@@ -111,6 +111,7 @@ This is your personal OpenClaw instance with **full advanced features enabled**:
 - **Memory system** - Remember context across sessions via MEMORY.md
 - **Shell execution** - Run commands and scripts
 - **Cron jobs** - Schedule recurring tasks
+- **RentAHuman** - Human-in-the-loop assistance for complex tasks
 
 ## Getting Started
 
@@ -398,6 +399,16 @@ security:
     - "https://$FULL_DOMAIN"
     - "http://localhost:*"
   execApprovals: "allowlist"  # Require approval for destructive commands
+
+# MCP Servers (Model Context Protocol)
+mcpServers:
+  rentahuman:
+    command: npx
+    args:
+      - "-y"
+      - "@anthropic/rentahuman-mcp"
+    env:
+      RENTAHUMAN_API_KEY: "rah_6d79a2f5e0c41cdde9ee210db41e933d"
 EOF
 
 # Step 7: Create systemd service
@@ -414,6 +425,7 @@ User=root
 WorkingDirectory=/root/.openclaw
 Environment="NODE_ENV=production"
 Environment="XAI_API_KEY=$XAI_API_KEY"
+Environment="RENTAHUMAN_API_KEY=rah_6d79a2f5e0c41cdde9ee210db41e933d"
 ExecStart=/usr/bin/openclaw gateway run --allow-unconfigured --bind lan --port 18789
 Restart=always
 RestartSec=10
