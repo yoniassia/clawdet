@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { upsertUser } from '@/lib/db'
+import { upsertUser, updateUser } from '@/lib/db'
+import { generateSessionToken } from '@/lib/security'
 
 const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID
 const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET
@@ -89,6 +90,13 @@ export async function GET(request: NextRequest) {
       xProfileImage: userData.profile_image_url
     })
 
+    // Generate secure session token
+    const sessionToken = generateSessionToken()
+    updateUser(user.id, {
+      sessionToken,
+      sessionCreatedAt: Date.now()
+    })
+
     // Check if user already has email/terms accepted (returning user)
     const redirectUrl = user.email && user.termsAccepted
       ? (user.paid ? '/dashboard' : '/checkout')
@@ -96,19 +104,13 @@ export async function GET(request: NextRequest) {
 
     const response = NextResponse.redirect(new URL(redirectUrl, request.url))
     
-    // Set session cookie with user data
-    response.cookies.set('user_session', JSON.stringify({
-      userId: user.id,
-      xId: user.xId,
-      username: user.xUsername,
-      name: user.xName,
-      profileImage: user.xProfileImage,
-      createdAt: Date.now()
-    }), {
+    // Set secure session cookie
+    response.cookies.set('user_session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      sameSite: 'strict' // Changed from 'lax' to 'strict' for better CSRF protection
+      sameSite: 'strict', // CSRF protection
+      path: '/'
     })
 
     // Clear OAuth state

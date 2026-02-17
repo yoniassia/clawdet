@@ -17,6 +17,8 @@ export interface User {
   instanceUrl?: string
   hetznerVpsId?: string
   hetznerVpsIp?: string
+  sessionToken?: string
+  sessionCreatedAt?: number
   createdAt: number
   updatedAt: number
 }
@@ -54,6 +56,12 @@ export function findUserByXId(xId: string): User | undefined {
 export function findUserById(id: string): User | undefined {
   const users = loadUsers()
   return users.find(u => u.id === id)
+}
+
+// Find user by session token
+export function findUserBySessionToken(sessionToken: string): User | undefined {
+  const users = loadUsers()
+  return users.find(u => u.sessionToken === sessionToken)
 }
 
 // Create or update user

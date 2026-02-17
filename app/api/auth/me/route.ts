@@ -1,18 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getOptionalAuth } from '@/lib/auth-middleware'
+import { SECURITY_HEADERS } from '@/lib/security'
 
 export async function GET(request: NextRequest) {
   try {
-    const sessionCookie = request.cookies.get('user_session')
+    const user = getOptionalAuth(request)
     
-    if (!sessionCookie) {
-      return NextResponse.json({ user: null })
+    if (!user) {
+      return NextResponse.json({ user: null }, { headers: SECURITY_HEADERS })
     }
-
-    const userData = JSON.parse(sessionCookie.value)
     
-    return NextResponse.json({ user: userData })
+    return NextResponse.json({ 
+      user: {
+        id: user.id,
+        xUsername: user.xUsername,
+        email: user.email
+      }
+    }, { headers: SECURITY_HEADERS })
   } catch (error) {
     console.error('Auth check error:', error)
-    return NextResponse.json({ user: null })
+    return NextResponse.json({ user: null }, { headers: SECURITY_HEADERS })
   }
 }
