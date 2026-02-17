@@ -96,5 +96,17 @@
     "updatedAt": 1771327987009,
     "email": "testuser_1771327979643@example.com",
     "provisioningStatus": "pending"
+  },
+  {
+    "id": "user_1771358515818_2umtx",
+    "xId": "206662545",
+    "xUsername": "yoniassia",
+    "xName": "Yoni Assia",
+    "termsAccepted": false,
+    "paid": false,
+    "createdAt": 1771358515818,
+    "updatedAt": 1771358515819,
+    "sessionToken": "cbedff369c00b676f7ca6ff3681364c6b58f7f444098f736f64a786cdfbd9ecb",
+    "sessionCreatedAt": 1771358515819
   }
 ]
