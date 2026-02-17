@@ -166,3 +166,89 @@
   color: #1d9bf0;
   font-weight: 700;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    border-width: 2px;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .form {
+    padding: 1.5rem;
+  }
+
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  .label {
+    font-size: 0.9rem;
+  }
+
+  .input {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .hint {
+    font-size: 0.8rem;
+  }
+
+  .checkboxLabel {
+    font-size: 0.9rem;
+  }
+
+  .submitButton {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .pricingText {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .form {
+    padding: 1.25rem;
+  }
+
+  .input {
+    font-size: 0.9rem;
+  }
+
+  .checkboxLabel {
+    font-size: 0.85rem;
+  }
+}

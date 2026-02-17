@@ -123,3 +123,83 @@
 .backLink:hover {
   text-decoration: underline;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    padding: 28px 24px;
+  }
+
+  .price {
+    margin-bottom: 24px;
+  }
+
+  .currency {
+    font-size: 24px;
+  }
+
+  .amount {
+    font-size: 56px;
+  }
+
+  .period {
+    font-size: 20px;
+  }
+
+  .features {
+    margin-bottom: 24px;
+  }
+
+  .features li {
+    padding: 10px 0;
+    font-size: 15px;
+  }
+
+  .xButton {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .note {
+    font-size: 13px;
+  }
+
+  .backLink {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: 24px 20px;
+  }
+
+  .amount {
+    font-size: 48px;
+  }
+
+  .features li {
+    font-size: 14px;
+  }
+}

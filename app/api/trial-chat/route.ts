@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getClientIP, sanitizeInput, SECURITY_HEADERS } from '@/lib/security'
 
 const MAX_MESSAGES = 5
 const GROK_API_KEY = process.env.GROK_API_KEY || process.env.XAI_API_KEY
@@ -20,15 +21,48 @@ Keep responses under 150 words unless they ask for more detail.`
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 20 requests per minute per IP
+    const clientIP = getClientIP(request.headers)
+    const rateLimit = checkRateLimit(`trial-chat:${clientIP}`, { maxRequests: 20, windowMs: 60000 })
+    
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { 
+          status: 429,
+          headers: {
+            ...SECURITY_HEADERS,
+            'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
+
     const body = await request.json()
     const { message, count } = body
+
+    // Validate and sanitize input
+    if (!message || typeof message !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid message' },
+        { status: 400, headers: SECURITY_HEADERS }
+      )
+    }
+
+    const sanitizedMessage = sanitizeInput(message, 5000)
+    if (sanitizedMessage.length === 0) {
+      return NextResponse.json(
+        { error: 'Message cannot be empty' },
+        { status: 400, headers: SECURITY_HEADERS }
+      )
+    }
 
     // Check if limit reached (count is 1-indexed, so 6th message has count=6)
     if (count > MAX_MESSAGES) {
       return NextResponse.json({
         limitReached: true,
         message: "🎉 You've reached your free message limit! Upgrade to continue chatting and unlock unlimited messages, advanced skills, and your own private AI instance."
-      })
+      }, { headers: SECURITY_HEADERS })
     }
 
     // Call real Grok API
@@ -46,7 +80,7 @@ export async function POST(request: NextRequest) {
         model: GROK_MODEL,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: message }
+          { role: 'user', content: sanitizedMessage }
         ],
         temperature: 0.7,
         max_tokens: 300,
@@ -66,7 +100,7 @@ export async function POST(request: NextRequest) {
       response: aiResponse,
       limitReached: false,
       messagesRemaining: MAX_MESSAGES - count
-    })
+    }, { headers: SECURITY_HEADERS })
 
   } catch (error) {
     console.error('API Error:', error)
@@ -77,6 +111,6 @@ export async function POST(request: NextRequest) {
       response: "I'm having trouble connecting right now. But I'd love to help! Clawdet gives you your own personal AI instance with unlimited conversations. Try asking me about features, pricing, or what makes Clawdet special!",
       limitReached: false,
       messagesRemaining: MAX_MESSAGES - (body?.count || 0)
-    })
+    }, { headers: SECURITY_HEADERS })
   }
 }

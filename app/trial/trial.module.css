@@ -259,3 +259,87 @@
 .chatContainer::-webkit-scrollbar-thumb:hover {
   background: #3e4144;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 16px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .counter {
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+
+  .chatContainer {
+    padding: 16px 12px;
+  }
+
+  .welcome {
+    padding: 40px 16px;
+  }
+
+  .welcome h2 {
+    font-size: 24px;
+  }
+
+  .welcome p {
+    font-size: 14px;
+  }
+
+  .messageContent {
+    max-width: 85%;
+  }
+
+  .messageText {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .inputContainer {
+    padding: 12px 12px;
+    gap: 8px;
+  }
+
+  .input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .sendButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .upgradePrompt {
+    padding: 20px 16px;
+  }
+
+  .upgradePrompt p {
+    font-size: 15px;
+  }
+
+  .upgradeButton {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messageContent {
+    max-width: 90%;
+  }
+
+  .messageText {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .sendButton {
+    padding: 10px 16px;
+  }
+}
