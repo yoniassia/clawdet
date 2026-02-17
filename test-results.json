@@ -1,0 +1,149 @@
+{
+  "timestamp": "2026-02-17T11:33:27.424Z",
+  "testUser": "testuser_1771327979643",
+  "results": [
+    {
+      "name": "Trial chat message 1/5",
+      "passed": true,
+      "duration": 725
+    },
+    {
+      "name": "Trial chat message 2/5",
+      "passed": true,
+      "duration": 652
+    },
+    {
+      "name": "Trial chat message 3/5",
+      "passed": true,
+      "duration": 1013
+    },
+    {
+      "name": "Trial chat message 4/5",
+      "passed": true,
+      "duration": 996
+    },
+    {
+      "name": "Trial chat message 5/5",
+      "passed": true,
+      "duration": 1260
+    },
+    {
+      "name": "Trial chat 6th message (should fail)",
+      "passed": true,
+      "duration": 23
+    },
+    {
+      "name": "Trial limit enforcement",
+      "passed": true
+    },
+    {
+      "name": "X OAuth login",
+      "passed": true,
+      "duration": 26
+    },
+    {
+      "name": "X OAuth callback",
+      "passed": true,
+      "duration": 33
+    },
+    {
+      "name": "Session verification",
+      "passed": true,
+      "duration": 32
+    },
+    {
+      "name": "Complete signup",
+      "passed": true,
+      "duration": 25
+    },
+    {
+      "name": "Create checkout session",
+      "passed": true,
+      "duration": 25
+    },
+    {
+      "name": "Complete mock payment",
+      "passed": true,
+      "duration": 29
+    },
+    {
+      "name": "Start provisioning",
+      "passed": true,
+      "duration": 24
+    },
+    {
+      "name": "Check provisioning status (attempt 1)",
+      "passed": true,
+      "duration": 23
+    },
+    {
+      "name": "Check provisioning status (attempt 2)",
+      "passed": true,
+      "duration": 20
+    },
+    {
+      "name": "Check provisioning status (attempt 3)",
+      "passed": true,
+      "duration": 19
+    },
+    {
+      "name": "Check provisioning status (attempt 4)",
+      "passed": true,
+      "duration": 21
+    },
+    {
+      "name": "Check provisioning status (attempt 5)",
+      "passed": true,
+      "duration": 21
+    },
+    {
+      "name": "Check provisioning status (attempt 6)",
+      "passed": true,
+      "duration": 24
+    },
+    {
+      "name": "Check provisioning status (attempt 7)",
+      "passed": true,
+      "duration": 19
+    },
+    {
+      "name": "Check provisioning status (attempt 8)",
+      "passed": true,
+      "duration": 16
+    },
+    {
+      "name": "Check provisioning status (attempt 9)",
+      "passed": true,
+      "duration": 18
+    },
+    {
+      "name": "Check provisioning status (attempt 10)",
+      "passed": true,
+      "duration": 17
+    },
+    {
+      "name": "Provisioning completion",
+      "passed": false,
+      "error": "Timeout"
+    },
+    {
+      "name": "User in database",
+      "passed": true
+    },
+    {
+      "name": "Missing email validation",
+      "passed": false,
+      "error": "No validation"
+    },
+    {
+      "name": "Unauthorized provisioning",
+      "passed": false,
+      "error": "No auth check"
+    }
+  ],
+  "summary": {
+    "total": 28,
+    "passed": 25,
+    "failed": 3
+  }
+}

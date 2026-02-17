@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { message, count } = body
 
-    // Check if limit reached
-    if (count >= MAX_MESSAGES) {
+    // Check if limit reached (count is 1-indexed, so 6th message has count=6)
+    if (count > MAX_MESSAGES) {
       return NextResponse.json({
         limitReached: true,
         message: "🎉 You've reached your free message limit! Upgrade to continue chatting and unlock unlimited messages, advanced skills, and your own private AI instance."

@@ -1,1 +1,100 @@
-[]
+[
+  {
+    "id": "user_1771327808212_tkx4bh",
+    "xId": "mock_1771327808212",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": false,
+    "paid": false,
+    "createdAt": 1771327808212,
+    "updatedAt": 1771327808212
+  },
+  {
+    "id": "user_1771327831301_67xxli",
+    "xId": "mock_1771327831301",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": false,
+    "paid": false,
+    "createdAt": 1771327831301,
+    "updatedAt": 1771327831301
+  },
+  {
+    "id": "user_1771327858528_zh3nb",
+    "xId": "mock_1771327858528",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": false,
+    "createdAt": 1771327858528,
+    "updatedAt": 1771327858580,
+    "email": "testuser_1771327851433@example.com"
+  },
+  {
+    "id": "user_1771327882074_g7ijwj",
+    "xId": "mock_1771327882074",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": false,
+    "createdAt": 1771327882074,
+    "updatedAt": 1771327882133,
+    "email": "testuser_1771327874529@example.com"
+  },
+  {
+    "id": "user_1771327911059_guna6l",
+    "xId": "mock_1771327911058",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": true,
+    "createdAt": 1771327911059,
+    "updatedAt": 1771327911151,
+    "email": "testuser_1771327903641@example.com",
+    "provisioningStatus": "pending"
+  },
+  {
+    "id": "user_1771327945060_1pze0m",
+    "xId": "mock_1771327945060",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": true,
+    "createdAt": 1771327945060,
+    "updatedAt": 1771327945174,
+    "email": "testuser_1771327937930@example.com",
+    "provisioningStatus": "pending"
+  },
+  {
+    "id": "user_1771327963925_spi5x",
+    "xId": "mock_1771327963925",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": true,
+    "createdAt": 1771327963925,
+    "updatedAt": 1771327964023,
+    "email": "testuser_1771327956126@example.com",
+    "provisioningStatus": "pending"
+  },
+  {
+    "id": "user_1771327986886_dn81oj",
+    "xId": "mock_1771327986886",
+    "xUsername": "testuser",
+    "xName": "Test User",
+    "xProfileImage": "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+    "termsAccepted": true,
+    "paid": true,
+    "createdAt": 1771327986886,
+    "updatedAt": 1771327987009,
+    "email": "testuser_1771327979643@example.com",
+    "provisioningStatus": "pending"
+  }
+]
