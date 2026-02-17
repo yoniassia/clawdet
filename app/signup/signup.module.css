@@ -1,0 +1,124 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.content {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #e7e9ea;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #71767b;
+  margin-bottom: 40px;
+}
+
+.card {
+  background: #16181c;
+  border: 1px solid #2f3336;
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 24px;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.currency {
+  font-size: 32px;
+  color: #71767b;
+  margin-right: 4px;
+}
+
+.amount {
+  font-size: 72px;
+  font-weight: 700;
+  color: #e7e9ea;
+}
+
+.period {
+  font-size: 24px;
+  color: #71767b;
+  margin-left: 4px;
+}
+
+.features {
+  list-style: none;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.features li {
+  padding: 12px 0;
+  font-size: 16px;
+  color: #e7e9ea;
+  border-bottom: 1px solid #2f3336;
+}
+
+.features li:last-child {
+  border-bottom: none;
+}
+
+.xButton {
+  width: 100%;
+  background: #000000;
+  color: #e7e9ea;
+  border: 1px solid #2f3336;
+  border-radius: 24px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: background 0.2s;
+  margin-bottom: 16px;
+}
+
+.xButton:not(:disabled):hover {
+  background: #16181c;
+}
+
+.xButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.xIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.note {
+  font-size: 14px;
+  color: #71767b;
+  font-style: italic;
+}
+
+.backLink {
+  display: inline-block;
+  color: #1d9bf0;
+  font-size: 16px;
+  padding: 12px;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}

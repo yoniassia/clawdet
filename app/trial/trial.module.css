@@ -1,0 +1,261 @@
+/* X-style (Twitter-like) dark theme */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  color: #e7e9ea;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2f3336;
+  position: sticky;
+  top: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #e7e9ea;
+}
+
+.counter {
+  font-size: 14px;
+  color: #71767b;
+  background: #16181c;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #2f3336;
+}
+
+.chatContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.welcome {
+  text-align: center;
+  padding: 60px 20px;
+  color: #71767b;
+}
+
+.welcome h2 {
+  color: #e7e9ea;
+  font-size: 28px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.welcome p {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.hint {
+  color: #1d9bf0;
+  font-weight: 500;
+  margin-top: 20px !important;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.assistant {
+  justify-content: flex-start;
+}
+
+.messageContent {
+  max-width: 80%;
+}
+
+.messageText {
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.message.user .messageText {
+  background: #1d9bf0;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.message.assistant .messageText {
+  background: #16181c;
+  color: #e7e9ea;
+  border: 1px solid #2f3336;
+  border-bottom-left-radius: 4px;
+}
+
+.typing {
+  padding: 12px 16px;
+  border-radius: 20px;
+  border-bottom-left-radius: 4px;
+  background: #16181c;
+  border: 1px solid #2f3336;
+  color: #71767b;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.inputContainer {
+  position: sticky;
+  bottom: 0;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid #2f3336;
+  display: flex;
+  gap: 12px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.input {
+  flex: 1;
+  background: #16181c;
+  border: 1px solid #2f3336;
+  border-radius: 20px;
+  padding: 12px 16px;
+  color: #e7e9ea;
+  font-size: 15px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.input:focus {
+  border-color: #1d9bf0;
+  background: #000000;
+}
+
+.input::placeholder {
+  color: #71767b;
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sendButton {
+  background: #1d9bf0;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-end;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #1a8cd8;
+}
+
+.sendButton:disabled {
+  background: #1d9bf0;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upgradePrompt {
+  position: sticky;
+  bottom: 0;
+  padding: 24px 20px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid #2f3336;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.upgradePrompt p {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: #e7e9ea;
+}
+
+.upgradeButton {
+  background: #1d9bf0;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upgradeButton:hover {
+  background: #1a8cd8;
+  transform: scale(1.02);
+}
+
+/* Scrollbar styling */
+.chatContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatContainer::-webkit-scrollbar-thumb {
+  background: #2f3336;
+  border-radius: 3px;
+}
+
+.chatContainer::-webkit-scrollbar-thumb:hover {
+  background: #3e4144;
+}
