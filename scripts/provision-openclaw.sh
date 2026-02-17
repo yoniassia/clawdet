@@ -82,15 +82,66 @@ cat > /root/.openclaw/workspace/USER.md <<EOF
 # USER.md - About Your Human
 
 **Name:** $USERNAME
-**Timezone:** UTC
+**Timezone:** UTC (update as needed)
 **Instance:** $FULL_DOMAIN
 **Provisioned:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
-## Context
+## Your OpenClaw Instance (ClawDet Beta)
 
-This is your personal OpenClaw instance, provisioned via ClawDet.
+This is your personal OpenClaw instance with **full advanced features enabled**:
 
-You have access to Grok AI (xAI) for conversations and tasks.
+✅ **Grok AI** (xAI) - Extended reasoning mode
+✅ **All tool integrations** - Browser, cron, sub-agents, memory
+✅ **Advanced mode** - High thinking level, verbose output
+✅ **Unlimited sessions** - No message limits
+✅ **Full workspace access** - Read, write, execute
+
+## What I Can Do
+
+**Core Capabilities:**
+- Research and information lookup
+- Task automation (cron jobs, scheduled reminders)
+- Code generation and debugging
+- Content creation and editing
+- File management and organization
+
+**Advanced Features:**
+- **Browser automation** - Control websites, fill forms, scrape data
+- **Sub-agents** - Spawn isolated AI sessions for complex tasks
+- **Memory system** - Remember context across sessions via MEMORY.md
+- **Shell execution** - Run commands and scripts
+- **Cron jobs** - Schedule recurring tasks
+
+## Getting Started
+
+**Connect your Telegram bot:**
+1. Create a bot via @BotFather on Telegram
+2. Configure the bot token in your OpenClaw config
+3. Start chatting!
+
+**Or use the web interface:**
+- Visit: https://$FULL_DOMAIN
+
+**Check service status:**
+\`\`\`bash
+systemctl status openclaw-gateway
+journalctl -u openclaw-gateway -f
+\`\`\`
+
+## Customization
+
+Edit these files to personalize your AI assistant:
+
+- **SOUL.md** - My personality and behavior
+- **AGENTS.md** - Workspace conventions and rules
+- **MEMORY.md** - Long-term memory (automatically searched)
+- **TOOLS.md** - Your local configurations (SSH hosts, API keys)
+- **HEARTBEAT.md** - Periodic tasks (email checks, reminders, etc.)
+
+## Notes
+
+_Add your personal context, preferences, and notes below:_
+
 EOF
 
 # AGENTS.md
@@ -178,17 +229,124 @@ cat > /root/.openclaw/workspace/IDENTITY.md <<EOF
 This is your personal OpenClaw instance.
 EOF
 
-# Create empty MEMORY.md
-touch /root/.openclaw/workspace/MEMORY.md
-touch /root/.openclaw/workspace/HEARTBEAT.md
-touch /root/.openclaw/workspace/TOOLS.md
+# Create MEMORY.md
+cat > /root/.openclaw/workspace/MEMORY.md <<'EOF'
+# MEMORY.md - Long-Term Memory
+
+This is your long-term memory. Use this for important context, decisions, and learnings that should persist across all sessions.
+
+## How to Use
+
+**This file is automatically searched** when you ask questions about past work, decisions, or preferences.
+
+**Add entries like:**
+- Important project context
+- User preferences
+- Key decisions and rationale
+- Lessons learned
+- Contact information
+- Passwords/credentials (encrypted)
+
+## Example Entries
+
+### Projects
+- Working on ClawDet SaaS platform
+- Goal: Automate OpenClaw provisioning
+
+### Preferences
+- Preferred communication style: Direct, concise
+- Timezone: America/New_York
+
+### Skills
+- Proficient in: TypeScript, React, Node.js, Linux
+- Learning: Hetzner API, Cloudflare automation
+
+---
+
+_Start adding your context below:_
+
+EOF
+
+# Create HEARTBEAT.md
+cat > /root/.openclaw/workspace/HEARTBEAT.md <<'EOF'
+# HEARTBEAT.md - Periodic Tasks
+
+This file defines tasks that run periodically when the heartbeat polls.
+
+**Leave this empty** if you don't want any periodic checks.
+
+## Example Tasks
+
+```
+# Check for urgent emails (every ~30 min)
+- Read recent emails, flag urgent ones
+
+# Calendar reminders (every ~1 hour)
+- Check for events in next 2 hours
+
+# GitHub notifications (every ~4 hours)
+- Check for mentions, PRs, issues
+```
+
+---
+
+_Add your periodic tasks below:_
+
+EOF
+
+# Create TOOLS.md
+cat > /root/.openclaw/workspace/TOOLS.md <<'EOF'
+# TOOLS.md - Local Configuration
+
+This file stores environment-specific configurations for your tools and integrations.
+
+## Available Skills
+
+Your ClawDet instance comes with these pre-installed skills:
+
+### Core Tools
+- **File operations**: read, write, edit files
+- **Shell execution**: Run commands with `exec`
+- **Web search**: Search the web via Brave API
+- **Web fetch**: Extract content from URLs
+- **Memory**: Semantic search across your notes
+
+### Advanced Tools
+- **Browser control**: Automate web browsing
+- **Cron jobs**: Schedule recurring tasks
+- **Sub-agents**: Spawn isolated AI sessions
+- **Canvas**: Visual UI rendering
+- **Nodes**: Control paired devices
+
+## Your Configurations
+
+Add your specific configurations below:
+
+### Example: SSH Hosts
+```
+home-server: 192.168.1.100 (user: admin)
+vps-prod: 188.34.197.212 (user: root)
+```
+
+### Example: API Keys
+```
+# Store sensitive data encrypted or reference from environment
+OPENAI_API_KEY: $ENV
+GITHUB_TOKEN: $ENV
+```
+
+---
+
+_Add your tool configurations below:_
+
+EOF
 
 # Step 6: Create OpenClaw configuration
 log "Configuring OpenClaw gateway..."
 
 cat > /root/.openclaw/config/gateway.yaml <<EOF
 # OpenClaw Gateway Configuration
-# Provisioned by ClawDet
+# Provisioned by ClawDet (Beta)
 
 # Domain configuration
 domain: $FULL_DOMAIN
@@ -197,6 +355,8 @@ port: 18789
 # AI Model Configuration
 model:
   default: "anthropic/claude-sonnet-4-5"
+  reasoning: "extended"  # Enable extended reasoning mode
+  thinking: "high"       # Enable thinking/reasoning output
   
 providers:
   xai:
@@ -211,18 +371,33 @@ workspace: /root/.openclaw/workspace
 session:
   type: main
   history:
-    maxMessages: 100
+    maxMessages: 200  # Increased for advanced users
+  context:
+    enabled: true
+    maxDepth: 10
     
+# Advanced features enabled
+features:
+  tools: true              # Enable all tool integrations
+  cron: true               # Enable cron jobs
+  subagents: true          # Enable sub-agent spawning
+  memory: true             # Enable memory search
+  browser: true            # Enable browser automation
+  exec: true               # Enable shell execution
+  canvas: true             # Enable canvas rendering
+  
 # Logging
 logging:
   level: info
   file: /root/.openclaw/logs/gateway.log
+  verbose: true
 
 # Security
 security:
   allowedOrigins:
     - "https://$FULL_DOMAIN"
     - "http://localhost:*"
+  execApprovals: "allowlist"  # Require approval for destructive commands
 EOF
 
 # Step 7: Create systemd service

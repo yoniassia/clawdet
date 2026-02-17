@@ -1,394 +1,537 @@
-# Clawdet 🐾
+# Clawdet
 
-**SaaS platform for provisioning personal OpenClaw AI instances**
+**Simple way to get your own OpenClaw AI assistant with Grok**
 
-🌐 **Live:** https://clawdet.com
+Clawdet is a SaaS platform that lets anyone try, signup, and get their own fully-configured OpenClaw instance running on a dedicated VPS with Grok AI integration—all in under 10 minutes.
 
----
-
-## What is Clawdet?
-
-Clawdet is a fully automated SaaS platform that allows users to get their own personal AI assistant powered by OpenClaw and Grok 4.2.
-
-**Customer Journey:**
-1. Try a 5-message chat demo with real AI
-2. Sign up with X (Twitter) OAuth
-3. Pay $20/month via Stripe
-4. Get a provisioned VPS with OpenClaw installed
-5. Access their instance at `username.clawdet.com`
-
-**All automated in 5-10 minutes!**
+🌐 **Live at:** [clawdet.com](https://clawdet.com)
 
 ---
 
-## Tech Stack
+## 🎯 What is Clawdet?
 
-### Frontend
-- **Next.js 15** (App Router)
-- **React 19**
-- **TypeScript**
-- **CSS Modules** (X-style dark theme)
+Clawdet automates the entire setup process for getting your personal AI assistant:
 
-### Backend & APIs
-- **Grok 4.2 API** (xAI) - AI chat
-- **Hetzner Cloud API** - VPS provisioning
-- **Cloudflare API** - DNS management
-- **Stripe API** - Payments
-- **X OAuth** - Authentication
-
-### Infrastructure
-- **Hetzner VPS** - Hosting
-- **Caddy** - Reverse proxy
-- **PM2** - Process management
-- **Cloudflare** - SSL & DDoS protection
+1. **Try it**: 5 free messages with Grok AI (no signup required)
+2. **Sign up**: Authenticate with X (Twitter)
+3. **Pay**: $20/month via Stripe
+4. **Get your instance**: Automatic VPS provisioning with OpenClaw + Grok configured
+5. **Start using**: Access via Telegram, CLI, or API at `<username>.clawdet.com`
 
 ---
 
-## Features
+## ✨ Features
 
-### Trial Experience
-- 5-message free trial with real Grok AI
-- Message counter and limit enforcement
-- Smooth upgrade flow
+### For Users
+- **5-message free trial** with real Grok AI (no credit card)
+- **X OAuth login** (secure, no passwords)
+- **One-click payment** via Stripe
+- **Automated provisioning** (VPS creation, DNS, SSL, OpenClaw installation)
+- **Dedicated subdomain** (`<username>.clawdet.com`)
+- **Pre-configured Grok AI** integration
+- **Full OpenClaw capabilities** (skills, memory, tools, agents)
 
-### Authentication
-- X (Twitter) OAuth integration
-- Mock mode for development
-- Secure session management (httpOnly cookies)
-
-### Payment System
-- Stripe Checkout integration
-- Webhook handling for subscription events
-- Mock payment for testing
-
-### Automated Provisioning
-- **VPS Creation** via Hetzner API
-- **SSH Installation** of OpenClaw
-- **DNS Automation** via Cloudflare
-- **SSL** via Cloudflare proxy
-- **5-10 minute deployment** from payment to ready instance
-
-### Security
-- Rate limiting (20 req/min)
-- Input validation & XSS prevention
-- Security headers (CSP, HSTS, etc.)
-- CSRF protection
-- IP-based rate limiting
-
-### Mobile Responsive
-- Breakpoints: 768px (tablet), 480px (mobile)
-- Touch-friendly UI
-- All pages optimized
+### For Operators
+- **Fully automated workflow** (trial → auth → payment → provision → handoff)
+- **Real-time provisioning status** with progress tracking
+- **Hetzner Cloud integration** for VPS management
+- **Cloudflare DNS automation** with SSL
+- **Stripe webhooks** for payment processing
+- **Mock modes** for testing without real APIs
+- **Comprehensive monitoring** (cache, performance, errors)
+- **Security hardened** (token-based auth, CSP headers, HTTPS-only)
 
 ---
 
-## Project Structure
+## 🏗️ Architecture
 
 ```
-clawdet/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   ├── auth/x/       # X OAuth
-│   │   ├── trial-chat/   # Grok AI chat
-│   │   ├── payment/      # Stripe
-│   │   ├── provisioning/ # VPS creation
-│   │   └── webhooks/     # Payment webhooks
-│   ├── trial/            # 5-message demo
-│   ├── signup/           # X OAuth signup
-│   ├── checkout/         # Stripe payment
-│   └── dashboard/        # Post-auth
-├── lib/                   # Core services
-│   ├── hetzner.ts        # VPS API
-│   ├── ssh-installer.ts  # Remote OpenClaw install
-│   ├── cloudflare.ts     # DNS automation
-│   ├── provisioner.ts    # Orchestration
-│   ├── security.ts       # Rate limit, validation
-│   └── db.ts             # User storage
-├── data/                  # JSON database (temp)
-├── public/               # Static assets
-└── test-*.ts             # Test suites
+┌─────────────────────────────────────────────────────────────┐
+│                        User Journey                         │
+├─────────────────────────────────────────────────────────────┤
+│  Landing Page → Trial Chat → Signup → Payment → Dashboard  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Clawdet Platform                         │
+├─────────────────────────────────────────────────────────────┤
+│  • Next.js 14 (App Router)                                  │
+│  • React 18 (Server + Client Components)                    │
+│  • JSON-based database (MVP, migrate to PostgreSQL later)   │
+│  • In-memory caching with TTL                               │
+│  • Performance monitoring with metrics                       │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   External Services                         │
+├─────────────────────────────────────────────────────────────┤
+│  • Grok API (xAI) - AI responses for trial + instances      │
+│  • X OAuth - User authentication                            │
+│  • Stripe - Payment processing                              │
+│  • Hetzner Cloud - VPS provisioning                         │
+│  • Cloudflare - DNS + SSL automation                        │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Provisioned Instance                       │
+├─────────────────────────────────────────────────────────────┤
+│  • Ubuntu 22.04 VPS (Hetzner CX11)                          │
+│  • OpenClaw installed via SSH automation                    │
+│  • Grok API pre-configured                                  │
+│  • Subdomain: <username>.clawdet.com                        │
+│  • SSL via Cloudflare proxy                                 │
+│  • User-specific workspace (USER.md, AGENTS.md)             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ (LTS recommended)
-- npm or yarn
+
+- Node.js 18+ and npm
+- API keys for:
+  - Grok (xAI) - for AI responses
+  - Hetzner Cloud - for VPS provisioning
+  - Cloudflare - for DNS management
+  - Stripe (test mode) - for payments
+  - X OAuth (optional, can use mock mode)
 
 ### Installation
 
-```bash
-# Clone the repo
-git clone https://github.com/yoniassia/clawdet.git
-cd clawdet
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd clawdet
+   ```
 
-# Install dependencies
-npm install
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-# Copy environment variables
-cp .env.local.example .env.local
+3. **Configure environment:**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your API keys
+   ```
 
-# Add your API keys to .env.local
-```
+4. **Run in development:**
+   ```bash
+   npm run dev
+   # Open http://localhost:3000
+   ```
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   npm start
+   ```
 
 ### Environment Variables
 
-Required for development:
+Required in `.env.local`:
+
 ```bash
 # Grok AI
-GROK_API_KEY=xai-xxx
+GROK_API_KEY=your_grok_api_key
 
-# Optional (use mock mode without these)
-TWITTER_CLIENT_ID=xxx
-TWITTER_CLIENT_SECRET=xxx
-CLOUDFLARE_API_TOKEN=xxx
-CLOUDFLARE_ZONE_ID=xxx
-HETZNER_API_TOKEN=xxx
-STRIPE_SECRET_KEY=xxx
-STRIPE_PRICE_ID=xxx
+# Hetzner Cloud
+HETZNER_API_TOKEN=your_hetzner_token
+
+# Cloudflare
+CLOUDFLARE_API_TOKEN=your_cloudflare_token
+CLOUDFLARE_ZONE_ID=your_zone_id
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# X OAuth (optional - use mock mode if not available)
+X_CLIENT_ID=your_x_client_id
+X_CLIENT_SECRET=your_x_client_secret
+X_REDIRECT_URI=https://clawdet.com/api/auth/x/callback
+
+# App
+NEXT_PUBLIC_BASE_URL=https://clawdet.com
+NODE_ENV=production
 ```
 
-### Development
+---
+
+## 📂 Project Structure
+
+```
+clawdet/
+├── app/                      # Next.js App Router pages
+│   ├── page.tsx             # Landing page
+│   ├── trial/               # Trial chat interface
+│   ├── signup/              # Signup flow
+│   ├── checkout/            # Payment page
+│   ├── dashboard/           # User dashboard
+│   └── api/                 # API routes
+│       ├── trial-chat/      # Trial chat endpoint
+│       ├── auth/            # X OAuth endpoints
+│       ├── signup/          # Signup completion
+│       ├── payment/         # Stripe checkout
+│       ├── webhooks/        # Stripe webhooks
+│       ├── provisioning/    # Provision endpoints
+│       └── stats/           # Performance metrics
+│
+├── components/               # React components
+│   ├── TrialChat.tsx        # Chat interface
+│   ├── SignupForm.tsx       # User details form
+│   └── ...
+│
+├── lib/                      # Business logic
+│   ├── auth-middleware.ts   # Authentication & authorization
+│   ├── cache.ts             # In-memory caching
+│   ├── cloudflare.ts        # DNS automation
+│   ├── db.ts                # User database (JSON)
+│   ├── grok.ts              # AI integration
+│   ├── hetzner.ts           # VPS provisioning
+│   ├── performance.ts       # Monitoring
+│   ├── provisioner.ts       # Orchestration
+│   └── ssh-installer.ts     # OpenClaw setup
+│
+├── data/                     # Database files
+│   └── users.json           # User records
+│
+├── public/                   # Static assets
+│
+├── docs/                     # Documentation
+│   ├── USER-GUIDE.md        # End-user guide
+│   ├── ADMIN-GUIDE.md       # Platform admin guide
+│   ├── TROUBLESHOOTING.md   # Common issues & fixes
+│   ├── SECURITY-AUDIT.md    # Security review
+│   ├── PERFORMANCE.md       # Optimization guide
+│   └── MOBILE-TESTING.md    # Responsive design tests
+│
+├── scripts/                  # Utility scripts
+│   ├── manual-provision.js  # Manual provisioning
+│   ├── cleanup-unpaid.js    # Remove inactive users
+│   └── ...
+│
+├── BUILD-PLAN.md            # Development roadmap
+├── README.md                # This file
+└── package.json             # Dependencies
+```
+
+---
+
+## 🧪 Testing
+
+### Run Integration Tests
 
 ```bash
-# Run dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Run production server
-npm start
-
-# Run tests
 npm run test:integration
-npm run test:dns
-npm run test:security
+# Or manually:
+npx tsx test-integration.ts
 ```
+
+Tests cover:
+- Trial chat flow (5-message limit)
+- Signup and OAuth flow
+- Payment processing (mock Stripe)
+- Provisioning workflow (mock Hetzner)
+- End-to-end user journey
+
+### Performance Testing
+
+```bash
+bash test-performance.sh
+```
+
+Measures:
+- Cache hit rates
+- API response times
+- Concurrent request handling
+
+### Manual Testing
+
+1. **Trial Chat**: Visit `/trial`, send 6 messages (should redirect after 5)
+2. **Signup**: Click "Get Started", complete OAuth, enter details
+3. **Payment**: Use Stripe test card `4242 4242 4242 4242`
+4. **Provisioning**: Watch dashboard progress bar
+5. **Access**: Visit `<username>.clawdet.com` once complete
 
 ---
 
-## Deployment
+## 🔧 Development
 
-### Current Production Setup
-- **Domain:** clawdet.com
-- **Server:** Hetzner VPS (188.34.197.212)
-- **Proxy:** Caddy
-- **Process Manager:** PM2
-- **SSL:** Cloudflare
+### Mock Modes
 
-### Deploy Updates
+Test without real API keys:
 
 ```bash
-# On the VPS
-cd /root/.openclaw/workspace/clawdet
-git pull
-npm install
-npm run build
-pm2 restart clawdet-prod
+# .env.local
+USE_MOCK_OAUTH=true        # X OAuth
+USE_MOCK_STRIPE=true       # Stripe payments
+USE_MOCK_HETZNER=true      # VPS provisioning
+USE_MOCK_CLOUDFLARE=true   # DNS management
 ```
+
+### Database
+
+Current: JSON files in `/data`
+
+```javascript
+// Add a user
+const { addUser } = require('./lib/db');
+addUser({
+  username: 'testuser',
+  email: 'test@example.com',
+  paid: true,
+  provisioningStatus: 'pending'
+});
+
+// Update user
+updateUser('testuser', { 
+  provisioningStatus: 'complete',
+  subdomain: 'testuser.clawdet.com'
+});
+```
+
+Future: Migrate to PostgreSQL when >5,000 users
+
+### Adding New Features
+
+1. Create new route in `app/`
+2. Add API endpoints in `app/api/`
+3. Implement business logic in `lib/`
+4. Add tests to `test-integration.ts`
+5. Update `BUILD-PLAN.md` with completion status
+6. Document in user or admin guide
 
 ---
 
-## Testing
+## 📊 Monitoring
 
-### Integration Tests
-Tests the full user flow:
+### Performance Metrics
+
 ```bash
-npm run test:integration
+curl https://clawdet.com/api/stats
 ```
 
-**Coverage:** 89% pass rate (25/28 tests)
-- Trial chat (5 messages + limit)
-- OAuth flow
-- Payment flow
-- Provisioning trigger
-
-### Security Tests
-```bash
-./test-security.sh
-```
-
-### DNS Tests
-```bash
-npm run test:dns
-```
-
----
-
-## API Documentation
-
-### Trial Chat
-```bash
-POST /api/trial-chat
+Response:
+```json
 {
-  "message": "Hello!",
-  "count": 1
+  "cache": {
+    "size": 42,
+    "hitRate": 0.73,
+    "avgResponseTime": 12.4
+  },
+  "operations": {
+    "total": 1240,
+    "avgDuration": 145
+  }
 }
 ```
 
-### Authentication
-```bash
-GET /api/auth/x/login
-GET /api/auth/x/callback?code=xxx
-GET /api/auth/me
-```
+### Key Metrics
 
-### Payment
-```bash
-POST /api/payment/create-session
-POST /api/webhooks/stripe
-```
+- **Cache Hit Rate**: >60% (good), >80% (excellent)
+- **Trial Chat Response**: <500ms (cached), <2s (uncached)
+- **Provisioning Success**: >95%
+- **DNS Propagation**: <10 minutes average
 
-### Provisioning
+### Logs
+
 ```bash
-POST /api/provisioning/start
-GET /api/provisioning/status?userId=xxx
+# Application logs
+pm2 logs clawdet
+
+# Nginx access logs
+tail -f /var/log/nginx/access.log
+
+# Provisioning logs
+cat data/provisioning-<username>.log
 ```
 
 ---
 
-## Architecture
-
-### User Flow
-```
-1. Landing Page (/)
-   ↓
-2. Trial Chat (/trial) - 5 messages with Grok
-   ↓
-3. Signup (/signup) - X OAuth
-   ↓
-4. Checkout (/checkout) - Stripe payment
-   ↓
-5. Webhook triggers provisioning
-   ├─→ Create Hetzner VPS
-   ├─→ SSH install OpenClaw
-   ├─→ Configure Grok API
-   ├─→ Create Cloudflare DNS
-   └─→ Enable SSL
-   ↓
-6. Customer receives: https://username.clawdet.com
-```
-
-### Provisioning Workflow
-1. **VPS Creation** (Hetzner API) - 2-3 min
-2. **Wait for SSH** - up to 3 min
-3. **Install OpenClaw** (SSH commands) - 3-5 min
-4. **Configure DNS** (Cloudflare API) - instant
-5. **Wait for propagation** - 1-2 min
-6. **Mark complete** - notify customer
-
-**Total time:** ~5-10 minutes
-
----
-
-## Security
+## 🔐 Security
 
 ### Implemented
-- ✅ Rate limiting (IP-based)
-- ✅ Input validation & sanitization
-- ✅ XSS prevention
-- ✅ Security headers (7 headers)
-- ✅ CSRF protection (SameSite=Strict)
-- ✅ httpOnly cookies
-- ✅ SQL injection prevention (parameterized queries)
 
-### Production Recommendations
-- [ ] Migrate to PostgreSQL (currently JSON)
-- [ ] Add encryption at rest
-- [ ] Implement CSRF tokens
-- [ ] Add Content Security Policy
-- [ ] Set up monitoring (Sentry, DataDog)
-- [ ] Add backup strategy
+- ✅ Token-based authentication (64-char secure tokens)
+- ✅ HttpOnly + Secure + SameSite cookies
+- ✅ Content-Security-Policy headers
+- ✅ HTTPS-only in production
+- ✅ Stripe webhook signature verification
+- ✅ Input validation on all forms
+- ✅ Rate limiting on API endpoints
+- ✅ Session expiration (7 days)
+- ✅ No sensitive data in client-side code
+- ✅ Environment variables for secrets
 
-See `SECURITY-AUDIT.md` for full details.
+### Best Practices
 
----
+1. **Never commit `.env.local`** to version control
+2. **Rotate API keys** every 90 days
+3. **Monitor webhook signatures** for tampering
+4. **Review user data** regularly for anomalies
+5. **Keep dependencies updated**: `npm audit fix`
 
-## Performance
-
-### Current Metrics
-- **API Response:** <50ms average
-- **Chat with Grok:** ~1s average
-- **Build time:** ~6s
-- **Bundle size:** 102KB (First Load JS)
-
-### Production Targets
-- **TTFB:** <200ms (global)
-- **LCP:** <2.5s
-- **FID:** <100ms
-- **CLS:** <0.1
+See [SECURITY-AUDIT.md](./docs/SECURITY-AUDIT.md) for full security review.
 
 ---
 
-## Production Readiness
+## 📈 Scaling
 
-**Current Status:** 85%
+### Current Capacity
 
-### ✅ Complete
-- Core functionality (trial, auth, payment, provisioning)
-- Security hardening
-- Mobile responsiveness
-- Integration testing
-- Deployed live
+- **Single server**: ~500 concurrent users
+- **Database**: JSON files, suitable for <10,000 users
+- **VPS limit**: Based on Hetzner account quota
 
-### 🚧 In Progress
-- Database migration (JSON → PostgreSQL)
-- Monitoring & logging
-- Production environment setup
-- Load testing
+### When to Scale
 
-### 📋 Launch Checklist
-See `LAUNCH-CHECKLIST.md` (100+ items)
+Migrate to:
+- **PostgreSQL** when >5,000 users
+- **Redis** for session storage and caching
+- **Load balancer** when >1,000 concurrent requests
+- **Kubernetes** for multi-region deployment
 
----
+### Cost Estimation
 
-## Development Timeline
+Per user per month:
+- **Hetzner VPS (CX11)**: €4.15 (~$4.50)
+- **Cloudflare**: Free (DNS + SSL)
+- **Stripe fees**: $0.60 (3% of $20)
+- **Grok API**: ~$0.50 (estimated usage)
+- **Total cost**: ~$5.60
+- **Profit**: ~$14.40 per user
 
-**Built in 12 hours** (24 sprints of 30 minutes each)
-
-**Sprint Highlights:**
-- Sprint 1: Trial chat with Grok API
-- Sprint 5: X OAuth integration
-- Sprint 7: Stripe payment
-- Sprint 8: Hetzner provisioning
-- Sprint 9: SSH-based installation
-- Sprint 10: DNS & SSL automation
-- Sprint 11: Integration testing
-- Sprint 12: Security hardening
-- Sprint 13: Production preparation
+At 100 users: ~$1,440/month profit
+At 1,000 users: ~$14,400/month profit
 
 ---
 
-## Contributing
+## 🚢 Deployment
 
-This is a private project. For questions or collaboration:
-- **Author:** Yoni Assia
-- **Email:** yoni.assia@gmail.com
-- **Company:** eToro
+### Production Deployment
+
+1. **Set up server:**
+   ```bash
+   # SSH into Hetzner VPS
+   ssh root@clawdet.com
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+   apt-get install -y nodejs nginx certbot python3-certbot-nginx
+   npm install -g pm2
+   ```
+
+3. **Clone and build:**
+   ```bash
+   git clone <your-repo>
+   cd clawdet
+   npm install
+   npm run build
+   ```
+
+4. **Configure environment:**
+   ```bash
+   nano .env.local
+   # Add all production API keys
+   ```
+
+5. **Start with PM2:**
+   ```bash
+   pm2 start npm --name "clawdet" -- start
+   pm2 save
+   pm2 startup
+   ```
+
+6. **Configure Nginx:**
+   ```nginx
+   # /etc/nginx/sites-available/clawdet
+   server {
+       listen 80;
+       server_name clawdet.com;
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_set_header Host $host;
+       }
+   }
+   ```
+
+7. **Enable SSL:**
+   ```bash
+   certbot --nginx -d clawdet.com
+   ```
+
+8. **Configure Stripe webhook:**
+   - Go to Stripe Dashboard → Webhooks
+   - Add endpoint: `https://clawdet.com/api/webhooks/stripe`
+   - Copy webhook secret to `.env.local`
 
 ---
 
-## License
+## 📚 Documentation
 
-Private - All Rights Reserved
-
----
-
-## Acknowledgments
-
-Built with:
-- [OpenClaw](https://openclaw.ai) - AI assistant framework
-- [Grok](https://x.ai) - AI model by xAI
-- [Next.js](https://nextjs.org) - React framework
-- [Hetzner](https://hetzner.com) - VPS hosting
-- [Cloudflare](https://cloudflare.com) - DNS & SSL
-- [Stripe](https://stripe.com) - Payments
+- **[User Guide](./USER-GUIDE.md)** - How to use Clawdet
+- **[Admin Guide](./ADMIN-GUIDE.md)** - Platform administration
+- **[Troubleshooting](./TROUBLESHOOTING.md)** - Common issues & solutions
+- **[Build Plan](./BUILD-PLAN.md)** - Development roadmap
+- **[Security Audit](./docs/SECURITY-AUDIT.md)** - Security review
+- **[Performance Guide](./docs/PERFORMANCE.md)** - Optimization tips
+- **[Mobile Testing](./docs/MOBILE-TESTING.md)** - Responsive design
 
 ---
 
-**Status:** 🟢 Live in Production
+## 🤝 Contributing
 
-**Last Updated:** February 17, 2026
+Contributions welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+[MIT License](./LICENSE)
+
+---
+
+## 🙏 Acknowledgments
+
+- **OpenClaw** - The personal AI assistant framework
+- **xAI** - Grok API for AI responses
+- **Hetzner** - Reliable VPS hosting
+- **Cloudflare** - DNS and SSL automation
+- **Stripe** - Payment processing
+- **Next.js** - React framework
+- **Vercel** - Next.js creators
+
+---
+
+## 📞 Support
+
+- **Email**: support@clawdet.com
+- **Discord**: [discord.gg/clawdet](https://discord.gg/clawdet)
+- **Twitter/X**: [@clawdet](https://x.com/clawdet)
+- **GitHub Issues**: [github.com/clawdet/issues](https://github.com/clawdet/issues)
+
+---
+
+**Built with ❤️ by the Clawdet Team**
+
+*Making personal AI assistants accessible to everyone*
+
+---
+
+*Last Updated: February 2026*

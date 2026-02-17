@@ -1,323 +1,352 @@
-# Clawdet Production Launch Checklist
+# Clawdet Launch Checklist
 
-**Target Launch Date:** TBD  
-**Current Status:** Pre-Production Testing  
-**Last Updated:** 2026-02-17
+Complete this checklist before launching Clawdet to production.
 
----
+## 🔐 Security
 
-## 🔐 Security (CRITICAL)
+### Environment & Secrets
+- [ ] All API keys stored in `.env.local` (not in code)
+- [ ] `.env.local` added to `.gitignore`
+- [ ] Production API keys (not test keys) configured
+- [ ] Stripe webhook secret matches production endpoint
+- [ ] X OAuth credentials match production domain
+- [ ] Server SSH keys rotated and secured
 
-- [x] Security audit completed (see SECURITY-AUDIT.md)
-- [x] Rate limiting implemented on all API endpoints
-- [x] Security headers configured (CSP, HSTS, etc.)
-- [x] SameSite=Strict cookies for session management
-- [x] Input validation on all user inputs
-- [x] XSS protection implemented
-- [ ] **Database migration from JSON to PostgreSQL/MySQL**
-- [ ] **Stripe webhook endpoint registered in Stripe dashboard**
-- [ ] **All environment variables set in production**
-- [ ] **SSH keys rotated and stored in secrets manager**
-- [ ] **SSL/TLS certificates verified (Cloudflare proxy)**
+### Application Security
+- [ ] HTTPS enforced (no HTTP access allowed)
+- [ ] HttpOnly + Secure cookies enabled
+- [ ] Content-Security-Policy headers configured
+- [ ] CSRF protection enabled (SameSite=strict)
+- [ ] Rate limiting active on API endpoints
+- [ ] Input validation on all forms
+- [ ] Session tokens use crypto.randomBytes (64 chars)
+- [ ] Authentication middleware protects sensitive routes
+- [ ] Webhook signature verification working
 
----
-
-## 🌐 Infrastructure
-
-- [x] Domain configured (clawdet.com → 188.34.197.212:18789)
-- [x] Server running (Hetzner VPS)
-- [x] Next.js app deployed and accessible
-- [ ] **Production database setup and tested**
-- [ ] **Redis/cache layer configured (optional but recommended)**
-- [ ] **CDN enabled for static assets**
-- [ ] **Load balancer configured (if scaling needed)**
-- [ ] **Backup strategy implemented**
-  - [ ] Database backups (daily automated)
-  - [ ] User data backups
-  - [ ] System configuration backups
-
----
-
-## 🔌 API Integrations
-
-### Grok AI
-- [x] API key configured
-- [x] Trial chat tested with real API
-- [x] Error handling for API failures
-- [ ] **Usage monitoring and alerts**
-- [ ] **Rate limits verified with xAI team**
-
-### Stripe
-- [ ] **Test mode → Production mode switch**
-- [ ] **Webhook endpoint registered**: `https://clawdet.com/api/webhooks/stripe`
-- [ ] **Webhook secret configured**
-- [ ] **Product created**: "$20/month OpenClaw Instance"
-- [ ] **Test payment flow end-to-end**
-- [ ] **Refund policy documented**
-
-### X/Twitter OAuth
-- [ ] **Production OAuth app created**
-- [ ] **Callback URLs updated**:
-  - Production: `https://clawdet.com/api/auth/x/callback`
-- [ ] **Scopes verified**: tweet.read, users.read, offline.access
-- [ ] **OAuth flow tested with real accounts**
-
-### Hetzner Cloud
-- [x] API token configured
-- [x] VPS provisioning tested (mock mode)
-- [ ] **Production API token with appropriate permissions**
-- [ ] **Billing limits set** (to prevent runaway costs)
-- [ ] **Server types configured**: CX11 or CPX11
-- [ ] **Server regions configured** (nearest to users)
-
-### Cloudflare
-- [x] DNS API configured
-- [x] Subdomain creation tested
-- [ ] **All DNS records verified**
-- [ ] **Proxy enabled for all customer subdomains**
-- [ ] **SSL mode set to Full (Strict)**
-- [ ] **Firewall rules configured**
-- [ ] **Rate limiting rules at edge (optional)**
+### Audit
+- [ ] Run `npm audit` and fix critical/high issues
+- [ ] Review [SECURITY-AUDIT.md](./docs/SECURITY-AUDIT.md)
+- [ ] Test unauthorized access (should be blocked)
+- [ ] Verify session expiration (7 days max)
+- [ ] Check for exposed sensitive data in client code
 
 ---
 
 ## 🧪 Testing
 
-### Unit Tests
-- [x] Integration test suite created (28 tests)
-- [x] 25/28 tests passing
-- [ ] **All critical tests passing (100%)**
-- [ ] **Edge case tests added**
+### Functional Testing
+- [ ] Trial chat works (5-message limit enforced)
+- [ ] X OAuth flow completes successfully
+- [ ] Mock OAuth works for testing
+- [ ] Signup form validation working
+- [ ] Stripe checkout redirects correctly
+- [ ] Stripe test payment processes
+- [ ] Webhook triggers provisioning
+- [ ] VPS creation succeeds (test with mock mode)
+- [ ] SSH installation completes
+- [ ] DNS record created correctly
+- [ ] Subdomain resolves and has SSL
+- [ ] Dashboard shows correct provisioning status
+- [ ] End-to-end flow works without errors
 
-### End-to-End Tests
-- [ ] **Trial chat flow** (5 messages → upgrade prompt)
-- [ ] **Full signup flow** (X OAuth → details → payment → dashboard)
-- [ ] **Payment flow** (Stripe test mode → webhook → provisioning trigger)
-- [ ] **Provisioning flow** (VPS creation → DNS → OpenClaw install → handoff)
-- [ ] **Error scenarios** (payment failure, VPS creation failure, DNS failure)
+### Integration Tests
+- [ ] Run `npm run test:integration`
+- [ ] All critical tests passing (25/28+ expected)
+- [ ] Fix any new test failures
+- [ ] Test results documented
 
-### Load Testing
-- [ ] **Trial chat under load** (100 concurrent users)
-- [ ] **API endpoints under load**
-- [ ] **Database performance verified**
-- [ ] **Provisioning queue tested** (multiple simultaneous provisions)
+### Performance Testing
+- [ ] Run `bash test-performance.sh`
+- [ ] Cache hit rate >60%
+- [ ] API response times <500ms (cached)
+- [ ] Trial chat responds in <2s
+- [ ] No memory leaks during load test
+- [ ] Review [PERFORMANCE.md](./docs/PERFORMANCE.md)
 
-### Security Testing
-- [ ] **OWASP Top 10 checklist completed**
-- [ ] **SQL injection tests** (N/A for JSON DB, add for SQL DB)
-- [ ] **XSS tests on all input fields**
-- [ ] **CSRF tests on state-changing operations**
-- [ ] **Authentication bypass attempts**
-- [ ] **Rate limit verification**
-- [ ] **External security scan** (securityheaders.com, etc.)
-
-### Mobile Testing
-- [x] Mobile responsive CSS implemented
-- [ ] **Test on iOS Safari**
-- [ ] **Test on Android Chrome**
-- [ ] **Test on various screen sizes** (320px, 768px, 1024px+)
-
----
-
-## 📱 User Experience
-
-- [x] Landing page complete
-- [x] Trial chat functional
-- [x] Signup flow complete
-- [x] Payment page complete
-- [x] Dashboard with provisioning status
-- [ ] **Error messages user-friendly**
-- [ ] **Loading states on all async operations**
-- [ ] **Success confirmations clear**
-- [ ] **Help documentation available**
-- [ ] **FAQ page created**
+### Manual Testing
+- [ ] Test on Chrome desktop
+- [ ] Test on Firefox desktop
+- [ ] Test on Safari (Mac/iOS)
+- [ ] Test on mobile (responsive design)
+- [ ] Test with slow network (3G throttling)
+- [ ] Test with JavaScript disabled (graceful degradation)
 
 ---
 
-## 📊 Monitoring & Analytics
+## 🌐 Infrastructure
 
-- [ ] **Error tracking configured** (Sentry, Rollbar, etc.)
-- [ ] **Application monitoring** (uptime checks)
-- [ ] **Performance monitoring** (response times, API latency)
-- [ ] **Business metrics tracking**:
-  - [ ] Trial chat usage
-  - [ ] Signup conversions
-  - [ ] Payment success rate
-  - [ ] Provisioning success rate
-  - [ ] Provisioning time (target: <10 minutes)
-- [ ] **Alerts configured**:
-  - [ ] Service downtime
-  - [ ] High error rates
-  - [ ] Failed provisioning
-  - [ ] Payment failures
-  - [ ] API rate limit hits
+### Domain & DNS
+- [ ] Domain registered and active (clawdet.com)
+- [ ] DNS pointed to production server IP
+- [ ] Cloudflare account configured
+- [ ] Cloudflare API token has correct permissions
+- [ ] Zone ID and Account ID in `.env.local`
+- [ ] Test subdomain creation (username.clawdet.com)
+- [ ] Verify DNS propagation (<15 min)
+- [ ] SSL working via Cloudflare proxy (orange cloud)
 
----
+### Server Setup
+- [ ] Production VPS provisioned (Hetzner or similar)
+- [ ] Server accessible via SSH
+- [ ] Firewall configured (allow 80, 443, 22 only)
+- [ ] Node.js 18+ installed
+- [ ] npm installed
+- [ ] PM2 installed globally
+- [ ] Nginx installed and configured
+- [ ] SSL certificate obtained (via Cloudflare or Certbot)
 
-## 📧 Communications
-
-- [ ] **Transactional emails configured**:
-  - [ ] Welcome email after signup
-  - [ ] Payment confirmation
-  - [ ] Instance ready notification
-  - [ ] Setup instructions
-- [ ] **X DM notifications** (optional):
-  - [ ] Instance ready DM
-- [ ] **Support email setup**: support@clawdet.com
-- [ ] **Refund policy documented**
-- [ ] **Terms of Service finalized**
-- [ ] **Privacy Policy finalized**
+### Application Deployment
+- [ ] Repository cloned to server
+- [ ] Dependencies installed (`npm install`)
+- [ ] Application built (`npm run build`)
+- [ ] `.env.local` configured with production values
+- [ ] PM2 process started (`pm2 start npm --name clawdet -- start`)
+- [ ] PM2 auto-start configured (`pm2 save && pm2 startup`)
+- [ ] Nginx reverse proxy configured
+- [ ] Logs accessible (`pm2 logs clawdet`)
 
 ---
 
-## 💰 Business Operations
+## 💳 Payment Setup
 
-- [ ] **Pricing confirmed**: $20/month
-- [ ] **Billing tested**: First charge + recurring
-- [ ] **Refund process documented**
-- [ ] **Cancellation flow implemented**
-- [ ] **Usage limits defined**:
-  - [ ] Max instances per user
-  - [ ] API usage limits per instance
-- [ ] **Cost analysis**:
-  - [ ] Hetzner VPS cost: ~€4/month per instance
-  - [ ] Grok API cost: TBD (shared key for now)
-  - [ ] Stripe fees: 2.9% + $0.30 per transaction
-  - [ ] Profit margin verified
+### Stripe Configuration
+- [ ] Stripe account in production mode (not test)
+- [ ] Product created: "OpenClaw Instance - $20/month"
+- [ ] Webhook endpoint added: `https://clawdet.com/api/webhooks/stripe`
+- [ ] Webhook events subscribed:
+  - `checkout.session.completed`
+  - `customer.subscription.deleted`
+  - `invoice.payment_failed`
+- [ ] Webhook signing secret in `.env.local`
+- [ ] Test webhook delivery (should return 200 OK)
+- [ ] Stripe publishable key in `.env.local`
+- [ ] Payment flow tested with real card (then refunded)
 
----
-
-## 🚨 Incident Response
-
-- [ ] **Incident response plan documented**
-- [ ] **On-call rotation defined** (if team)
-- [ ] **Escalation procedures clear**
-- [ ] **Rollback procedures tested**
-- [ ] **Emergency contacts list**:
-  - [ ] Hetzner support
-  - [ ] Cloudflare support
-  - [ ] Stripe support
-  - [ ] xAI support
+### Billing
+- [ ] Bank account connected to Stripe
+- [ ] Tax settings configured (if applicable)
+- [ ] Email templates customized
+- [ ] Refund policy documented
+- [ ] Cancellation flow documented
 
 ---
 
-## 📚 Documentation
+## 🖥️ VPS Provisioning
 
-- [ ] **User onboarding guide**
-- [ ] **Setup instructions for provisioned instances**
-- [ ] **Troubleshooting guide**
-- [ ] **Developer documentation** (for future maintenance)
-- [ ] **API documentation** (if exposing APIs)
-- [ ] **README.md updated**
+### Hetzner Cloud
+- [ ] Hetzner account created
+- [ ] API token generated and in `.env.local`
+- [ ] Billing method added
+- [ ] Sufficient credits/budget for launch
+- [ ] Server type selected (CX11 recommended)
+- [ ] Datacenter location chosen (nbg1, fsn1, or hel1)
+- [ ] SSH key added to Hetzner account
+- [ ] Test VPS creation (then delete)
 
----
-
-## 🎯 Performance Targets
-
-| Metric | Target | Status |
-|--------|--------|--------|
-| Trial chat response time | <2s | ✅ |
-| Signup flow completion | <3 minutes | ✅ |
-| Payment processing | <30s | ⏳ |
-| VPS provisioning | <10 minutes | ⏳ |
-| Homepage load time | <1s | ✅ |
-| Mobile Lighthouse score | >90 | ⏳ |
-| API uptime | 99.9% | ⏳ |
+### Provisioning Workflow
+- [ ] SSH key generated for VPS access
+- [ ] cloud-init script validated
+- [ ] OpenClaw installation script tested
+- [ ] Grok API key configured for instances
+- [ ] DNS automation tested
+- [ ] Full provisioning tested end-to-end
+- [ ] Rollback plan documented for failures
 
 ---
 
-## 🎬 Launch Day Checklist
+## 📱 OAuth & Integrations
 
-**24 Hours Before:**
-- [ ] Run full test suite
-- [ ] Verify all integrations
-- [ ] Backup everything
-- [ ] Notify stakeholders
+### X (Twitter) OAuth
+- [ ] X Developer account active
+- [ ] App created at [developer.twitter.com](https://developer.twitter.com)
+- [ ] OAuth 2.0 enabled
+- [ ] Callback URL: `https://clawdet.com/api/auth/x/callback`
+- [ ] Client ID and Secret in `.env.local`
+- [ ] App permissions: Read user profile
+- [ ] Test OAuth flow from production domain
+- [ ] Mock mode works for testing without real OAuth
 
-**Launch Time:**
-- [ ] Switch Stripe to production mode
-- [ ] Update all production env vars
-- [ ] Restart services
-- [ ] Monitor logs closely
-- [ ] Test one end-to-end flow manually
-
-**First Hour:**
-- [ ] Monitor error logs
-- [ ] Watch provisioning queue
-- [ ] Check payment webhooks
-- [ ] Verify DNS resolution
-
-**First Day:**
-- [ ] Monitor all metrics
-- [ ] Respond to any user issues immediately
-- [ ] Check all integrations still working
-- [ ] Review cost dashboard
-
-**First Week:**
-- [ ] Gather user feedback
-- [ ] Fix any critical bugs
-- [ ] Optimize performance bottlenecks
-- [ ] Review financial metrics
+### Grok API (xAI)
+- [ ] Grok API key obtained from xAI
+- [ ] API key in `.env.local`
+- [ ] Quota sufficient for expected usage
+- [ ] Test API call: `grok-2-1212` model
+- [ ] Billing alerts set up
+- [ ] Rate limits understood
 
 ---
 
-## 🐛 Known Issues to Fix Before Launch
+## 📊 Monitoring & Logs
 
-From integration testing:
+### Application Monitoring
+- [ ] PM2 monitoring active (`pm2 monit`)
+- [ ] Performance metrics endpoint working (`/api/stats`)
+- [ ] Cache statistics tracked
+- [ ] Response times logged
+- [ ] Error tracking configured
+- [ ] Uptime monitoring set up (e.g., UptimeRobot)
+- [ ] Alerts configured for downtime
 
-1. **Trial message limit edge case** - FIXED ✅
-2. **OAuth API endpoint** - FIXED ✅
-3. **Payment userId handling** - FIXED ✅
-4. **JSON database limitations** - TO FIX ⚠️
-   - Need to migrate to PostgreSQL before launch
-   - Race conditions possible with concurrent writes
-   - No encryption at rest
+### Log Management
+- [ ] PM2 logs accessible (`pm2 logs clawdet`)
+- [ ] Nginx access logs rotation configured
+- [ ] Nginx error logs monitored
+- [ ] Provisioning logs stored per-user
+- [ ] Log retention policy defined (30 days recommended)
+- [ ] Sensitive data not logged (API keys, passwords)
 
----
-
-## ✅ Sprint 12 Completed Items
-
-- [x] Next.js middleware for security headers
-- [x] CSP (Content Security Policy) configured
-- [x] Rate limiting added to auth endpoints
-- [x] SameSite=Strict cookies implemented
-- [x] Viewport meta tag added
-- [x] Mobile responsiveness verified
-- [x] Security audit document created
-- [x] Launch checklist created
-
----
-
-## 📝 Post-Launch TODO
-
-- [ ] Implement admin dashboard to view all instances
-- [ ] Add user dashboard features:
-  - [ ] View instance status
-  - [ ] Restart instance
-  - [ ] View logs
-  - [ ] Update billing info
-- [ ] Add email notifications
-- [ ] Implement analytics dashboard
-- [ ] Add referral program
-- [ ] Create affiliate system
-- [ ] Add team/organization accounts
-- [ ] Multi-instance support per user
+### Metrics to Track
+- [ ] Trial chat usage (messages per day)
+- [ ] Signup conversion rate
+- [ ] Payment success rate
+- [ ] Provisioning success rate
+- [ ] Average provisioning time
+- [ ] DNS propagation time
+- [ ] Active subscriptions
+- [ ] Churn rate
 
 ---
 
-**Sign-off Required:**
-- [ ] Technical Lead (Security & Infrastructure)
-- [ ] Business Owner (Pricing & Terms)
-- [ ] Legal (Terms of Service, Privacy Policy)
+## 📄 Documentation
 
-**Ready for Launch:** ⏳ NOT YET
+### User-Facing
+- [ ] Landing page clear and compelling
+- [ ] "How it works" section accurate
+- [ ] Pricing clearly displayed
+- [ ] FAQ page created (optional but recommended)
+- [ ] Terms of Service published
+- [ ] Privacy Policy published
+- [ ] Contact information visible
+- [ ] User guide linked from dashboard
 
-**Critical Blockers:**
-1. Database migration from JSON to PostgreSQL
-2. Stripe production setup
-3. All environment variables in production
-4. End-to-end production test
+### Internal Documentation
+- [ ] README.md complete and accurate
+- [ ] ADMIN-GUIDE.md up to date
+- [ ] TROUBLESHOOTING.md covers common issues
+- [ ] BUILD-PLAN.md reflects current state
+- [ ] Architecture diagram included
+- [ ] Runbook for common operations
+- [ ] Disaster recovery plan documented
 
 ---
 
-**Questions? Contact:** support@clawdet.com (to be set up)
+## 🚀 Launch Day
+
+### Pre-Launch (T-24 hours)
+- [ ] All checklist items above completed
+- [ ] Backup of database created
+- [ ] Rollback plan prepared
+- [ ] Team notified of launch time
+- [ ] Support email monitored
+- [ ] Status page prepared (optional)
+
+### Launch (T-0)
+- [ ] Final smoke test (trial → signup → payment → provision)
+- [ ] Monitor server resources (CPU, memory, disk)
+- [ ] Watch PM2 logs for errors
+- [ ] Monitor Stripe webhook deliveries
+- [ ] Check first real signup completes successfully
+- [ ] Verify DNS propagation for first user
+
+### Post-Launch (T+24 hours)
+- [ ] Review error logs
+- [ ] Check provisioning success rate
+- [ ] Verify all webhooks processing
+- [ ] Monitor server load
+- [ ] Respond to any support requests
+- [ ] Track key metrics (signups, payments, provisions)
+
+---
+
+## 🎯 Success Metrics
+
+After 24 hours, evaluate:
+
+**Technical Health:**
+- [ ] Uptime >99.5%
+- [ ] Provisioning success rate >95%
+- [ ] No critical errors in logs
+- [ ] Average provisioning time <10 minutes
+- [ ] DNS propagation <15 minutes
+
+**Business Metrics:**
+- [ ] X signups completed
+- [ ] Y payments processed
+- [ ] Z instances provisioned
+- [ ] Support requests handled within 24h
+- [ ] No refund requests
+
+**User Feedback:**
+- [ ] Collect feedback from first users
+- [ ] Review any support tickets
+- [ ] Monitor social media mentions
+- [ ] Check for bugs reported
+
+---
+
+## 🐛 Common Issues & Fixes
+
+If something goes wrong during launch:
+
+### Application Won't Start
+```bash
+pm2 delete clawdet
+pm2 start npm --name "clawdet" -- start
+pm2 logs clawdet
+```
+
+### Stripe Webhooks Not Working
+1. Check webhook URL is accessible from internet
+2. Verify signing secret matches
+3. Test with Stripe CLI: `stripe trigger checkout.session.completed`
+
+### Provisioning Failing
+1. Check Hetzner API token is valid
+2. Verify account has sufficient credits
+3. Test SSH connection to newly created VPS
+4. Review provisioning logs: `cat data/provisioning-<username>.log`
+
+### High Memory Usage
+```bash
+pm2 restart clawdet
+# Add swap if needed:
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+```
+
+---
+
+## 📞 Emergency Contacts
+
+Keep these handy during launch:
+
+- **Hetzner Support**: [support.hetzner.com](https://support.hetzner.com)
+- **Stripe Support**: [support.stripe.com](https://support.stripe.com)
+- **Cloudflare Support**: [support.cloudflare.com](https://support.cloudflare.com)
+- **X/Twitter API Support**: [developer.twitter.com/support](https://developer.twitter.com/support)
+
+---
+
+## ✅ Final Approval
+
+Before going live:
+
+- [ ] Technical lead reviewed checklist
+- [ ] All critical items completed
+- [ ] Rollback plan tested
+- [ ] Support team briefed
+- [ ] **GO / NO-GO decision made**
+
+---
+
+**Signature:** ________________________  
+**Date:** ___________________________  
+**Launch Time:** ____________________
+
+---
+
+*Good luck with the launch! 🚀*
+
+*Last Updated: February 2026*

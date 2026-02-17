@@ -13,6 +13,8 @@ export interface User {
   email?: string
   termsAccepted?: boolean
   paid?: boolean
+  paidAt?: string
+  paymentMethod?: string
   provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
   instanceUrl?: string
   hetznerVpsId?: string
@@ -38,6 +40,11 @@ export function loadUsers(): User[] {
   }
   const data = fs.readFileSync(USERS_FILE, 'utf-8')
   return JSON.parse(data)
+}
+
+// Get all users (alias for loadUsers)
+export function getAllUsers(): User[] {
+  return loadUsers()
 }
 
 // Save all users

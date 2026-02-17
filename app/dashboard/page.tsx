@@ -197,7 +197,32 @@ export default function DashboardPage() {
     )
   }
 
-  // Show payment prompt (default)
+  // Show free beta prompt (default)
+  const handleFreeBeta = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/provisioning/free-beta', {
+        method: 'POST'
+      })
+      
+      const data = await res.json()
+      
+      if (res.ok) {
+        // Success! Start polling for status
+        alert(`🎉 Success! Your instance is being provisioned. (Spot ${data.instanceNumber}/${data.totalLimit})`)
+        
+        // Reload to show provisioning status
+        window.location.reload()
+      } else {
+        alert(data.message || data.error || 'Failed to start provisioning')
+      }
+    } catch (error) {
+      alert('Failed to start provisioning. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -205,39 +230,64 @@ export default function DashboardPage() {
         <p className={styles.subtitle}>@{user.username}</p>
         
         <div className={styles.card}>
-          <h2>Next Step: Complete Payment</h2>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <h2 style={{ color: '#1DA1F2', marginBottom: '0.5rem' }}>🎉 Limited Time: Free Beta!</h2>
+            <p style={{ fontSize: '1.1rem', marginBottom: '0' }}>
+              <strong>First 20 users get a FREE instance!</strong>
+            </p>
+          </div>
+          
           <p>
-            You're almost there! Complete your payment to get your own dedicated 
-            Clawdet instance at <strong>{user.username}.clawdet.com</strong>
+            You're almost there! Get your own dedicated OpenClaw instance at{' '}
+            <strong>{user.username}.clawdet.com</strong>
           </p>
           
           <div className={styles.pricing}>
             <div className={styles.price}>
-              <span className={styles.currency}>$</span>
-              <span className={styles.amount}>20</span>
-              <span className={styles.period}>/month</span>
+              <span className={styles.currency} style={{ textDecoration: 'line-through', opacity: 0.5 }}>$</span>
+              <span className={styles.amount} style={{ textDecoration: 'line-through', opacity: 0.5 }}>20</span>
+              <span className={styles.period} style={{ textDecoration: 'line-through', opacity: 0.5 }}>/month</span>
+              <div style={{ fontSize: '2rem', color: '#1DA1F2', marginTop: '0.5rem' }}>
+                <strong>FREE</strong> <span style={{ fontSize: '1rem' }}>(Beta)</span>
+              </div>
             </div>
             
             <ul className={styles.features}>
-              <li>✅ Unlimited AI conversations</li>
-              <li>✅ Your own subdomain</li>
-              <li>✅ Tool integrations</li>
-              <li>✅ 24/7 availability</li>
+              <li>✅ Dedicated VPS (4GB RAM, 2 vCPU)</li>
+              <li>✅ Your own subdomain ({user.username}.clawdet.com)</li>
+              <li>✅ Automatic SSL & DNS</li>
+              <li>✅ Pre-configured with Grok AI</li>
+              <li>✅ Advanced mode enabled</li>
+              <li>✅ Full tool integrations</li>
             </ul>
           </div>
           
           <button 
             className={styles.payButton}
-            onClick={() => router.push('/checkout')}
+            onClick={handleFreeBeta}
+            disabled={loading}
+            style={{ 
+              background: 'linear-gradient(135deg, #1DA1F2 0%, #0084C7 100%)',
+              fontSize: '1.1rem',
+              padding: '1rem 2rem'
+            }}
           >
-            Continue to Payment
+            {loading ? 'Starting Provisioning...' : '🚀 Get My Free Instance Now'}
           </button>
+          
+          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', opacity: 0.7 }}>
+            No credit card required • Provisioned in 10 minutes
+          </p>
         </div>
         
         <div className={styles.info}>
           <p>
-            <strong>Note:</strong> This is a test environment. In production, 
-            real payment processing will be enabled.
+            <strong>Beta Access:</strong> First 20 users get free lifetime access. 
+            After that, regular pricing ($20/month) applies.
+          </p>
+          <p style={{ marginTop: '0.5rem' }}>
+            <strong>What happens next:</strong> Your VPS will be created, DNS configured, 
+            and OpenClaw installed automatically. You'll have full access in ~10 minutes.
           </p>
         </div>
       </div>
