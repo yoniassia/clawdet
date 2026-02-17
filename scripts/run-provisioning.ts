@@ -220,4 +220,5 @@ if (require.main === module) {
   main()
 }
 
-export { provisionInstance, ProvisionConfig }
+export { provisionInstance }
+export type { ProvisionConfig }

@@ -10,7 +10,7 @@ import { createSubdomain, waitForDNSPropagation } from './cloudflare'
 
 const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY
 const SSH_KEY_PATH = process.env.SSH_KEY_PATH || '/root/.ssh/id_ed25519'
-const HETZNER_SSH_KEY_NAME = 'clawdet-provisioning'
+const HETZNER_SSH_KEY_ID = 107615133 // clawdet-provisioning key
 
 export interface ProvisioningStatus {
   status: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
@@ -53,7 +53,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
       server_type: 'cx23', // 2 vCPU, 4GB RAM, 40GB SSD - €2.99/month
       image: 'ubuntu-24.04',
       location: 'hel1', // Helsinki, Finland
-      ssh_keys: [HETZNER_SSH_KEY_NAME],
+      ssh_keys: [HETZNER_SSH_KEY_ID],
       labels: {
         'project': 'clawdet',
         'user': user.xUsername,
