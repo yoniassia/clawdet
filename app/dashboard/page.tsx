@@ -130,6 +130,9 @@ export default function DashboardPage() {
               <a href={user.instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.primaryButton}>
                 Open Your Instance →
               </a>
+              <a href="/onboarding" className={styles.secondaryButton} style={{ textAlign: 'center', textDecoration: 'none' }}>
+                📚 Onboarding Guide
+              </a>
               <button className={styles.secondaryButton} onClick={() => window.location.reload()}>
                 Refresh Status
               </button>
