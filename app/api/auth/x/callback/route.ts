@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { upsertUser } from '@/lib/db'
 
 const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID
 const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET
@@ -80,15 +81,28 @@ export async function GET(request: NextRequest) {
       userData = data
     }
 
-    // Create session
-    const response = NextResponse.redirect(new URL('/dashboard', request.url))
+    // Create or update user in database
+    const user = upsertUser({
+      xId: userData.id,
+      xUsername: userData.username,
+      xName: userData.name,
+      xProfileImage: userData.profile_image_url
+    })
+
+    // Check if user already has email/terms accepted (returning user)
+    const redirectUrl = user.email && user.termsAccepted
+      ? (user.paid ? '/dashboard' : '/checkout')
+      : '/signup/details'
+
+    const response = NextResponse.redirect(new URL(redirectUrl, request.url))
     
     // Set session cookie with user data
     response.cookies.set('user_session', JSON.stringify({
-      userId: userData.id,
-      username: userData.username,
-      name: userData.name,
-      profileImage: userData.profile_image_url,
+      userId: user.id,
+      xId: user.xId,
+      username: user.xUsername,
+      name: user.xName,
+      profileImage: user.xProfileImage,
       createdAt: Date.now()
     }), {
       httpOnly: true,

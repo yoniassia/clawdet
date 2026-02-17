@@ -1,0 +1,199 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+  padding: 2rem;
+}
+
+.loading {
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  padding-top: 3rem;
+}
+
+.content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding-top: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #8b949e;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.productInfo {
+  margin-bottom: 2rem;
+}
+
+.productHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.productName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.currency {
+  font-size: 1.5rem;
+  color: #1d9bf0;
+  font-weight: 700;
+}
+
+.amount {
+  font-size: 2.5rem;
+  color: #1d9bf0;
+  font-weight: 700;
+}
+
+.period {
+  font-size: 1rem;
+  color: #8b949e;
+  font-weight: 600;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  color: #c9d1d9;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.checkmark {
+  color: #1d9bf0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.features li code {
+  background: rgba(29, 155, 240, 0.15);
+  color: #1d9bf0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.error {
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  color: #fca5a5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.checkoutButton {
+  width: 100%;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #1d9bf0 0%, #0d7dd6 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.checkoutButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(29, 155, 240, 0.5);
+}
+
+.checkoutButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.secureNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #8b949e;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+}
+
+.lockIcon {
+  width: 16px;
+  height: 16px;
+  color: #1d9bf0;
+}
+
+.note {
+  font-size: 0.95rem;
+  color: #8b949e;
+  line-height: 1.6;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid #1d9bf0;
+  border-radius: 4px;
+}
+
+.note strong {
+  color: white;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #1d9bf0;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.backLink:hover {
+  color: #4ab3ff;
+  transform: translateX(-4px);
+}
