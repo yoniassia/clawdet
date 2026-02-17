@@ -13,7 +13,7 @@ export interface User {
   email?: string
   termsAccepted?: boolean
   paid?: boolean
-  provisioningStatus?: 'pending' | 'provisioning' | 'complete' | 'failed'
+  provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
   instanceUrl?: string
   hetznerVpsId?: string
   createdAt: number

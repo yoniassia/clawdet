@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateUser, findUserById } from '@/lib/db'
+import { startProvisioningJob } from '@/lib/provisioner'
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET
@@ -92,14 +93,14 @@ async function handleCheckoutComplete(session: any) {
 
   console.log(`✅ User ${user.xUsername} marked as paid. Provisioning status: pending`)
 
-  // TODO: Trigger provisioning workflow
-  // For now, we just set the status to 'pending'
-  // In the next sprint, we'll implement the actual Hetzner VPS creation
+  // Trigger provisioning workflow in background
+  console.log('🚀 Triggering VPS provisioning...')
+  await startProvisioningJob(userId)
   
   // Optional: Send confirmation notification
   // await sendConfirmationNotification(updatedUser)
   
-  console.log('📋 Provisioning will be triggered by background worker')
+  console.log('📋 Provisioning started in background')
 }
 
 async function handleSubscriptionDeleted(subscription: any) {
