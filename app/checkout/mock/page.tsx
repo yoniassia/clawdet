@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import styles from './mock.module.css'
 
-export default function MockCheckoutPage() {
+function MockCheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [processing, setProcessing] = useState(false)
@@ -90,5 +90,19 @@ export default function MockCheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function MockCheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.loading}>Loading...</div>
+        </div>
+      </div>
+    }>
+      <MockCheckoutContent />
+    </Suspense>
   )
 }
