@@ -1,6 +1,6 @@
-# Clawdet FAQ (Frequently Asked Questions)
+# Clawdet FAQ
 
-Quick answers to common questions about Clawdet.
+Frequently Asked Questions about Clawdet — your personal AI assistant platform.
 
 ---
 
@@ -8,418 +8,394 @@ Quick answers to common questions about Clawdet.
 
 ### What is Clawdet?
 
-Clawdet is a SaaS platform that provisions personal AI assistant instances powered by OpenClaw and Grok AI. Each user gets their own dedicated server with a private AI assistant.
+Clawdet is a service that gives you your own personal AI assistant running 24/7 in the cloud. For $20/month, you get:
+- A dedicated cloud server (Hetzner VPS)
+- OpenClaw AI assistant software pre-installed
+- Grok AI API access included
+- Your own subdomain with SSL
+- Full root access to customize
 
-### How is Clawdet different from ChatGPT or other AI chatbots?
+### How is this different from ChatGPT or Claude?
 
-- **Dedicated resources**: You get your own server, not shared resources
-- **Full control**: Customize your AI's personality, memory, and capabilities
-- **Task automation**: Your assistant can execute commands, manage files, and run scheduled tasks
-- **Privacy**: Your conversations and data stay on your private instance
-- **Extensibility**: Add skills, integrations, and custom tools
+**Clawdet gives you:**
+- **Your own server** — Not shared with others
+- **24/7 availability** — Always running, not just when you open a tab
+- **Full customization** — Edit code, add skills, automate tasks
+- **Multi-platform** — Connect via Telegram, Discord, WhatsApp, etc.
+- **Privacy** — Your data stays on your server
+- **Automation** — Set up cron jobs, webhooks, and background tasks
 
-### Is my data private?
+ChatGPT/Claude are great for chat, but Clawdet is a **personal assistant platform** you fully control.
 
-Yes! Your data is stored on your dedicated VPS instance. We do not access, store, or train models on your conversations. Your instance is completely isolated from other users.
+### Do I need technical skills to use Clawdet?
 
-### What's included in the $20/month plan?
+**No!** The basic setup is automated:
+- Sign up with Twitter/X
+- Pay via Stripe
+- Your instance is provisioned automatically
+- Connect via Telegram and start chatting
 
-- Dedicated Hetzner VPS (CX11: 2GB RAM, 1 vCPU, 20GB SSD)
-- OpenClaw pre-installed and configured
-- Grok 4.2 API integration
-- Your own subdomain: `yourusername.clawdet.com`
-- SSL certificate (auto-renewing)
-- 24/7 uptime
-- Email support
-
----
-
-## Trial & Signup
-
-### Do I need to sign up to try Clawdet?
-
-No! Click "Try Now" on the homepage for a 5-message free trial with real Grok AI. No credit card or registration required.
-
-### Why do I need to sign in with X (Twitter)?
-
-We use X OAuth for secure, passwordless authentication. It's fast, secure, and allows us to:
-- Use your X username for your subdomain
-- Send you optional notifications via X DM
-- Provide easy account recovery
-
-We do NOT post on your behalf or access your DMs without explicit permission.
-
-### Can I sign up without X?
-
-Currently, X OAuth is the primary authentication method. We're considering adding email/password login in the future based on user feedback.
-
-### What if I don't have an X account?
-
-You can create a free X account at [x.com/signup](https://x.com/i/flow/signup) in just a few minutes. No phone number required for basic accounts.
+**Advanced features** (like SSH access, custom skills) are optional and for power users.
 
 ---
 
-## Payment & Billing
+## Pricing & Billing
+
+### How much does it cost?
+
+**$20/month** for one personal OpenClaw instance.
+
+Includes:
+- Dedicated VPS (1 vCPU, 2GB RAM, 20GB SSD)
+- Grok AI API access (fair use)
+- Subdomain with SSL
+- Full support
+
+### Is there a free trial?
+
+Yes! You get **5 free messages** to try Grok AI before signing up. No credit card required.
 
 ### What payment methods do you accept?
 
-We use Stripe, which accepts:
-- Credit cards (Visa, Mastercard, Amex, Discover, etc.)
-- Debit cards
-- Apple Pay / Google Pay (where available)
+We accept all major credit/debit cards via **Stripe**:
+- Visa, Mastercard, American Express, Discover
+- Apple Pay, Google Pay
+- International cards supported
 
-### Is my payment information secure?
+### Can I cancel anytime?
 
-Absolutely! All payment processing is handled by Stripe, a PCI DSS Level 1 compliant payment processor. We never see or store your full card details.
+Absolutely. Cancel from your dashboard or Stripe portal anytime. Your server will remain active until the end of your billing period.
 
-### How does billing work?
+### What happens if I cancel?
 
-- **First month**: Charged immediately upon signup ($20)
-- **Recurring**: Auto-renewed monthly on your signup date
-- **Cancellation**: Cancel anytime from your dashboard
-- **Refunds**: 7-day money-back guarantee, no questions asked
+- Your server stays active until the end of your paid period
+- After that, it's shut down and data is deleted after 7 days
+- You can re-subscribe anytime to get a new instance
 
-### Can I get a refund?
+### Is there a refund policy?
 
-Yes! If you're not satisfied within the first 7 days, contact support for a full refund. After 7 days, we prorate refunds based on unused days.
-
-### What happens if my payment fails?
-
-- You'll receive an email notification
-- Your instance remains active for 3 days (grace period)
-- After 3 days, your instance is suspended
-- After 7 days, your instance is deleted (data backed up for 30 days)
-
-### Can I upgrade or downgrade my plan?
-
-Currently, we offer one plan tier. As we grow, we'll add options for more powerful instances (more CPU, RAM, storage). Existing customers will be grandfathered into current pricing.
-
----
-
-## Provisioning & Setup
-
-### How long does provisioning take?
-
-Typically 5-10 minutes:
-- VPS creation: 2-3 minutes
-- DNS setup: 1-2 minutes
-- OpenClaw installation: 3-5 minutes
-
-If it takes longer than 15 minutes, something may be wrong. Contact support.
-
-### What if provisioning fails?
-
-If provisioning fails, you'll see an error message on your dashboard. Common causes:
-- Hetzner Cloud API temporarily unavailable
-- DNS propagation delays
-- Network issues
-
-We'll automatically retry, and you won't be charged if provisioning fails. Contact support if the issue persists.
-
-### Can I choose my server location?
-
-Currently, all instances are provisioned in Hetzner's Falkenstein (Germany) datacenter. We plan to add location options (US, Asia) in the future.
-
-### Can I access my VPS directly?
-
-Yes! Your dashboard includes SSH credentials. You have full root access to customize your instance as you see fit.
-
-### What if I break something on my instance?
-
-You have full control, which means you can accidentally break things. If you need help recovering:
-1. Contact support with details of what happened
-2. We can help restore from backups (if configured)
-3. Worst case: we can re-provision your instance
-
-**Pro tip**: Set up automated backups via Hetzner or your own backup solution!
-
----
-
-## Using Your Instance
-
-### How do I access my AI assistant?
-
-Your OpenClaw instance can be accessed via:
-- Web interface: `https://yourusername.clawdet.com`
-- Telegram bot (if configured)
-- API endpoints (for developers)
-
-### Can I use my own Grok API key?
-
-Yes! By default, your instance uses our shared Grok API key. To use your own:
-1. SSH into your VPS
-2. Edit `/root/.openclaw/config.json`
-3. Add your Grok API key under `providers`
-4. Restart: `openclaw gateway restart`
-
-### Can I connect other AI models?
-
-Yes! OpenClaw supports multiple AI providers:
-- Grok (xAI)
-- Claude (Anthropic)
-- GPT-4 (OpenAI)
-- Gemini (Google)
-- Local models (Ollama)
-
-Edit your config to add API keys for other providers.
-
-### What skills/integrations are available?
-
-Your OpenClaw instance comes with:
-- File management
-- Web browsing
-- Code execution
-- Memory/recall
-- Cron jobs
-
-You can add skills for:
-- X/Twitter automation
-- Email
-- GitHub
-- Slack/Discord
-- And more!
-
-See OpenClaw documentation for full list.
-
-### Is my assistant always running?
-
-Yes! Your instance runs 24/7 as a systemd service. If it crashes, it auto-restarts within seconds.
-
-### Can I customize my AI's personality?
-
-Absolutely! Edit these files on your instance:
-- `AGENTS.md` - Define your AI's behavior and style
-- `USER.md` - Tell your AI about you
-- `MEMORY.md` - Store long-term context
-
-Your AI reads these files on every session to maintain consistency.
+We offer a **7-day money-back guarantee**. If you're not satisfied within the first week, contact support for a full refund.
 
 ---
 
 ## Technical Questions
 
-### What are the server specs?
+### What server specs do I get?
 
-Default plan includes:
-- **CPU**: 1 vCPU (AMD or Intel)
-- **RAM**: 2GB
-- **Storage**: 20GB SSD
-- **Network**: 20TB monthly bandwidth
-- **OS**: Ubuntu 22.04 LTS
-- **Location**: Hetzner Falkenstein, Germany
+**Hetzner CX11 or CPX11:**
+- 1 vCPU (shared)
+- 2GB RAM
+- 20GB SSD
+- 20TB traffic/month
+- Ubuntu 22.04 LTS
+- Located in Germany (EU)
 
-### Can I upgrade my server specs?
+Plenty for a personal AI assistant!
 
-Not yet, but we're working on it! Future plans include:
-- Medium tier: 4GB RAM, 2 vCPUs
-- Pro tier: 8GB RAM, 4 vCPUs
-- Custom tiers: Bring your own requirements
+### Can I upgrade my server?
 
-### What ports are open on my instance?
+Not yet, but it's on our roadmap! For now, you can manually resize your Hetzner VPS:
+1. SSH into your server
+2. Use Hetzner's console to resize
+3. Contact support if you need help
 
-By default:
-- **Port 80**: HTTP (redirects to HTTPS)
-- **Port 443**: HTTPS (OpenClaw web interface)
-- **Port 22**: SSH (secured with key authentication)
+### Where is my data stored?
 
-Your instance is behind Cloudflare's proxy for DDoS protection.
+All your data is on **your VPS** in Hetzner's Germany datacenter (EU). Clawdet doesn't store your conversations or files.
 
-### Can I install other software on my VPS?
+### Can I SSH into my server?
 
-Yes! You have full root access. Install whatever you need:
+Yes! You have **full root access**. SSH credentials are sent to your email upon provisioning.
+
 ```bash
-apt install postgresql redis-server docker.io
+ssh root@yourusername.clawdet.com
 ```
 
-Just be aware that additional software may consume resources.
+### Can I install additional software?
 
-### How do backups work?
+Absolutely! It's your server. Install whatever you need:
 
-Currently, backups are NOT automatic. We recommend:
-1. **Hetzner Snapshots**: €0.01/GB/month, taken manually or via API
-2. **Custom backups**: Set up your own backup solution (rsync, Borg, etc.)
-3. **OpenClaw memory exports**: Your conversations can be exported as files
+```bash
+apt update
+apt install <package-name>
+```
 
-We're working on automated daily backups as an add-on feature.
+### What AI model does it use?
 
-### What happens if my server goes down?
+By default, your instance uses **Grok 4.1 Fast** (non-reasoning) from xAI. This is included in your subscription.
 
-- **Hardware failure**: Hetzner will automatically migrate your instance to working hardware
-- **Software crash**: OpenClaw auto-restarts via systemd
-- **Network issues**: Cloudflare provides DDoS protection and redundancy
+You can also configure it to use:
+- OpenAI GPT-4o
+- Anthropic Claude
+- Local models via Ollama
+- Any OpenAI-compatible API
 
-Uptime guarantee: 99.5% (excludes planned maintenance)
+Just edit `/root/.openclaw/.env` and add your own API keys.
 
-### Can I migrate my instance later?
+### How do I backup my data?
 
-Yes, you can:
-1. Export your workspace files (via SSH or rsync)
-2. Download your OpenClaw config
-3. Set up a new instance elsewhere
-4. Import your data
+**Manual backups:**
+```bash
+# Copy workspace to local machine
+scp -r root@yourusername.clawdet.com:/root/.openclaw/workspace ./backup/
+```
 
-OpenClaw is open source, so you're never locked in!
+**Automated backups:**
+Use Hetzner's snapshot feature (small additional cost) or set up automated rsync.
+
+We're working on built-in backup functionality!
 
 ---
 
-## Account Management
+## Features & Functionality
 
-### How do I cancel my subscription?
+### Can I connect multiple chat platforms?
 
-1. Log in to your dashboard
-2. Go to Account Settings
-3. Click "Cancel Subscription"
-4. Confirm cancellation
+Yes! OpenClaw supports:
+- Telegram (easiest to set up)
+- Discord
+- WhatsApp
+- Slack
+- SMS (via Twilio)
 
-Your instance will remain active until the end of your billing period.
+Check the OpenClaw documentation for setup instructions.
 
-### What happens to my data after cancellation?
+### Does it remember past conversations?
 
-- **Immediate**: Your instance becomes read-only
-- **7 days**: Billing stops, no further charges
-- **30 days**: Your VPS is deleted, but we keep a backup
-- **60 days**: All backups are permanently deleted
+Yes! Your assistant has:
+- **Short-term memory** — Recent conversation context
+- **Long-term memory** — Stored in `MEMORY.md`
+- **Daily logs** — Saved in `memory/YYYY-MM-DD.md`
 
-You can export your data anytime before deletion.
+It learns your preferences and remembers important information.
 
-### Can I reactivate after canceling?
+### What can my assistant do?
 
-Yes! Within 30 days, we can restore your instance from backup. After 30 days, you'll need to provision a new instance (but you can still use the same subdomain if available).
+Out of the box:
+- **Chat** — Natural language conversations
+- **Web search** — Find information online
+- **Code execution** — Run Python, JavaScript, bash
+- **File management** — Read/write files
+- **Reminders** — Set cron jobs and alarms
+- **Web scraping** — Fetch and parse websites
 
-### How do I change my email or X account?
+With additional skills:
+- Control smart home devices
+- Manage GitHub repositories
+- Schedule meetings
+- Send emails/SMS
+- Monitor social media
+- Trade stocks (with eToro skill)
+- And much more!
 
-Contact support to update your email. Changing your X account requires re-authentication (which may change your subdomain).
+### Can I customize my assistant's personality?
+
+Yes! Edit `/root/.openclaw/workspace/AGENTS.md` to change:
+- Tone and style (formal, casual, funny)
+- Response length preferences
+- Domain expertise
+- Behavioral rules
+- Working hours
+
+### How do I add skills?
+
+Skills extend your assistant's capabilities. To add one:
+
+```bash
+ssh root@yourusername.clawdet.com
+openclaw skill install <skill-name>
+```
+
+Browse available skills at [github.com/openclaw/skills](https://github.com/openclaw/skills)
+
+---
+
+## Security & Privacy
+
+### Is my data private?
+
+**Yes!** Your data is stored only on your VPS, not on Clawdet servers. We don't have access to your conversations or files.
+
+### Is it encrypted?
+
+- **In transit:** Yes, all connections use SSL/TLS (HTTPS)
+- **At rest:** Your VPS uses encrypted storage (Hetzner default)
+- **Telegram:** Supports end-to-end encryption
+
+### Who can access my server?
+
+Only **you** have SSH access. Clawdet doesn't retain access after provisioning is complete.
+
+### What data does Clawdet collect?
+
+We collect minimal data:
+- Email address (for billing and support)
+- X/Twitter username (for authentication)
+- Payment information (via Stripe, not stored by us)
+- Server metadata (IP, subdomain, creation date)
+
+We **do not** collect or log:
+- Your conversations
+- Files on your server
+- API usage patterns
+
+### Is it GDPR compliant?
+
+Yes. Your data is processed in the EU (Germany), and you have full control over your data. Contact support to exercise your GDPR rights.
 
 ---
 
 ## Troubleshooting
 
-### My trial chat isn't working
+### My instance isn't responding
 
-**Possible causes:**
-- Browser issues: Try clearing cache or using incognito mode
-- Ad blockers: Disable for clawdet.com
-- Network: Check your internet connection
+1. **Check server status:**
+   ```bash
+   ssh root@yourusername.clawdet.com
+   systemctl status openclaw-gateway
+   ```
 
-**Solutions:**
-1. Refresh the page (Ctrl+F5)
-2. Try a different browser
-3. Check browser console for errors (F12 → Console)
+2. **Restart the service:**
+   ```bash
+   systemctl restart openclaw-gateway
+   ```
 
-### I can't log in with X
+3. **Check logs for errors:**
+   ```bash
+   journalctl -u openclaw-gateway -f
+   ```
 
-**Possible causes:**
-- Cookies disabled
-- X account suspended
-- OAuth permissions denied
+If issues persist, contact support.
 
-**Solutions:**
-1. Enable cookies (especially third-party cookies)
-2. Verify your X account is active
-3. Re-authorize the OAuth connection
+### I forgot my instance URL
 
-### My payment failed
+Visit [clawdet.com/dashboard](https://clawdet.com/dashboard) and sign in with X. Your URL will be displayed.
 
-**Common reasons:**
-- Insufficient funds
-- Card declined by bank
-- Incorrect billing address
+### Telegram bot isn't working
 
-**Solutions:**
-1. Check with your bank
-2. Try a different card
-3. Use PayPal (if available)
-4. Contact Stripe support
+1. **Check bot token:** Ensure it's configured in `/root/.openclaw/.env`
+2. **Restart gateway:** `systemctl restart openclaw-gateway`
+3. **Check Telegram logs:** Look for errors in the service logs
 
-### My instance isn't loading
+### DNS not resolving
 
-**Checks:**
-1. Wait 2-3 minutes for DNS to propagate
-2. Make sure you're using HTTPS, not HTTP
-3. Clear browser cache
-4. Try accessing from a different network
+DNS propagation takes 5-10 minutes. If it's been longer:
 
-If still not working after 15 minutes, contact support.
+1. **Clear DNS cache:**
+   - Windows: `ipconfig /flushdns`
+   - Mac: `sudo dscacheutil -flushcache`
+   - Linux: `sudo systemd-resolve --flush-caches`
 
-### I forgot my SSH password
+2. **Try Google DNS:** Temporarily use 8.8.8.8 as your DNS server
 
-Your instance uses SSH key authentication, not passwords. If you lost your SSH key:
-1. Contact support
-2. We can add a new SSH key to your instance
-3. Or we can reset your instance (data will be lost unless backed up)
+3. **Check from another network:** Mobile data, different WiFi, etc.
 
----
+### Payment failed
 
-## Policies & Legal
+Common reasons:
+- **Insufficient funds** — Check your card balance
+- **Expired card** — Update payment method
+- **Bank decline** — Contact your bank; they may flag it as unusual activity
+- **Wrong CVV/ZIP** — Double-check details
 
-### What's your refund policy?
+Try again or contact support if the issue persists.
 
-7-day money-back guarantee. No questions asked. After 7 days, prorated refunds based on unused time.
+### Provisioning stuck
 
-### What's your data retention policy?
+If provisioning is taking longer than 15 minutes:
 
-- **Active instances**: Data retained indefinitely
-- **Canceled instances**: 30-day backup retention
-- **Deleted instances**: Immediate deletion, no recovery
-
-We do not access, analyze, or train models on your instance data.
-
-### Do you collect usage analytics?
-
-We collect minimal analytics:
-- Page views (anonymized)
-- API response times (for performance monitoring)
-- Error logs (for debugging)
-
-We do NOT collect or analyze your conversations with your AI.
-
-### Can I run Clawdet for commercial use?
-
-Yes! Your Clawdet instance can be used for:
-- Business automation
-- Client services
-- Research and development
-- Commercial products
-
-Just follow our Terms of Service (no illegal activity, spam, etc.).
+1. **Refresh your dashboard** — Sometimes the status lags
+2. **Check Hetzner status** — [status.hetzner.com](https://status.hetzner.com)
+3. **Contact support** — We'll investigate and provision manually if needed
 
 ---
 
-## Future Features
+## Account Management
 
-### What's on the roadmap?
+### How do I change my email?
 
-Coming soon:
-- **Email/password authentication** (alternative to X OAuth)
-- **Multiple AI models** (Claude, GPT-4, Gemini)
-- **Larger instance tiers** (more CPU, RAM, storage)
-- **Automated backups** (daily snapshots)
-- **Team accounts** (multiple users per instance)
-- **API access** (programmatic instance management)
-- **Mobile app** (iOS/Android)
+Currently, email changes require contacting support. We're building self-service account management.
 
-Want something else? Let us know!
+### Can I transfer my instance to another account?
 
-### Can I request features?
+Not directly, but you can:
+1. Backup your data (via SSH/rsync)
+2. Sign up with a new account
+3. Restore your data to the new instance
 
-Absolutely! We'd love your feedback:
-- Email: support@clawdet.com
-- X: @clawdet
-- GitHub Issues: Submit feature requests
+### Can I have multiple instances?
 
-We prioritize features based on user demand.
+Yes! Each Clawdet account can have one instance, but you can create multiple accounts with different X/Twitter profiles.
 
----
+Multi-instance support per account is on our roadmap.
 
-## Still Have Questions?
+### How do I delete my account?
 
-Contact us:
-- **Email**: support@clawdet.com
-- **X**: [@clawdet](https://x.com/clawdet)
-- **Documentation**: [clawdet.com/docs](https://clawdet.com/docs)
+1. Cancel your subscription (dashboard or Stripe)
+2. Email support@clawdet.com with "Delete Account" in subject
+3. We'll delete your account data within 7 days
 
-We typically respond within 24 hours (usually much faster!).
+Your VPS and data will be wiped as part of the process.
 
 ---
 
-*Last updated: February 17, 2026*
+## Support
+
+### How do I contact support?
+
+- **Email:** support@clawdet.com
+- **Response time:** Usually within 24 hours
+- **Discord:** [discord.gg/openclaw](https://discord.gg/openclaw) (community support)
+
+### What if I find a bug?
+
+Please report it!
+
+- **Email:** support@clawdet.com with details
+- **GitHub:** [github.com/openclaw/clawdet/issues](https://github.com/openclaw/clawdet/issues)
+
+Include:
+- What you were trying to do
+- What happened instead
+- Screenshots or error messages (if applicable)
+
+### Where can I learn more about OpenClaw?
+
+- **Official docs:** [docs.openclaw.com](https://docs.openclaw.com)
+- **GitHub:** [github.com/openclaw](https://github.com/openclaw)
+- **Discord:** [discord.gg/openclaw](https://discord.gg/openclaw)
+
+---
+
+## Roadmap & Future Features
+
+### When will you add [feature]?
+
+Check our [public roadmap](#) to see what's planned. Upcoming features:
+- Multiple pricing tiers (Q2 2026)
+- Custom domains (Q2 2026)
+- Team accounts (Q2 2026)
+- Mobile app (Q2 2026)
+- Email notifications (Q1 2026)
+- Admin panel (Q1 2026)
+
+### Can I request a feature?
+
+Absolutely! Email support@clawdet.com or open a GitHub issue with your idea.
+
+### Is Clawdet open source?
+
+The **OpenClaw assistant** is open source. The **Clawdet platform** (provisioning, billing, etc.) is proprietary, but we plan to open-source parts of it in the future.
+
+---
+
+## Still have questions?
+
+**Email us:** support@clawdet.com
+
+We're here to help! 🚀
+
+---
+
+*Last updated: February 2026*
+*Version: 1.0*

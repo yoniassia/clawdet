@@ -27,6 +27,12 @@
   color: #e7e9ea;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .counter {
   font-size: 14px;
   color: #71767b;
@@ -34,6 +40,24 @@
   padding: 6px 12px;
   border-radius: 20px;
   border: 1px solid #2f3336;
+}
+
+.signupButton {
+  background: #1d9bf0;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.signupButton:hover {
+  background: #1a8cd8;
+  transform: scale(1.02);
 }
 
 .chatContainer {
@@ -270,9 +294,18 @@
     font-size: 18px;
   }
 
+  .headerRight {
+    gap: 8px;
+  }
+
   .counter {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .signupButton {
     font-size: 13px;
-    padding: 4px 10px;
+    padding: 6px 14px;
   }
 
   .chatContainer {
@@ -330,6 +363,24 @@
 }
 
 @media (max-width: 480px) {
+  .header {
+    padding: 10px 12px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .counter {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .signupButton {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
   .messageContent {
     max-width: 90%;
   }
@@ -341,5 +392,15 @@
 
   .sendButton {
     padding: 10px 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .headerRight {
+    gap: 6px;
+  }
+
+  .counter {
+    display: none;
   }
 }

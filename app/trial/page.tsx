@@ -90,8 +90,16 @@ export default function TrialPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.logo}>🐾 Clawdet</h1>
-        <div className={styles.counter}>
-          {messageCount}/{MAX_MESSAGES} free messages
+        <div className={styles.headerRight}>
+          <div className={styles.counter}>
+            {messageCount}/{MAX_MESSAGES} free messages
+          </div>
+          <button 
+            className={styles.signupButton}
+            onClick={() => window.location.href = '/signup'}
+          >
+            Sign Up Free
+          </button>
         </div>
       </div>
 

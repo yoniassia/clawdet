@@ -73,7 +73,7 @@ export default function FeedbackWidget() {
           style={{
             position: 'fixed',
             bottom: '5rem',
-            right: '5.5rem',
+            left: '5.5rem',
             zIndex: 10001,
             padding: '0.75rem 1rem',
             borderRadius: '0.75rem',
@@ -89,7 +89,7 @@ export default function FeedbackWidget() {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button - positioned to avoid covering other buttons */}
       <button
         onClick={() => {
           setOpen(!open)
@@ -98,8 +98,8 @@ export default function FeedbackWidget() {
         style={{
           position: 'fixed',
           bottom: '1.5rem',
-          right: '1.5rem',
-          zIndex: 10000,
+          left: '1.5rem',
+          zIndex: 9999,
           width: '3.5rem',
           height: '3.5rem',
           borderRadius: '50%',
@@ -143,7 +143,7 @@ export default function FeedbackWidget() {
             zIndex: 10000,
             display: 'flex',
             alignItems: 'flex-end',
-            justifyContent: 'flex-end',
+            justifyContent: 'flex-start',
             padding: '1.25rem',
             paddingBottom: '7rem',
           }}
