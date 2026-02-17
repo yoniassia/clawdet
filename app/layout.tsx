@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import FeedbackWidget from '@/components/FeedbackWidget'
 
 export const metadata: Metadata = {
   title: 'Clawdet - Your AI Companion',
@@ -19,7 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <FeedbackWidget />
+      </body>
     </html>
   )
 }
