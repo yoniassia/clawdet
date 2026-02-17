@@ -9,6 +9,7 @@ XAI_API_KEY="${XAI_API_KEY:-}"
 USERNAME="${USERNAME:-}"
 SUBDOMAIN="${SUBDOMAIN:-}"
 FULL_DOMAIN="${SUBDOMAIN}.clawdet.com"
+GATEWAY_TOKEN="${GATEWAY_TOKEN:-$(openssl rand -hex 32)}"  # Generate secure token
 
 # Colors for output
 RED='\033[0;31m'
@@ -44,13 +45,14 @@ fi
 
 log "Starting OpenClaw provisioning for user: $USERNAME"
 log "Domain: $FULL_DOMAIN"
+log "Gateway Token: ${GATEWAY_TOKEN:0:16}..."
 
 # Step 1: System Update
 log "Updating system packages..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get upgrade -y -qq
-apt-get install -y -qq curl wget git build-essential ca-certificates
+apt-get install -y -qq curl wget git build-essential ca-certificates openssl
 
 # Step 2: Install Node.js 22.x (LTS)
 log "Installing Node.js..."
@@ -62,19 +64,31 @@ fi
 NODE_VERSION=$(node --version)
 log "Node.js installed: $NODE_VERSION"
 
-# Step 3: Install OpenClaw
+# Step 3: Install Caddy (reverse proxy for SSL)
+log "Installing Caddy..."
+if ! command -v caddy &> /dev/null; then
+    apt-get install -y -qq debian-keyring debian-archive-keyring apt-transport-https
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+    apt-get update -qq
+    apt-get install -y caddy
+fi
+log "Caddy installed: $(caddy version)"
+
+# Step 4: Install OpenClaw
 log "Installing OpenClaw..."
 npm install -g openclaw@latest --silent
 
 OPENCLAW_VERSION=$(openclaw version 2>&1 || echo "unknown")
 log "OpenClaw installed: $OPENCLAW_VERSION"
 
-# Step 4: Create workspace directory
+# Step 5: Create workspace directory
 log "Setting up workspace..."
 mkdir -p /root/.openclaw/workspace/memory
 mkdir -p /root/.openclaw/config
+mkdir -p /root/.openclaw/logs
 
-# Step 5: Create workspace files
+# Step 6: Create workspace files
 log "Creating workspace files..."
 
 # USER.md
@@ -115,13 +129,13 @@ This is your personal OpenClaw instance with **full advanced features enabled**:
 
 ## Getting Started
 
+**Web interface:**
+- Visit: https://$FULL_DOMAIN
+
 **Connect your Telegram bot:**
 1. Create a bot via @BotFather on Telegram
 2. Configure the bot token in your OpenClaw config
 3. Start chatting!
-
-**Or use the web interface:**
-- Visit: https://$FULL_DOMAIN
 
 **Check service status:**
 \`\`\`bash
@@ -248,20 +262,6 @@ This is your long-term memory. Use this for important context, decisions, and le
 - Contact information
 - Passwords/credentials (encrypted)
 
-## Example Entries
-
-### Projects
-- Working on ClawDet SaaS platform
-- Goal: Automate OpenClaw provisioning
-
-### Preferences
-- Preferred communication style: Direct, concise
-- Timezone: America/New_York
-
-### Skills
-- Proficient in: TypeScript, React, Node.js, Linux
-- Learning: Hetzner API, Cloudflare automation
-
 ---
 
 _Start adding your context below:_
@@ -275,19 +275,6 @@ cat > /root/.openclaw/workspace/HEARTBEAT.md <<'EOF'
 This file defines tasks that run periodically when the heartbeat polls.
 
 **Leave this empty** if you don't want any periodic checks.
-
-## Example Tasks
-
-```
-# Check for urgent emails (every ~30 min)
-- Read recent emails, flag urgent ones
-
-# Calendar reminders (every ~1 hour)
-- Check for events in next 2 hours
-
-# GitHub notifications (every ~4 hours)
-- Check for mentions, PRs, issues
-```
 
 ---
 
@@ -319,100 +306,110 @@ Your ClawDet instance comes with these pre-installed skills:
 - **Canvas**: Visual UI rendering
 - **Nodes**: Control paired devices
 
-## Your Configurations
-
-Add your specific configurations below:
-
-### Example: SSH Hosts
-```
-home-server: 192.168.1.100 (user: admin)
-vps-prod: 188.34.197.212 (user: root)
-```
-
-### Example: API Keys
-```
-# Store sensitive data encrypted or reference from environment
-OPENAI_API_KEY: $ENV
-GITHUB_TOKEN: $ENV
-```
-
 ---
 
 _Add your tool configurations below:_
 
 EOF
 
-# Step 6: Create OpenClaw configuration
-log "Configuring OpenClaw gateway..."
+# Step 7: Create openclaw.json (gateway config)
+log "Creating OpenClaw configuration..."
 
-cat > /root/.openclaw/config/gateway.yaml <<EOF
-# OpenClaw Gateway Configuration
-# Provisioned by ClawDet (Beta)
-
-# Domain configuration
-domain: $FULL_DOMAIN
-port: 18789
-
-# AI Model Configuration
-model:
-  default: "anthropic/claude-sonnet-4-5"
-  reasoning: "extended"  # Enable extended reasoning mode
-  thinking: "high"       # Enable thinking/reasoning output
-  
-providers:
-  xai:
-    apiKey: "$XAI_API_KEY"
-  anthropic:
-    apiKey: "$XAI_API_KEY"  # Using xAI key for now
-
-# Workspace
-workspace: /root/.openclaw/workspace
-
-# Session settings
-session:
-  type: main
-  history:
-    maxMessages: 200  # Increased for advanced users
-  context:
-    enabled: true
-    maxDepth: 10
-    
-# Advanced features enabled
-features:
-  tools: true              # Enable all tool integrations
-  cron: true               # Enable cron jobs
-  subagents: true          # Enable sub-agent spawning
-  memory: true             # Enable memory search
-  browser: true            # Enable browser automation
-  exec: true               # Enable shell execution
-  canvas: true             # Enable canvas rendering
-  
-# Logging
-logging:
-  level: info
-  file: /root/.openclaw/logs/gateway.log
-  verbose: true
-
-# Security
-security:
-  allowedOrigins:
-    - "https://$FULL_DOMAIN"
-    - "http://localhost:*"
-  execApprovals: "allowlist"  # Require approval for destructive commands
-
-# MCP Servers (Model Context Protocol)
-mcpServers:
-  rentahuman:
-    command: npx
-    args:
-      - "-y"
-      - "@anthropic/rentahuman-mcp"
-    env:
-      RENTAHUMAN_API_KEY: "rah_6d79a2f5e0c41cdde9ee210db41e933d"
+cat > /root/.openclaw/openclaw.json <<EOF
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/root/.openclaw/workspace"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "allowInsecureAuth": true
+    },
+    "auth": {
+      "token": "$GATEWAY_TOKEN",
+      "allowTailscale": false
+    },
+    "trustedProxies": [
+      "127.0.0.1",
+      "173.245.48.0/20",
+      "103.21.244.0/22",
+      "103.22.200.0/22",
+      "103.31.4.0/22",
+      "141.101.64.0/18",
+      "108.162.192.0/18",
+      "190.93.240.0/20",
+      "188.114.96.0/20",
+      "197.234.240.0/22",
+      "198.41.128.0/17",
+      "162.158.0.0/15",
+      "104.16.0.0/13",
+      "104.24.0.0/14",
+      "172.64.0.0/13",
+      "131.0.72.0/22"
+    ]
+  },
+  "providers": {
+    "xai": {
+      "apiKey": "$XAI_API_KEY"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.2.15",
+    "lastTouchedAt": "$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")"
+  }
+}
 EOF
 
-# Step 7: Create systemd service
-log "Setting up systemd service..."
+# Also create config.yaml for backward compatibility
+cat > /root/.openclaw/config.yaml <<EOF
+# Minimal OpenClaw config
+gateway:
+  mode: local
+  port: 18789
+  bind: lan
+
+workspace: /root/.openclaw/workspace
+
+providers:
+  xai:
+    apiKey: $XAI_API_KEY
+EOF
+
+# Copy to gateway.yaml as well
+cp /root/.openclaw/config.yaml /root/.openclaw/gateway.yaml
+
+# Step 8: Configure Caddy
+log "Configuring Caddy reverse proxy..."
+
+cat > /etc/caddy/Caddyfile <<EOF
+# HTTP
+$FULL_DOMAIN:80 {
+    reverse_proxy localhost:18789
+}
+
+# HTTPS with self-signed cert (Cloudflare handles real SSL)
+$FULL_DOMAIN:443 {
+    reverse_proxy localhost:18789
+    tls internal
+}
+EOF
+
+# Restart Caddy
+systemctl restart caddy
+systemctl enable caddy
+
+log "Caddy configured and running"
+
+# Step 9: Create systemd service
+log "Setting up OpenClaw systemd service..."
 
 cat > /etc/systemd/system/openclaw-gateway.service <<EOF
 [Unit]
@@ -425,8 +422,10 @@ User=root
 WorkingDirectory=/root/.openclaw
 Environment="NODE_ENV=production"
 Environment="XAI_API_KEY=$XAI_API_KEY"
+Environment="OPENCLAW_STATE_DIR=/root/.openclaw"
+Environment="OPENCLAW_GATEWAY_TOKEN=$GATEWAY_TOKEN"
 Environment="RENTAHUMAN_API_KEY=rah_6d79a2f5e0c41cdde9ee210db41e933d"
-ExecStart=/usr/bin/openclaw gateway run --allow-unconfigured --bind lan --port 18789
+ExecStart=/usr/bin/openclaw gateway run
 Restart=always
 RestartSec=10
 StandardOutput=journal
@@ -442,9 +441,13 @@ systemctl enable openclaw-gateway
 systemctl start openclaw-gateway
 
 # Wait for service to start
-sleep 3
+log "Waiting for services to start..."
+sleep 5
 
-# Check service status
+# Step 10: Verify services
+log "Verifying services..."
+
+# Check OpenClaw
 if systemctl is-active --quiet openclaw-gateway; then
     log "✅ OpenClaw gateway is running!"
 else
@@ -452,27 +455,51 @@ else
     systemctl status openclaw-gateway --no-pager || true
 fi
 
-# Step 8: Configure firewall (if ufw is available)
+# Check Caddy
+if systemctl is-active --quiet caddy; then
+    log "✅ Caddy reverse proxy is running!"
+else
+    warn "Caddy may not have started correctly"
+    systemctl status caddy --no-pager || true
+fi
+
+# Check if OpenClaw is listening
+if ss -tlnp | grep -q ":18789"; then
+    log "✅ OpenClaw gateway is listening on port 18789"
+else
+    warn "OpenClaw gateway may not be listening yet"
+fi
+
+# Check if Caddy is listening
+if ss -tlnp | grep -q ":80"; then
+    log "✅ Caddy is listening on port 80"
+fi
+
+if ss -tlnp | grep -q ":443"; then
+    log "✅ Caddy is listening on port 443"
+fi
+
+# Step 11: Configure firewall (if ufw is available)
 if command -v ufw &> /dev/null; then
     log "Configuring firewall..."
     ufw --force enable
     ufw allow 22/tcp   # SSH
-    ufw allow 80/tcp   # HTTP
-    ufw allow 443/tcp  # HTTPS
-    ufw allow 18789/tcp # OpenClaw Gateway
-    log "Firewall configured"
+    ufw allow 80/tcp   # HTTP (Caddy)
+    ufw allow 443/tcp  # HTTPS (Caddy)
+    log "Firewall configured (OpenClaw port 18789 is internal only)"
 else
     warn "UFW not found, skipping firewall configuration"
 fi
 
-# Step 9: Final checks
-log "Running final checks..."
+# Step 12: Final health check
+log "Running final health checks..."
+sleep 2
 
-# Check if OpenClaw is listening
-if netstat -tuln 2>/dev/null | grep -q ":18789"; then
-    log "✅ OpenClaw gateway is listening on port 18789"
+HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80 || echo "000")
+if [ "$HTTP_CHECK" = "200" ]; then
+    log "✅ HTTP endpoint responding (Caddy → OpenClaw)"
 else
-    warn "OpenClaw gateway may not be listening yet (this is normal if starting)"
+    warn "HTTP endpoint returned: $HTTP_CHECK"
 fi
 
 # Display summary
@@ -482,20 +509,34 @@ log "✅ OpenClaw Provisioning Complete!"
 log "========================================"
 log ""
 log "Instance Details:"
-log "  Domain: https://$FULL_DOMAIN"
-log "  Gateway: https://$FULL_DOMAIN:18789"
-log "  User: $USERNAME"
+log "  Domain:    https://$FULL_DOMAIN"
+log "  User:      $USERNAME"
 log "  Workspace: /root/.openclaw/workspace"
+log "  Token:     ${GATEWAY_TOKEN:0:16}...${GATEWAY_TOKEN: -4}"
 log ""
 log "Service Management:"
-log "  Status:  systemctl status openclaw-gateway"
-log "  Logs:    journalctl -u openclaw-gateway -f"
-log "  Restart: systemctl restart openclaw-gateway"
+log "  OpenClaw:"
+log "    Status:  systemctl status openclaw-gateway"
+log "    Logs:    journalctl -u openclaw-gateway -f"
+log "    Restart: systemctl restart openclaw-gateway"
+log ""
+log "  Caddy (Reverse Proxy):"
+log "    Status:  systemctl status caddy"
+log "    Logs:    journalctl -u caddy -f"
+log "    Restart: systemctl restart caddy"
+log ""
+log "Architecture:"
+log "  Internet → Cloudflare (SSL) → Caddy (80/443) → OpenClaw (18789)"
 log ""
 log "Next Steps:"
-log "  1. Verify DNS: $SUBDOMAIN.clawdet.com → $(curl -s ifconfig.me)"
-log "  2. Configure Cloudflare SSL proxy"
-log "  3. Test gateway: curl https://$FULL_DOMAIN:18789/health"
+log "  1. DNS should be configured: $SUBDOMAIN.clawdet.com"
+log "  2. Cloudflare SSL proxy should be enabled"
+log "  3. Test gateway: curl https://$FULL_DOMAIN"
 log ""
 log "🦞 Welcome to OpenClaw!"
 log "========================================"
+
+# Save token for later reference
+echo "$GATEWAY_TOKEN" > /root/.openclaw/gateway-token.txt
+chmod 600 /root/.openclaw/gateway-token.txt
+log "Gateway token saved to: /root/.openclaw/gateway-token.txt"
