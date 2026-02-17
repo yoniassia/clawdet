@@ -16,6 +16,7 @@ export interface User {
   provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
   instanceUrl?: string
   hetznerVpsId?: string
+  hetznerVpsIp?: string
   createdAt: number
   updatedAt: number
 }
@@ -85,6 +86,7 @@ export function upsertUser(userData: Partial<User> & { xId: string }): User {
       provisioningStatus: userData.provisioningStatus,
       instanceUrl: userData.instanceUrl,
       hetznerVpsId: userData.hetznerVpsId,
+      hetznerVpsIp: userData.hetznerVpsIp,
       createdAt: now,
       updatedAt: now
     }

@@ -9,11 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.6",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.7.3",
-    "@types/react": "^19.0.6",
-    "@types/node": "^22.10.5"
+    "ssh2": "^1.17.0",
+    "typescript": "^5.7.3"
   }
 }

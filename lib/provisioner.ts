@@ -5,6 +5,7 @@
 
 import { createServer, waitForServer, generateCloudInit, HetznerServer } from './hetzner'
 import { updateUser, findUserById, User } from './db'
+import { installOpenClawViaSSH, testSSHConnection } from './ssh-installer'
 
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN
 const CLOUDFLARE_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID
@@ -75,6 +76,11 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     const vpsIp = server.public_net.ipv4.ip
     
     console.log(`[PROVISIONER] VPS ready at IP: ${vpsIp}`)
+    
+    // Save VPS IP
+    updateUser(userId, {
+      hetznerVpsIp: vpsIp
+    })
 
     // Step 3: Configure DNS
     updateUser(userId, {
@@ -84,15 +90,53 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     console.log(`[PROVISIONER] Configuring DNS: ${subdomain}.clawdet.com → ${vpsIp}`)
     await createDnsRecord(subdomain, vpsIp)
 
-    // Step 4: Installation (happens via cloud-init in background)
+    // Step 4: Wait for SSH to be available
+    console.log(`[PROVISIONER] Waiting for SSH to be available...`)
+    const rootPassword = serverResponse.root_password
+    if (!rootPassword) {
+      throw new Error('No root password provided by Hetzner')
+    }
+
+    // Wait up to 3 minutes for SSH to be ready
+    let sshReady = false
+    const sshStartTime = Date.now()
+    const sshTimeout = 180000 // 3 minutes
+
+    while (!sshReady && Date.now() - sshStartTime < sshTimeout) {
+      try {
+        sshReady = await testSSHConnection(vpsIp, rootPassword)
+        if (sshReady) {
+          console.log(`[PROVISIONER] SSH is ready!`)
+          break
+        }
+      } catch (error) {
+        // SSH not ready yet, continue waiting
+      }
+      
+      // Wait 10 seconds before trying again
+      await new Promise(resolve => setTimeout(resolve, 10000))
+    }
+
+    if (!sshReady) {
+      throw new Error('SSH connection timeout - VPS did not become accessible')
+    }
+
+    // Step 5: Install OpenClaw via SSH
     updateUser(userId, {
       provisioningStatus: 'installing'
     })
 
-    console.log(`[PROVISIONER] OpenClaw installation started via cloud-init`)
-    
-    // Wait a bit for cloud-init to start
-    await new Promise(resolve => setTimeout(resolve, 10000))
+    console.log(`[PROVISIONER] Installing OpenClaw via SSH...`)
+    await installOpenClawViaSSH({
+      host: vpsIp,
+      password: rootPassword,
+      username: 'root',
+      xUsername: user.xUsername,
+      subdomain,
+      xaiApiKey: XAI_API_KEY
+    })
+
+    console.log(`[PROVISIONER] OpenClaw installation complete!`)
 
     // Step 5: Mark complete
     const instanceUrl = `https://${subdomain}.clawdet.com`
