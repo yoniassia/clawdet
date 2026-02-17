@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getClientIP, SECURITY_HEADERS } from '@/lib/security'
 
 const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID
 const TWITTER_AUTHORIZE_URL = 'https://twitter.com/i/oauth2/authorize'
@@ -35,6 +36,23 @@ function buildOAuthUrl(baseUrl: string): { url: string; state: string } {
 
 // POST endpoint for API-based flows (returns JSON)
 export async function POST(request: NextRequest) {
+  // Rate limiting: 5 requests per minute per IP
+  const clientIP = getClientIP(request.headers)
+  const rateLimit = checkRateLimit(`auth-login:${clientIP}`, { maxRequests: 5, windowMs: 60000 })
+  
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many login attempts. Please try again later.' },
+      { 
+        status: 429,
+        headers: {
+          ...SECURITY_HEADERS,
+          'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString()
+        }
+      }
+    )
+  }
+
   try {
     const { url, state } = buildOAuthUrl(request.url)
     
@@ -54,6 +72,20 @@ export async function POST(request: NextRequest) {
 
 // GET endpoint for browser-based flows (redirects)
 export async function GET(request: NextRequest) {
+  // Rate limiting: 5 requests per minute per IP
+  const clientIP = getClientIP(request.headers)
+  const rateLimit = checkRateLimit(`auth-login:${clientIP}`, { maxRequests: 5, windowMs: 60000 })
+  
+  if (!rateLimit.allowed) {
+    return new NextResponse('Too many login attempts. Please try again later.', {
+      status: 429,
+      headers: {
+        ...SECURITY_HEADERS,
+        'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString()
+      }
+    })
+  }
+
   try {
     const { url, state } = buildOAuthUrl(request.url)
     
