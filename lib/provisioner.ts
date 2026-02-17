@@ -6,11 +6,10 @@
 import { createServer, waitForServer, generateCloudInit, HetznerServer } from './hetzner'
 import { updateUser, findUserById, User } from './db'
 import { installOpenClawViaSSH, testSSHConnection } from './ssh-installer'
+import { createSubdomain, waitForDNSPropagation, mockMode as cloudflareMock } from './cloudflare'
 
-const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN
-const CLOUDFLARE_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID
 const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY
-const MOCK_DNS = !CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_MOCK_MODE === 'true'
+const MOCK_DNS = process.env.CLOUDFLARE_MOCK_MODE === 'true'
 
 export interface ProvisioningStatus {
   status: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
@@ -88,7 +87,21 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     })
 
     console.log(`[PROVISIONER] Configuring DNS: ${subdomain}.clawdet.com → ${vpsIp}`)
-    await createDnsRecord(subdomain, vpsIp)
+    
+    if (MOCK_DNS) {
+      await cloudflareMock.createSubdomain(subdomain, vpsIp)
+    } else {
+      const dnsResult = await createSubdomain(subdomain, vpsIp, true) // proxied=true for SSL
+      if (!dnsResult.success) {
+        throw new Error(`DNS creation failed: ${dnsResult.error}`)
+      }
+      
+      // Wait for DNS propagation (optional - may add delay but ensures DNS is ready)
+      console.log(`[PROVISIONER] Waiting for DNS propagation...`)
+      await waitForDNSPropagation(`${subdomain}.clawdet.com`, vpsIp)
+    }
+    
+    console.log(`[PROVISIONER] DNS configured: ${subdomain}.clawdet.com`)
 
     // Step 4: Wait for SSH to be available
     console.log(`[PROVISIONER] Waiting for SSH to be available...`)
@@ -160,39 +173,52 @@ export async function provisionUserInstance(userId: string): Promise<void> {
 }
 
 /**
- * Create DNS A record via Cloudflare API
+ * Generate customer handoff information
  */
-async function createDnsRecord(subdomain: string, ip: string): Promise<void> {
-  if (MOCK_DNS) {
-    console.log(`[DNS MOCK] Creating A record: ${subdomain}.clawdet.com → ${ip}`)
-    return
+export function generateHandoffInfo(user: User): {
+  instanceUrl: string;
+  username: string;
+  setupInstructions: string;
+  credentials: string;
+} {
+  const subdomain = user.xUsername.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  const instanceUrl = `https://${subdomain}.clawdet.com`
+  
+  return {
+    instanceUrl,
+    username: user.xUsername,
+    setupInstructions: `
+🎉 Your OpenClaw instance is ready!
+
+**Access your instance:**
+${instanceUrl}
+
+**What's included:**
+✅ Private VPS server (2GB RAM, 1 vCPU)
+✅ OpenClaw pre-installed and configured
+✅ Grok AI (xAI) integration enabled
+✅ Secure HTTPS with Cloudflare SSL
+✅ Your own subdomain: ${subdomain}.clawdet.com
+
+**Getting Started:**
+1. Your OpenClaw Gateway is running at ${instanceUrl}:18789
+2. Connect via Telegram by configuring your bot token
+3. All workspace files are in ~/.openclaw/workspace
+4. Check logs: journalctl -u openclaw-gateway -f
+
+**Need help?**
+- Documentation: https://clawdet.com/docs
+- Support: support@clawdet.com
+- Twitter: @clawdet
+
+Welcome to OpenClaw! 🦞
+    `.trim(),
+    credentials: `
+Server IP: ${user.hetznerVpsIp}
+SSH Access: Contact support for root credentials
+Instance URL: ${instanceUrl}
+    `.trim()
   }
-
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type: 'A',
-        name: subdomain,
-        content: ip,
-        ttl: 120,
-        proxied: true // Enable Cloudflare proxy for SSL
-      })
-    }
-  )
-
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`Cloudflare API error: ${response.status} - ${error}`)
-  }
-
-  const data = await response.json()
-  console.log(`[DNS] Created record: ${subdomain}.clawdet.com → ${ip}`)
 }
 
 /**
