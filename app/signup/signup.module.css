@@ -90,6 +90,7 @@
   gap: 12px;
   transition: background 0.2s;
   margin-bottom: 16px;
+  cursor: pointer;
 }
 
 .xButton:not(:disabled):hover {
