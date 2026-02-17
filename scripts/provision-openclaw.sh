@@ -414,7 +414,7 @@ User=root
 WorkingDirectory=/root/.openclaw
 Environment="NODE_ENV=production"
 Environment="XAI_API_KEY=$XAI_API_KEY"
-ExecStart=/usr/bin/openclaw gateway start
+ExecStart=/usr/bin/openclaw gateway run --allow-unconfigured --bind lan --port 18789
 Restart=always
 RestartSec=10
 StandardOutput=journal
