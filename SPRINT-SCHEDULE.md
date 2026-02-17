@@ -2,6 +2,7 @@
 
 **Status:** ✅ All 8 sprints scheduled
 **Mode:** Hourly execution (1 sprint per hour)
+**Model:** 🧠 **Claude Opus 4.6** (upgraded for superior coding)
 **Timeout:** 50 minutes per sprint
 **Auto-announce:** Results sent to Yoni on completion
 
