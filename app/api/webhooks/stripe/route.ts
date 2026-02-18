@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateUser, findUserById } from '@/lib/db'
-import { startProvisioningJob } from '@/lib/provisioner'
+import { startProvisioningJob } from '@/lib/provisioner-v2'
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET

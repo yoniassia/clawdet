@@ -2,7 +2,42 @@
 
 **Automated AI Assistant Provisioning Platform**
 
+[![Status](https://img.shields.io/badge/status-beta-blue.svg)](https://clawdet.com)
+[![Node.js](https://img.shields.io/badge/node.js-22.x-green.svg)](https://nodejs.org)
+[![Next.js](https://img.shields.io/badge/next.js-15-black.svg)](https://nextjs.org)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-complete-success.svg)](./DOCUMENTATION-INDEX.md)
+
 Clawdet makes it easy for anyone to get their own personal AI assistant running in the cloud. Sign up, pay $20/month, and get a fully configured OpenClaw instance on your own VPS in minutes.
+
+**🔗 Live:** [clawdet.com](https://clawdet.com)  
+**📖 Docs:** [Documentation Index](./DOCUMENTATION-INDEX.md)  
+**💬 Support:** support@clawdet.com
+
+---
+
+## ⚡ Quick Start
+
+**For Users:**
+1. Visit [clawdet.com](https://clawdet.com)
+2. Try 5 free messages with Grok AI
+3. Sign up with X/Twitter
+4. Pay $20/month via Stripe
+5. Get your instance at `yourusername.clawdet.com`
+
+📖 **Full guide:** [QUICK-START.md](./QUICK-START.md)
+
+**For Developers:**
+```bash
+git clone https://github.com/yoniassia/clawdet.git
+cd clawdet
+npm install
+cp .env.example .env
+# Edit .env with your API keys
+npm run dev
+```
+
+📖 **Developer docs:** [DEVELOPER-GUIDE.md](./DEVELOPER-GUIDE.md)
 
 ---
 
@@ -218,6 +253,8 @@ Then walk through the flow:
 4. Pay with test card (4242 4242 4242 4242)
 5. Watch provisioning complete in dashboard
 
+📖 **Complete testing guide:** [TEST-WORKFLOW.md](./TEST-WORKFLOW.md)
+
 ---
 
 ## 🚀 Deployment
@@ -291,43 +328,61 @@ ALLOWED_ORIGINS=https://clawdet.com
 
 ```
 clawdet/
-├── app/                    # Next.js App Router pages
-│   ├── page.tsx           # Landing page
-│   ├── trial/             # Trial chat page
-│   ├── signup/            # Signup flow
-│   ├── checkout/          # Payment pages
-│   ├── dashboard/         # User dashboard
-│   └── api/               # API routes
-│       ├── trial-chat/    # Trial chat endpoint
-│       ├── auth/          # OAuth endpoints
-│       ├── payment/       # Stripe integration
-│       ├── webhooks/      # Stripe webhooks
-│       └── provisioning/  # VPS provisioning
-├── lib/                   # Shared utilities
-│   ├── db.ts             # Database (JSON file storage)
-│   ├── auth.ts           # Authentication helpers
-│   ├── grok.ts           # Grok API client
-│   ├── stripe.ts         # Stripe client
-│   ├── hetzner.ts        # Hetzner Cloud API
-│   ├── cloudflare.ts     # Cloudflare DNS API
-│   ├── provisioner.ts    # Orchestrates VPS setup
-│   ├── ssh-installer.ts  # SSH-based OpenClaw install
-│   ├── cache.ts          # In-memory caching
-│   └── performance.ts    # Performance monitoring
-├── public/               # Static assets
-├── data/                 # JSON database files
-│   └── users.json       # User data
-├── docs/                # Documentation
-│   ├── USER-GUIDE.md    # User-facing guide
-│   ├── FAQ.md           # Common questions
-│   └── ADMIN-GUIDE.md   # Platform operations
-├── tests/               # Test files
+├── app/                         # Next.js App Router pages
+│   ├── page.tsx                # Landing page
+│   ├── trial/                  # Trial chat page
+│   ├── signup/                 # Signup flow
+│   ├── checkout/               # Payment pages
+│   ├── dashboard/              # User dashboard
+│   └── api/                    # API routes
+│       ├── trial-chat/         # Trial chat endpoint
+│       ├── auth/               # OAuth endpoints
+│       ├── payment/            # Stripe integration
+│       ├── webhooks/           # Stripe webhooks
+│       └── provisioning/       # VPS provisioning
+├── lib/                        # Shared utilities
+│   ├── db.ts                  # Database (JSON file storage)
+│   ├── auth.ts                # Authentication helpers
+│   ├── auth-middleware.ts     # Auth/authorization middleware
+│   ├── grok.ts                # Grok API client
+│   ├── stripe.ts              # Stripe client
+│   ├── hetzner.ts             # Hetzner Cloud API
+│   ├── cloudflare.ts          # Cloudflare DNS API
+│   ├── provisioner-v2.ts      # Orchestrates VPS setup
+│   ├── ssh-installer-v2.ts    # SSH-based OpenClaw install
+│   ├── cache.ts               # In-memory caching
+│   ├── performance.ts         # Performance monitoring
+│   └── rate-limit.ts          # Rate limiting
+├── components/                 # React components
+├── public/                     # Static assets
+├── data/                       # JSON database files
+│   └── users.json             # User data
+├── scripts/                    # Deployment scripts
+│   └── provision-openclaw.sh  # VPS provisioning script
+│
+├── Documentation:
+│   ├── DOCUMENTATION-INDEX.md  # 📚 Master documentation index
+│   ├── README.md              # This file
+│   ├── QUICK-START.md         # ⚡ 5-minute quick start
+│   ├── USER-GUIDE.md          # 👤 Complete user guide
+│   ├── FAQ.md                 # ❓ Frequently asked questions
+│   ├── TROUBLESHOOTING.md     # 🔧 Common issues & solutions
+│   ├── DEVELOPER-GUIDE.md     # 💻 Technical documentation
+│   ├── ADMIN-GUIDE.md         # 🛠️ Platform operations
+│   ├── SECURITY-AUDIT.md      # 🔒 Security documentation
+│   ├── PERFORMANCE.md         # ⚡ Performance optimization
+│   ├── DEPLOYMENT-SUMMARY.md  # 🚀 Deployment guide
+│   ├── TEST-WORKFLOW.md       # 🧪 Testing procedures
+│   ├── BUILD-PLAN.md          # 📋 Sprint tracker
+│   └── LAUNCH-CHECKLIST.md    # ✅ Launch readiness
+│
+├── tests/                      # Test files
 │   ├── test-integration.ts
 │   └── test-performance.sh
-├── BUILD-PLAN.md        # Sprint tracker
-├── SECURITY-AUDIT.md    # Security documentation
-├── PERFORMANCE.md       # Performance docs
-├── MOBILE-TESTING.md    # Mobile responsiveness
+├── .env.example                # Environment template
+├── next.config.js              # Next.js configuration
+├── tsconfig.json               # TypeScript configuration
+├── tailwind.config.js          # Tailwind CSS configuration
 └── package.json
 ```
 
@@ -335,30 +390,32 @@ clawdet/
 
 ## 🔐 Security
 
-### Authentication
+**Status:** ✅ Security hardened and production-ready
+
+### Authentication ✅
 - Secure token-based sessions (64-char random tokens)
 - httpOnly, SameSite=Strict cookies
 - HTTPS-only in production
 - 7-day session expiration
 
-### Authorization
+### Authorization ✅
 - `requireAuth()` middleware for protected routes
 - `requireOwnership()` for user-specific resources
 - Token verification on every request
 
-### API Security
+### API Security ✅
 - CSRF protection via SameSite cookies
 - Content-Security-Policy headers
-- Rate limiting (coming soon)
+- Rate limiting (20 req/min trial chat, 5 req/min auth)
 - Input validation and sanitization
 
-### Infrastructure
+### Infrastructure ✅
 - All data encrypted at rest (Hetzner)
 - SSL/TLS for all connections
 - Cloudflare DDoS protection
 - Regular security audits
 
-See [SECURITY-AUDIT.md](./SECURITY-AUDIT.md) for details.
+📖 **Full security documentation:** [SECURITY-AUDIT.md](./SECURITY-AUDIT.md)
 
 ---
 
@@ -381,11 +438,8 @@ pm2 logs clawdet
 journalctl -u clawdet -f
 ```
 
-**Nginx logs:**
-```bash
-tail -f /var/log/nginx/access.log
-tail -f /var/log/nginx/error.log
-```
+📖 **For troubleshooting:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)  
+📖 **For monitoring guide:** [ADMIN-GUIDE.md#monitoring](./ADMIN-GUIDE.md#monitoring)
 
 ---
 
@@ -430,6 +484,35 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 - **Hetzner** — Cloud infrastructure
 - **Stripe** — Payment processing
 - **Cloudflare** — DNS and CDN
+
+---
+
+## 📚 Documentation
+
+Clawdet has comprehensive documentation for users, developers, and administrators.
+
+### For Users
+- **[Quick Start Guide](./QUICK-START.md)** — Get started in 5 minutes
+- **[User Guide](./USER-GUIDE.md)** — Complete usage instructions
+- **[FAQ](./FAQ.md)** — Frequently asked questions
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)** — Common issues and solutions
+
+### For Developers
+- **[Developer Guide](./DEVELOPER-GUIDE.md)** — Technical documentation
+- **[Architecture Overview](./DEVELOPER-GUIDE.md#architecture)** — System design
+- **[API Reference](./DEVELOPER-GUIDE.md#api-reference)** — Complete API docs
+- **[Deployment Guide](./DEPLOYMENT-SUMMARY.md)** — Production deployment
+- **[Testing Guide](./TEST-WORKFLOW.md)** — Testing procedures
+
+### For Administrators
+- **[Admin Guide](./ADMIN-GUIDE.md)** — Platform operations
+- **[Security Audit](./SECURITY-AUDIT.md)** — Security documentation
+- **[Performance Guide](./PERFORMANCE.md)** — Optimization and monitoring
+
+### Project Information
+- **[Documentation Index](./DOCUMENTATION-INDEX.md)** — Complete docs overview
+- **[Build Plan](./BUILD-PLAN.md)** — Development history
+- **[Launch Checklist](./LAUNCH-CHECKLIST.md)** — Production readiness
 
 ---
 

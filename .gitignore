@@ -52,3 +52,8 @@ next-env.d.ts
 # Misc
 .turbo
 data/
+
+# Dev-only files - not for production
+public/instance-chat/
+public/dev-archive/
+public/test-instance/

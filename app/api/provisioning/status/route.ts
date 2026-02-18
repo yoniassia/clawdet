@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getProvisioningStatus } from '@/lib/provisioner'
+import { getProvisioningStatus } from '@/lib/provisioner-v2'
 import { requireAuth, requireOwnership } from '@/lib/auth-middleware'
 import { SECURITY_HEADERS } from '@/lib/security'
 

@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { startProvisioningJob } from '@/lib/provisioner'
+import { startProvisioningJob } from '@/lib/provisioner-v2'
 import { findUserById } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
