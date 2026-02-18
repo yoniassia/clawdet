@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Clawdet Instance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #71767b;
+            line-height: 1.6;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, #00ba7c 0%, #008f5d 100%);
+            border-radius: 20px;
+            padding: 24px 32px;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 24px rgba(0, 186, 124, 0.3);
+        }
+
+        .status-icon {
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .status-text h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            color: #ffffff;
+        }
+
+        .status-text p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Main Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .option-card {
+            background: #16181c;
+            border: 2px solid #2f3336;
+            border-radius: 20px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1d9bf0 0%, #00ba7c 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .option-card:hover {
+            border-color: #1d9bf0;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(29, 155, 240, 0.2);
+        }
+
+        .option-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .option-card.primary {
+            border-color: #1d9bf0;
+            background: linear-gradient(135deg, #16181c 0%, #1a1f2e 100%);
+        }
+
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #00ba7c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .option-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e7e9ea;
+        }
+
+        .option-description {
+            font-size: 15px;
+            color: #71767b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .option-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d9bf0;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .option-link:hover {
+            gap: 12px;
+        }
+
+        /* Quick Start Guide */
+        .guide-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+
+        .guide-section h3 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: #1d9bf0;
+        }
+
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            padding: 24px 0;
+            border-bottom: 1px solid #2f3336;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .steps li:last-child {
+            border-bottom: none;
+        }
+
+        .steps li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        .steps h4 {
+            font-size: 19px;
+            margin-bottom: 8px;
+            color: #e7e9ea;
+        }
+
+        .steps p {
+            color: #71767b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .steps code {
+            background: #000000;
+            padding: 4px 12px;
+            border-radius: 8px;
+            color: #00ba7c;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px solid #2f3336;
+        }
+
+        .steps a {
+            color: #1d9bf0;
+            text-decoration: none;
+        }
+
+        .steps a:hover {
+            text-decoration: underline;
+        }
+
+        /* Info Grid */
+        .info-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+
+        .info-section h3 {
+            font-size: 28px;
+            margin-bottom: 28px;
+            color: #1d9bf0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #000000;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .info-item:hover {
+            border-color: #1d9bf0;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #71767b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            color: #e7e9ea;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #2f3336;
+            color: #71767b;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #1d9bf0;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🐾</div>
+            <h1>Your Clawdet Instance</h1>
+            <p class="subtitle">Your personal AI assistant is ready • Powered by OpenClaw + Grok AI</p>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner">
+            <div class="status-icon">✨</div>
+            <div class="status-text">
+                <h2>Instance Online & Ready</h2>
+                <p>Advanced mode enabled • All tools available • Telegram integration ready</p>
+            </div>
+        </div>
+
+        <!-- Main Options -->
+        <div class="options-grid">
+            <div class="option-card primary" onclick="window.location.href='/gateway/'">
+                <div class="option-icon">⚙️</div>
+                <div class="option-badge">Control Panel</div>
+                <div class="option-title">Configure Your Instance</div>
+                <div class="option-description">
+                    Access the OpenClaw Control Panel to configure your Telegram bot, manage settings, and view system status.
+                </div>
+                <span class="option-link">Open Control Panel →</span>
+            </div>
+
+            <div class="option-card" onclick="window.open('https://docs.openclaw.ai', '_blank')">
+                <div class="option-icon">📚</div>
+                <div class="option-title">Documentation</div>
+                <div class="option-description">
+                    Learn about all available features, tools, and capabilities. Discover what your AI assistant can do.
+                </div>
+                <span class="option-link">Read Docs →</span>
+            </div>
+
+            <div class="option-card" onclick="window.open('https://clawdet.com', '_blank')">
+                <div class="option-icon">🏠</div>
+                <div class="option-title">Clawdet Platform</div>
+                <div class="option-description">
+                    Visit the main Clawdet site for guides, support, and community resources.
+                </div>
+                <span class="option-link">Visit Site →</span>
+            </div>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="guide-section">
+            <h3>🚀 Quick Start - Connect via Telegram</h3>
+            <ol class="steps">
+                <li>
+                    <h4>Create Your Bot</h4>
+                    <p>Open Telegram and search for <code>@BotFather</code>. Send <code>/newbot</code> and follow the prompts to create your bot. You'll receive a bot token.</p>
+                </li>
+                <li>
+                    <h4>Configure Your Instance</h4>
+                    <p>Click "Open Control Panel" above, navigate to the Telegram channel settings, and paste your bot token from BotFather.</p>
+                </li>
+                <li>
+                    <h4>Start Chatting!</h4>
+                    <p>Find your bot on Telegram and send it a message. Your Clawdet AI will respond with full access to all tools: web browsing, code execution, reminders, and more!</p>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Instance Info -->
+        <div class="info-section">
+            <h3>📋 Instance Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">AI Model</div>
+                    <div class="info-value">Grok 4.2</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Mode</div>
+                    <div class="info-value">Advanced</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Server</div>
+                    <div class="info-value">Hetzner CX23</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Location</div>
+                    <div class="info-value">Helsinki, Finland</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tools</div>
+                    <div class="info-value">Browser, Cron, Canvas, Exec, Memory</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value" style="color: #00ba7c;">Online</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Powered by <a href="https://openclaw.ai" target="_blank">OpenClaw</a> • Deployed by <a href="https://clawdet.com" target="_blank">Clawdet</a></p>
+            <p style="margin-top: 12px; font-size: 13px;">Need help? Visit <a href="https://clawdet.com" target="_blank">clawdet.com</a> for support</p>
+        </div>
+    </div>
+</body>
+</html>

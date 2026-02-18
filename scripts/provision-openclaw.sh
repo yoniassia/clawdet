@@ -397,7 +397,7 @@ cat > /var/www/html/index.html <<'EOLANDING'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clawdet - Your AI Assistant</title>
+    <title>Your Clawdet Instance</title>
     <style>
         * {
             margin: 0;
@@ -409,259 +409,34 @@ cat > /var/www/html/index.html <<'EOLANDING'
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: #000000;
             color: #e7e9ea;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 24px;
         }
 
         /* Header */
         .header {
-            background: #16181c;
-            border-bottom: 1px solid #2f3336;
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            text-align: center;
+            margin-bottom: 60px;
         }
 
         .logo {
-            font-size: 32px;
-        }
-
-        .title {
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #00ba7c;
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.disconnected {
-            background: #f91880;
-            animation: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .settings-btn {
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            color: #e7e9ea;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .settings-btn:hover {
-            background: #1d9bf0;
-            border-color: #1d9bf0;
-        }
-
-        /* Chat Container */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: #000000;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: #2f3336;
-            border-radius: 4px;
-        }
-
-        .message {
-            max-width: 70%;
-            padding: 16px 20px;
-            border-radius: 20px;
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            background: #1d9bf0;
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant {
-            align-self: flex-start;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            color: #e7e9ea;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.system {
-            align-self: center;
-            background: transparent;
-            color: #71767b;
-            font-size: 13px;
-            border: none;
-            padding: 8px;
-        }
-
-        .typing-indicator {
-            align-self: flex-start;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            border-bottom-left-radius: 4px;
-            padding: 16px 20px;
-            display: flex;
-            gap: 6px;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #71767b;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Input Area */
-        .input-container {
-            background: #16181c;
-            border-top: 1px solid #2f3336;
-            padding: 20px 24px;
-            flex-shrink: 0;
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            background: #000000;
-            border: 2px solid #2f3336;
-            border-radius: 24px;
-            padding: 4px 4px 4px 20px;
-            transition: border-color 0.2s;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: #1d9bf0;
-        }
-
-        #messageInput {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #e7e9ea;
-            font-size: 16px;
-            padding: 12px 0;
-            outline: none;
-        }
-
-        #messageInput::placeholder {
-            color: #71767b;
-        }
-
-        #sendBtn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
-            border: none;
-            color: #ffffff;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: transform 0.2s;
-        }
-
-        #sendBtn:hover:not(:disabled) {
-            transform: scale(1.05);
-        }
-
-        #sendBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Welcome Screen */
-        .welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 24px;
-            text-align: center;
-        }
-
-        .welcome-logo {
             font-size: 80px;
             margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
         }
 
-        .welcome-title {
-            font-size: 36px;
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 48px;
             font-weight: 700;
             margin-bottom: 16px;
             background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
@@ -669,319 +444,408 @@ cat > /var/www/html/index.html <<'EOLANDING'
             -webkit-text-fill-color: transparent;
         }
 
-        .welcome-subtitle {
-            font-size: 18px;
+        .subtitle {
+            font-size: 20px;
             color: #71767b;
-            margin-bottom: 40px;
-            max-width: 500px;
+            line-height: 1.6;
         }
 
-        .welcome-suggestions {
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, #00ba7c 0%, #008f5d 100%);
+            border-radius: 20px;
+            padding: 24px 32px;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 24px rgba(0, 186, 124, 0.3);
+        }
+
+        .status-icon {
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .status-text h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            color: #ffffff;
+        }
+
+        .status-text p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Main Options */
+        .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            width: 100%;
-            max-width: 800px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
         }
 
-        .suggestion-card {
+        .option-card {
+            background: #16181c;
+            border: 2px solid #2f3336;
+            border-radius: 20px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1d9bf0 0%, #00ba7c 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .option-card:hover {
+            border-color: #1d9bf0;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(29, 155, 240, 0.2);
+        }
+
+        .option-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .option-card.primary {
+            border-color: #1d9bf0;
+            background: linear-gradient(135deg, #16181c 0%, #1a1f2e 100%);
+        }
+
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #00ba7c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .option-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e7e9ea;
+        }
+
+        .option-description {
+            font-size: 15px;
+            color: #71767b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .option-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1d9bf0;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+
+        .option-link:hover {
+            gap: 12px;
+        }
+
+        /* Quick Start Guide */
+        .guide-section {
             background: #16181c;
             border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 24px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 48px;
         }
 
-        .suggestion-card:hover {
-            background: #1e2025;
-            border-color: #1d9bf0;
-            transform: translateY(-2px);
+        .guide-section h3 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: #1d9bf0;
         }
 
-        .suggestion-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
         }
 
-        .suggestion-title {
-            font-size: 16px;
-            font-weight: 600;
+        .steps li {
+            counter-increment: step-counter;
+            padding: 24px 0;
+            border-bottom: 1px solid #2f3336;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .steps li:last-child {
+            border-bottom: none;
+        }
+
+        .steps li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        .steps h4 {
+            font-size: 19px;
             margin-bottom: 8px;
             color: #e7e9ea;
         }
 
-        .suggestion-text {
-            font-size: 14px;
+        .steps p {
             color: #71767b;
-            line-height: 1.5;
+            font-size: 15px;
+            line-height: 1.7;
         }
 
-        /* Connection Banner */
-        .connection-banner {
-            background: #f91880;
-            color: #ffffff;
-            padding: 12px 24px;
-            text-align: center;
+        .steps code {
+            background: #000000;
+            padding: 4px 12px;
+            border-radius: 8px;
+            color: #00ba7c;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
-            display: none;
+            border: 1px solid #2f3336;
         }
 
-        .connection-banner.show {
-            display: block;
+        .steps a {
+            color: #1d9bf0;
+            text-decoration: none;
         }
 
+        .steps a:hover {
+            text-decoration: underline;
+        }
+
+        /* Info Grid */
+        .info-section {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+
+        .info-section h3 {
+            font-size: 28px;
+            margin-bottom: 28px;
+            color: #1d9bf0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #000000;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .info-item:hover {
+            border-color: #1d9bf0;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #71767b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            color: #e7e9ea;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #2f3336;
+            color: #71767b;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #1d9bf0;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .message {
-                max-width: 85%;
+            .container {
+                padding: 40px 20px;
             }
 
-            .welcome-suggestions {
+            h1 {
+                font-size: 36px;
+            }
+
+            .options-grid {
                 grid-template-columns: 1fr;
             }
 
-            .header {
-                padding: 12px 16px;
-            }
-
-            .chat-container {
-                padding: 16px;
-            }
-
-            .input-container {
-                padding: 16px;
+            .info-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="connection-banner" id="connectionBanner">
-        ⚠️ Connecting to your AI assistant...
-    </div>
-
-    <div class="header">
-        <div class="logo-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
             <div class="logo">🐾</div>
-            <div class="title">Clawdet</div>
+            <h1>Your Clawdet Instance</h1>
+            <p class="subtitle">Your personal AI assistant is ready • Powered by OpenClaw + Grok AI</p>
         </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div class="status-indicator">
-                <div class="status-dot" id="statusDot"></div>
-                <span id="statusText">Connecting...</span>
-            </div>
-            <button class="settings-btn" onclick="window.open('/gateway/', '_blank')">
-                <span>⚙️</span>
-                <span>Settings</span>
-            </button>
-        </div>
-    </div>
 
-    <div class="chat-container" id="chatContainer">
-        <div class="welcome-screen" id="welcomeScreen">
-            <div class="welcome-logo">🐾</div>
-            <h1 class="welcome-title">Welcome to Your Clawdet</h1>
-            <p class="welcome-subtitle">Your personal AI assistant powered by Grok 4.2 and OpenClaw. Ask me anything!</p>
-            
-            <div class="welcome-suggestions">
-                <div class="suggestion-card" onclick="sendSuggestion('Search the web for the latest news about AI')">
-                    <div class="suggestion-icon">🌐</div>
-                    <div class="suggestion-title">Browse the Web</div>
-                    <div class="suggestion-text">Search for information, news, and updates</div>
-                </div>
-                <div class="suggestion-card" onclick="sendSuggestion('Remind me to check email in 1 hour')">
-                    <div class="suggestion-icon">⏰</div>
-                    <div class="suggestion-title">Set Reminders</div>
-                    <div class="suggestion-text">Schedule tasks and get notifications</div>
-                </div>
-                <div class="suggestion-card" onclick="sendSuggestion('Help me write a Python script to sort a list')">
-                    <div class="suggestion-icon">💻</div>
-                    <div class="suggestion-title">Code Assistant</div>
-                    <div class="suggestion-text">Write, debug, and explain code</div>
-                </div>
-                <div class="suggestion-card" onclick="sendSuggestion('What can you help me with?')">
-                    <div class="suggestion-icon">✨</div>
-                    <div class="suggestion-title">Explore Features</div>
-                    <div class="suggestion-text">Discover what I can do for you</div>
-                </div>
+        <!-- Status Banner -->
+        <div class="status-banner">
+            <div class="status-icon">✨</div>
+            <div class="status-text">
+                <h2>Instance Online & Ready</h2>
+                <p>Advanced mode enabled • All tools available • Telegram integration ready</p>
             </div>
         </div>
-    </div>
 
-    <div class="input-container">
-        <div class="input-wrapper">
-            <input 
-                type="text" 
-                id="messageInput" 
-                placeholder="Message your AI assistant..." 
-                disabled
-            />
-            <button id="sendBtn" disabled>
-                <span>▶</span>
-            </button>
+        <!-- Main Options -->
+        <div class="options-grid">
+            <div class="option-card primary" onclick="window.location.href='/gateway/'">
+                <div class="option-icon">⚙️</div>
+                <div class="option-badge">Control Panel</div>
+                <div class="option-title">Configure Your Instance</div>
+                <div class="option-description">
+                    Access the OpenClaw Control Panel to configure your Telegram bot, manage settings, and view system status.
+                </div>
+                <span class="option-link">Open Control Panel →</span>
+            </div>
+
+            <div class="option-card" onclick="window.open('https://docs.openclaw.ai', '_blank')">
+                <div class="option-icon">📚</div>
+                <div class="option-title">Documentation</div>
+                <div class="option-description">
+                    Learn about all available features, tools, and capabilities. Discover what your AI assistant can do.
+                </div>
+                <span class="option-link">Read Docs →</span>
+            </div>
+
+            <div class="option-card" onclick="window.open('https://clawdet.com', '_blank')">
+                <div class="option-icon">🏠</div>
+                <div class="option-title">Clawdet Platform</div>
+                <div class="option-description">
+                    Visit the main Clawdet site for guides, support, and community resources.
+                </div>
+                <span class="option-link">Visit Site →</span>
+            </div>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="guide-section">
+            <h3>🚀 Quick Start - Connect via Telegram</h3>
+            <ol class="steps">
+                <li>
+                    <h4>Create Your Bot</h4>
+                    <p>Open Telegram and search for <code>@BotFather</code>. Send <code>/newbot</code> and follow the prompts to create your bot. You'll receive a bot token.</p>
+                </li>
+                <li>
+                    <h4>Configure Your Instance</h4>
+                    <p>Click "Open Control Panel" above, navigate to the Telegram channel settings, and paste your bot token from BotFather.</p>
+                </li>
+                <li>
+                    <h4>Start Chatting!</h4>
+                    <p>Find your bot on Telegram and send it a message. Your Clawdet AI will respond with full access to all tools: web browsing, code execution, reminders, and more!</p>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Instance Info -->
+        <div class="info-section">
+            <h3>📋 Instance Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">AI Model</div>
+                    <div class="info-value">Grok 4.2</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Mode</div>
+                    <div class="info-value">Advanced</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Server</div>
+                    <div class="info-value">Hetzner CX23</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Location</div>
+                    <div class="info-value">Helsinki, Finland</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tools</div>
+                    <div class="info-value">Browser, Cron, Canvas, Exec, Memory</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value" style="color: #00ba7c;">Online</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Powered by <a href="https://openclaw.ai" target="_blank">OpenClaw</a> • Deployed by <a href="https://clawdet.com" target="_blank">Clawdet</a></p>
+            <p style="margin-top: 12px; font-size: 13px;">Need help? Visit <a href="https://clawdet.com" target="_blank">clawdet.com</a> for support</p>
         </div>
     </div>
-
-    <script>
-        let ws = null;
-        let sessionId = null;
-        let isConnected = false;
-
-        const chatContainer = document.getElementById('chatContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const connectionBanner = document.getElementById('connectionBanner');
-        const welcomeScreen = document.getElementById('welcomeScreen');
-
-        // Connect to OpenClaw Gateway WebSocket
-        function connectWebSocket() {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}/gateway/ws`;
-            
-            showConnectionBanner('Connecting to your AI assistant...');
-            
-            ws = new WebSocket(wsUrl);
-
-            ws.onopen = () => {
-                console.log('WebSocket connected');
-                isConnected = true;
-                updateStatus('connected');
-                hideConnectionBanner();
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-                messageInput.focus();
-                
-                // Initialize session
-                ws.send(JSON.stringify({
-                    type: 'init',
-                    surface: 'web-chat'
-                }));
-            };
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                handleMessage(data);
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                showConnectionBanner('Connection error. Retrying...');
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket closed');
-                isConnected = false;
-                updateStatus('disconnected');
-                messageInput.disabled = true;
-                sendBtn.disabled = true;
-                
-                // Attempt to reconnect after 3 seconds
-                showConnectionBanner('Connection lost. Reconnecting...');
-                setTimeout(connectWebSocket, 3000);
-            };
-        }
-
-        function handleMessage(data) {
-            if (data.type === 'init_response') {
-                sessionId = data.sessionId;
-                console.log('Session initialized:', sessionId);
-            } else if (data.type === 'message') {
-                removeTypingIndicator();
-                addMessage(data.content, 'assistant');
-            } else if (data.type === 'error') {
-                removeTypingIndicator();
-                addMessage(`Error: ${data.message}`, 'system');
-            }
-        }
-
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || !isConnected) return;
-
-            // Hide welcome screen on first message
-            if (welcomeScreen) {
-                welcomeScreen.style.display = 'none';
-            }
-
-            addMessage(message, 'user');
-            messageInput.value = '';
-
-            // Show typing indicator
-            addTypingIndicator();
-
-            // Send to WebSocket
-            ws.send(JSON.stringify({
-                type: 'message',
-                content: message,
-                sessionId: sessionId
-            }));
-        }
-
-        function sendSuggestion(text) {
-            messageInput.value = text;
-            sendMessage();
-        }
-
-        function addMessage(content, role) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            messageDiv.textContent = content;
-            chatContainer.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        function addTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = '<span></span><span></span><span></span>';
-            chatContainer.appendChild(indicator);
-            scrollToBottom();
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
-
-        function scrollToBottom() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function updateStatus(status) {
-            if (status === 'connected') {
-                statusDot.classList.remove('disconnected');
-                statusText.textContent = 'Connected';
-            } else {
-                statusDot.classList.add('disconnected');
-                statusText.textContent = 'Disconnected';
-            }
-        }
-
-        function showConnectionBanner(message) {
-            connectionBanner.textContent = message;
-            connectionBanner.classList.add('show');
-        }
-
-        function hideConnectionBanner() {
-            connectionBanner.classList.remove('show');
-        }
-
-        // Event listeners
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        // Connect on load
-        connectWebSocket();
-    </script>
 </body>
 </html>
 EOLANDING
