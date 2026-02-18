@@ -35,9 +35,48 @@
 
 .price {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   margin-bottom: 32px;
+}
+
+.betaBadge {
+  display: inline-block;
+  background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.originalPrice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.strikethrough {
+  font-size: 28px;
+  color: #71767b;
+  text-decoration: line-through;
+}
+
+.freePrice {
+  font-size: 72px;
+  font-weight: 700;
+  color: #00ba7c;
+  text-shadow: 0 0 20px rgba(0, 186, 124, 0.3);
+}
+
+.betaNote {
+  font-size: 14px;
+  color: #71767b;
+  margin: 0;
 }
 
 .currency {
