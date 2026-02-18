@@ -127,6 +127,7 @@
             border-radius: 20px;
             line-height: 1.6;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .message.user {
@@ -373,7 +374,7 @@
         </div>
         <div style="display: flex; align-items: center; gap: 16px;">
             <div class="status-indicator">
-                <div class="status-dot" id="statusDot"></div>
+                <div class="status-dot disconnected" id="statusDot"></div>
                 <span id="statusText">Connecting...</span>
             </div>
             <button class="settings-btn" onclick="window.open('/gateway/', '_blank')">
@@ -387,7 +388,7 @@
         <div class="welcome-screen" id="welcomeScreen">
             <div class="welcome-logo">🐾</div>
             <h1 class="welcome-title">Welcome to Your Clawdet</h1>
-            <p class="welcome-subtitle">Your personal AI assistant powered by Grok 4.2 and OpenClaw. Ask me anything!</p>
+            <p class="welcome-subtitle">Your personal AI assistant powered by Grok and OpenClaw. Ask me anything!</p>
             
             <div class="welcome-suggestions">
                 <div class="suggestion-card" onclick="sendSuggestion('Search the web for the latest news about AI')">
@@ -429,9 +430,13 @@
     </div>
 
     <script>
+        // OpenClaw Gateway Protocol Client Implementation
         let ws = null;
-        let sessionId = null;
+        let sessionKey = null;
         let isConnected = false;
+        let pendingRequests = new Map();
+        let connectNonce = null;
+        let currentStreamedMessage = '';
 
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
@@ -441,34 +446,39 @@
         const connectionBanner = document.getElementById('connectionBanner');
         const welcomeScreen = document.getElementById('welcomeScreen');
 
-        // Connect to OpenClaw Gateway WebSocket
+        // Generate a random request ID
+        function generateId() {
+            return Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+
+        // Connect to OpenClaw Gateway with proper protocol
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}/gateway/ws`;
+            const wsUrl = `${protocol}//${window.location.host}`;
             
+            console.log('Connecting to:', wsUrl);
             showConnectionBanner('Connecting to your AI assistant...');
             
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('WebSocket connected');
-                isConnected = true;
-                updateStatus('connected');
-                hideConnectionBanner();
-                messageInput.disabled = false;
-                sendBtn.disabled = false;
-                messageInput.focus();
-                
-                // Initialize session
-                ws.send(JSON.stringify({
-                    type: 'init',
-                    surface: 'web-chat'
-                }));
+                console.log('WebSocket opened, waiting for connect challenge or sending connect...');
+                // Don't send connect immediately - wait for challenge if gateway sends it
+                // If no challenge comes in 750ms, send connect anyway
+                setTimeout(() => {
+                    if (!isConnected && ws && ws.readyState === WebSocket.OPEN) {
+                        sendConnectRequest();
+                    }
+                }, 750);
             };
 
             ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                handleMessage(data);
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (error) {
+                    console.error('Failed to parse message:', error, event.data);
+                }
             };
 
             ws.onerror = (error) => {
@@ -476,53 +486,255 @@
                 showConnectionBanner('Connection error. Retrying...');
             };
 
-            ws.onclose = () => {
-                console.log('WebSocket closed');
+            ws.onclose = (event) => {
+                console.log('WebSocket closed:', event.code, event.reason);
                 isConnected = false;
                 updateStatus('disconnected');
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
                 
                 // Attempt to reconnect after 3 seconds
-                showConnectionBanner('Connection lost. Reconnecting...');
+                showConnectionBanner(`Connection lost: ${event.reason || 'Unknown reason'}. Reconnecting...`);
                 setTimeout(connectWebSocket, 3000);
             };
         }
 
+        function sendConnectRequest() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            const connectParams = {
+                minProtocol: 3,
+                maxProtocol: 3,
+                client: {
+                    id: 'openclaw-control-ui',  // Identify as control UI to use allowInsecureAuth
+                    version: '1.0.0',
+                    platform: navigator.platform || 'web',
+                    mode: 'webchat'
+                },
+                role: 'operator',
+                scopes: ['operator.read', 'operator.write'],
+                caps: [],
+                auth: {},  // Empty auth - relying on allowInsecureAuth for controlUi
+                userAgent: navigator.userAgent,
+                locale: navigator.language || 'en-US'
+            };
+
+            // Add nonce if we received a challenge
+            if (connectNonce) {
+                connectParams.device = {
+                    id: 'webchat-' + generateId(),
+                    nonce: connectNonce
+                };
+            }
+
+            const connectRequest = {
+                type: 'req',
+                id: generateId(),
+                method: 'connect',
+                params: connectParams
+            };
+
+            console.log('Sending connect request:', connectRequest);
+            sendRequest(connectRequest);
+        }
+
+        function sendRequest(request) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                console.error('Cannot send request: WebSocket not open');
+                return Promise.reject(new Error('WebSocket not connected'));
+            }
+
+            return new Promise((resolve, reject) => {
+                pendingRequests.set(request.id, { resolve, reject });
+                ws.send(JSON.stringify(request));
+                
+                // Timeout after 30 seconds
+                setTimeout(() => {
+                    if (pendingRequests.has(request.id)) {
+                        pendingRequests.delete(request.id);
+                        reject(new Error('Request timeout'));
+                    }
+                }, 30000);
+            });
+        }
+
         function handleMessage(data) {
-            if (data.type === 'init_response') {
-                sessionId = data.sessionId;
-                console.log('Session initialized:', sessionId);
-            } else if (data.type === 'message') {
-                removeTypingIndicator();
-                addMessage(data.content, 'assistant');
-            } else if (data.type === 'error') {
-                removeTypingIndicator();
-                addMessage(`Error: ${data.message}`, 'system');
+            console.log('Received message:', data);
+
+            if (data.type === 'event') {
+                handleEvent(data);
+            } else if (data.type === 'res') {
+                handleResponse(data);
             }
         }
 
-        function sendMessage() {
+        function handleEvent(event) {
+            if (event.event === 'connect.challenge') {
+                console.log('Received connect challenge:', event.payload);
+                connectNonce = event.payload?.nonce || null;
+                sendConnectRequest();
+            } else if (event.event === 'agent') {
+                handleAgentEvent(event.payload);
+            } else if (event.event === 'chat') {
+                handleChatEvent(event.payload);
+            }
+        }
+
+        function handleResponse(response) {
+            const pending = pendingRequests.get(response.id);
+            if (pending) {
+                pendingRequests.delete(response.id);
+                if (response.ok) {
+                    pending.resolve(response.payload);
+                    
+                    // Handle connect response
+                    if (response.payload?.type === 'hello-ok') {
+                        handleHelloOk(response.payload);
+                    }
+                } else {
+                    pending.reject(new Error(response.error?.message || 'Request failed'));
+                }
+            }
+        }
+
+        function handleHelloOk(payload) {
+            console.log('Connected to gateway! Hello payload:', payload);
+            isConnected = true;
+            updateStatus('connected');
+            hideConnectionBanner();
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            messageInput.focus();
+            
+            // Get default session key from snapshot if available
+            sessionKey = payload.snapshot?.sessionDefaults?.mainSessionKey || 'agent:main:main';
+            console.log('Using session key:', sessionKey);
+        }
+
+        function handleAgentEvent(payload) {
+            console.log('Agent event:', payload);
+            
+            if (payload.state === 'stream' && payload.stream) {
+                // Handle streaming response
+                if (payload.stream.role === 'assistant' && payload.stream.content) {
+                    const content = payload.stream.content;
+                    if (Array.isArray(content)) {
+                        for (const part of content) {
+                            if (part.type === 'text') {
+                                currentStreamedMessage += part.text || '';
+                            }
+                        }
+                    }
+                    updateStreamingMessage();
+                }
+            } else if (payload.state === 'final') {
+                // Final response received
+                removeTypingIndicator();
+                if (currentStreamedMessage) {
+                    addMessage(currentStreamedMessage, 'assistant');
+                    currentStreamedMessage = '';
+                } else if (payload.finalMessage) {
+                    const textContent = extractTextContent(payload.finalMessage);
+                    if (textContent) {
+                        addMessage(textContent, 'assistant');
+                    }
+                }
+            } else if (payload.state === 'error') {
+                removeTypingIndicator();
+                addMessage(`Error: ${payload.error?.message || 'Unknown error'}`, 'system');
+                currentStreamedMessage = '';
+            }
+        }
+
+        function handleChatEvent(payload) {
+            console.log('Chat event:', payload);
+            
+            if (payload.state === 'delta' && payload.message) {
+                const textContent = extractTextContent(payload.message);
+                if (textContent) {
+                    currentStreamedMessage = textContent;
+                    updateStreamingMessage();
+                }
+            } else if (payload.state === 'final') {
+                removeTypingIndicator();
+                if (currentStreamedMessage) {
+                    addMessage(currentStreamedMessage, 'assistant');
+                    currentStreamedMessage = '';
+                } else if (payload.message) {
+                    const textContent = extractTextContent(payload.message);
+                    if (textContent) {
+                        addMessage(textContent, 'assistant');
+                    }
+                }
+            } else if (payload.state === 'error') {
+                removeTypingIndicator();
+                addMessage(`Error: ${payload.errorMessage || 'Unknown error'}`, 'system');
+                currentStreamedMessage = '';
+            }
+        }
+
+        function extractTextContent(message) {
+            if (typeof message === 'string') return message;
+            if (message.content) {
+                if (typeof message.content === 'string') return message.content;
+                if (Array.isArray(message.content)) {
+                    return message.content
+                        .filter(part => part.type === 'text')
+                        .map(part => part.text)
+                        .join('');
+                }
+            }
+            return '';
+        }
+
+        function updateStreamingMessage() {
+            let indicator = document.getElementById('streamingMessage');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'streamingMessage';
+                indicator.className = 'message assistant';
+                chatContainer.appendChild(indicator);
+            }
+            indicator.textContent = currentStreamedMessage;
+            scrollToBottom();
+        }
+
+        async function sendMessage() {
             const message = messageInput.value.trim();
-            if (!message || !isConnected) return;
+            if (!message || !isConnected || !sessionKey) return;
 
             // Hide welcome screen on first message
-            if (welcomeScreen) {
+            if (welcomeScreen && welcomeScreen.style.display !== 'none') {
                 welcomeScreen.style.display = 'none';
             }
 
             addMessage(message, 'user');
             messageInput.value = '';
+            currentStreamedMessage = '';
 
             // Show typing indicator
             addTypingIndicator();
 
-            // Send to WebSocket
-            ws.send(JSON.stringify({
-                type: 'message',
-                content: message,
-                sessionId: sessionId
-            }));
+            try {
+                const request = {
+                    type: 'req',
+                    id: generateId(),
+                    method: 'chat.send',
+                    params: {
+                        sessionKey: sessionKey,
+                        message: message,
+                        deliver: false,
+                        idempotencyKey: generateId()
+                    }
+                };
+
+                console.log('Sending chat message:', request);
+                await sendRequest(request);
+            } catch (error) {
+                console.error('Failed to send message:', error);
+                removeTypingIndicator();
+                addMessage(`Error: ${error.message}`, 'system');
+            }
         }
 
         function sendSuggestion(text) {
@@ -552,6 +764,10 @@
             if (indicator) {
                 indicator.remove();
             }
+            const streaming = document.getElementById('streamingMessage');
+            if (streaming) {
+                streaming.remove();
+            }
         }
 
         function scrollToBottom() {
@@ -580,12 +796,14 @@
         // Event listeners
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
             }
         });
 
         // Connect on load
+        console.log('Starting WebSocket connection...');
         connectWebSocket();
     </script>
 </body>

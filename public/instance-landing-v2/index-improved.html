@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Clawdet Instance - Setup Your Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #71767b;
+            line-height: 1.6;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, #00ba7c 0%, #008f5d 100%);
+            border-radius: 20px;
+            padding: 24px 32px;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 24px rgba(0, 186, 124, 0.3);
+        }
+
+        .status-icon {
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .status-text h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+            color: #ffffff;
+        }
+
+        .status-text p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Telegram Setup Wizard */
+        .telegram-setup-wizard {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .wizard-header h3 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #1d9bf0;
+        }
+
+        .wizard-header p {
+            color: #71767b;
+            font-size: 16px;
+        }
+
+        .setup-step {
+            display: flex;
+            gap: 24px;
+            padding: 32px 0;
+            border-bottom: 1px solid #2f3336;
+            transition: opacity 0.3s;
+        }
+
+        .setup-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .step-number.success {
+            background: linear-gradient(135deg, #00ba7c 0%, #008f5d 100%);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: #e7e9ea;
+        }
+
+        .sub-steps {
+            list-style: none;
+            counter-reset: sub-step;
+            padding-left: 0;
+            margin: 16px 0;
+        }
+
+        .sub-steps li {
+            counter-increment: sub-step;
+            padding-left: 32px;
+            position: relative;
+            margin-bottom: 12px;
+            color: #71767b;
+            line-height: 1.6;
+        }
+
+        .sub-steps li:before {
+            content: counter(sub-step);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            background: #2f3336;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #71767b;
+        }
+
+        .telegram-link {
+            color: #1d9bf0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .telegram-link:hover {
+            text-decoration: underline;
+        }
+
+        .visual-example {
+            background: #000000;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .example-label {
+            font-size: 12px;
+            color: #71767b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .token-example {
+            color: #00ba7c;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Token Input */
+        .token-input {
+            width: 100%;
+            background: #000000;
+            border: 2px solid #2f3336;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #e7e9ea;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: #1d9bf0;
+            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+        }
+
+        .token-input::placeholder {
+            color: #71767b;
+        }
+
+        /* Feedback Messages */
+        .feedback-message {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .feedback-message.error,
+        .feedback-message.success,
+        .feedback-message.info {
+            display: block;
+        }
+
+        .feedback-message.error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #ff6b6b;
+        }
+
+        .feedback-message.success {
+            background: rgba(0, 186, 124, 0.1);
+            border: 1px solid rgba(0, 186, 124, 0.3);
+            color: #00ba7c;
+        }
+
+        .feedback-message.info {
+            background: rgba(29, 155, 240, 0.1);
+            border: 1px solid rgba(29, 155, 240, 0.3);
+            color: #1d9bf0;
+        }
+
+        .feedback-message code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* Connect Button */
+        .btn-connect {
+            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-connect:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(29, 155, 240, 0.4);
+        }
+
+        .btn-connect:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-icon {
+            font-size: 20px;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Section */
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #71767b;
+            margin-bottom: 20px;
+        }
+
+        .success-message strong {
+            color: #00ba7c;
+        }
+
+        .next-steps {
+            background: #000000;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .next-steps p {
+            margin-bottom: 16px;
+            color: #71767b;
+            font-size: 15px;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            background: #2f3336;
+            color: #e7e9ea;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #3f4447;
+            transform: translateY(-1px);
+        }
+
+        /* Main Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .option-card {
+            background: #16181c;
+            border: 2px solid #2f3336;
+            border-radius: 20px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .option-card:hover {
+            border-color: #1d9bf0;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(29, 155, 240, 0.2);
+        }
+
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .option-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e7e9ea;
+        }
+
+        .option-description {
+            font-size: 15px;
+            color: #71767b;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #2f3336;
+            color: #71767b;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #1d9bf0;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .setup-step {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .step-number {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🐾</div>
+            <h1>Your Clawdet Instance</h1>
+            <p class="subtitle">Your personal AI assistant is ready • Powered by OpenClaw + Grok AI</p>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner">
+            <div class="status-icon">✨</div>
+            <div class="status-text">
+                <h2>Instance Online & Ready</h2>
+                <p>Advanced mode enabled • All tools available • Telegram integration ready</p>
+            </div>
+        </div>
+
+        <!-- Telegram Setup Wizard -->
+        <div class="telegram-setup-wizard" id="setup-wizard">
+            <div class="wizard-header">
+                <h3>🤖 Connect Your Telegram Bot</h3>
+                <p>Follow these 3 simple steps to get started with your AI assistant</p>
+            </div>
+
+            <!-- Step 1: Instructions -->
+            <div class="setup-step" id="step-1">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Create Your Bot with @BotFather</h4>
+                    <p style="color: #71767b; margin-bottom: 16px;">
+                        BotFather is Telegram's official bot that helps you create and manage bots. It only takes 30 seconds!
+                    </p>
+                    <ol class="sub-steps">
+                        <li>Open Telegram and search for <a href="https://t.me/BotFather" target="_blank" class="telegram-link">@BotFather</a></li>
+                        <li>Send the command: <code style="background: #000; padding: 2px 8px; border-radius: 4px; color: #00ba7c;">/newbot</code></li>
+                        <li>Choose a display name for your bot (e.g., "My AI Assistant")</li>
+                        <li>Choose a username ending in "bot" (e.g., "myai_assistant_bot")</li>
+                        <li>Copy the bot token that BotFather sends you</li>
+                    </ol>
+                    <div class="visual-example">
+                        <div class="example-label">Example Token Format:</div>
+                        <code class="token-example">1234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Token Input -->
+            <div class="setup-step" id="step-2">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Paste Your Bot Token</h4>
+                    <p style="color: #71767b; margin-bottom: 16px;">
+                        Copy the entire token from BotFather (numbers, colon, and letters) and paste it below:
+                    </p>
+                    <input 
+                        type="text" 
+                        id="telegram-token" 
+                        class="token-input" 
+                        placeholder="1234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxx"
+                        spellcheck="false"
+                        autocomplete="off"
+                    >
+                    <div id="token-feedback" class="feedback-message"></div>
+                    <button id="connect-bot-btn" class="btn-connect" disabled>
+                        <span class="btn-icon">🤖</span>
+                        <span id="btn-text">Connect Bot</span>
+                    </button>
+                    <div style="margin-top: 16px;">
+                        <a href="https://core.telegram.org/bots#how-do-i-create-a-bot" target="_blank" style="color: #71767b; font-size: 13px; text-decoration: none;">
+                            Need help? Read Telegram's bot creation guide →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div class="setup-step hidden" id="step-3">
+                <div class="step-number success">✅</div>
+                <div class="step-content">
+                    <h4>Bot Connected Successfully!</h4>
+                    <p class="success-message">
+                        Your bot <strong id="bot-username">@your_bot</strong> is now connected and ready to chat!
+                    </p>
+                    <div class="next-steps">
+                        <p><strong>What's next?</strong></p>
+                        <p>📱 Open Telegram and send a message to <strong id="bot-username-link">@your_bot</strong> to start chatting with your AI!</p>
+                        <p style="margin-bottom: 0;">💡 <strong>Pro tip:</strong> Your bot has access to web browsing, code execution, reminders, and more. Just ask!</p>
+                    </div>
+                    <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="https://t.me/" target="_blank" class="btn-connect" style="text-decoration: none;">
+                            <span class="btn-icon">✈️</span>
+                            Open Telegram
+                        </a>
+                        <a href="/gateway/" class="btn-secondary">View Control Panel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="options-grid">
+            <a href="/gateway/" class="option-card">
+                <div class="option-icon">⚙️</div>
+                <div class="option-title">Control Panel</div>
+                <div class="option-description">
+                    Advanced configuration, manage allowlists, view system status, and customize your instance.
+                </div>
+            </a>
+
+            <a href="https://docs.openclaw.ai" target="_blank" class="option-card">
+                <div class="option-icon">📚</div>
+                <div class="option-title">Documentation</div>
+                <div class="option-description">
+                    Learn about all available features, tools, and capabilities your AI assistant has.
+                </div>
+            </a>
+
+            <a href="https://clawdet.com" target="_blank" class="option-card">
+                <div class="option-icon">🏠</div>
+                <div class="option-title">Clawdet Platform</div>
+                <div class="option-description">
+                    Visit the main Clawdet site for guides, support, and community resources.
+                </div>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Powered by <a href="https://openclaw.ai" target="_blank">OpenClaw</a> • Deployed by <a href="https://clawdet.com" target="_blank">Clawdet</a></p>
+            <p style="margin-top: 12px; font-size: 13px;">Need help? Visit <a href="https://clawdet.com" target="_blank">clawdet.com</a> for support</p>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const tokenInput = document.getElementById('telegram-token');
+        const connectBtn = document.getElementById('connect-bot-btn');
+        const btnText = document.getElementById('btn-text');
+        const feedback = document.getElementById('token-feedback');
+        const step3 = document.getElementById('step-3');
+        const botUsernameSpan = document.getElementById('bot-username');
+        const botUsernameLink = document.getElementById('bot-username-link');
+
+        // Token format: 8-10 digits : 35 alphanumeric chars
+        const TOKEN_REGEX = /^\d{8,10}:[A-Za-z0-9_-]{35}$/;
+
+        let validatedToken = null;
+        let validatedUsername = null;
+
+        // Real-time format validation
+        tokenInput.addEventListener('input', function() {
+            const token = tokenInput.value.trim();
+            
+            if (!token) {
+                feedback.className = 'feedback-message';
+                feedback.textContent = '';
+                connectBtn.disabled = true;
+                return;
+            }
+
+            if (!TOKEN_REGEX.test(token)) {
+                feedback.className = 'feedback-message error';
+                feedback.innerHTML = '⚠️ Invalid token format. Expected: <code>number:letters</code>';
+                connectBtn.disabled = true;
+                validatedToken = null;
+                return;
+            }
+
+            // Format is valid - enable button for API check
+            feedback.className = 'feedback-message success';
+            feedback.textContent = '✓ Valid format - click Connect to verify';
+            connectBtn.disabled = false;
+        });
+
+        // Allow Enter key to trigger connection
+        tokenInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !connectBtn.disabled) {
+                connectBtn.click();
+            }
+        });
+
+        // Connect button handler
+        connectBtn.addEventListener('click', async function() {
+            const token = tokenInput.value.trim();
+            
+            if (!TOKEN_REGEX.test(token)) {
+                return;
+            }
+
+            // Disable button during check
+            connectBtn.disabled = true;
+            btnText.textContent = 'Validating...';
+            connectBtn.innerHTML = '<span class="spinner"></span> <span>Validating...</span>';
+            feedback.className = 'feedback-message info';
+            feedback.textContent = '🔄 Checking with Telegram API...';
+
+            try {
+                // Step 1: Validate token with Telegram
+                const tgRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+                const tgData = await tgRes.json();
+
+                if (!tgData.ok) {
+                    throw new Error('Token rejected by Telegram - please check your token and try again');
+                }
+
+                const botUsername = tgData.result.username;
+                validatedToken = token;
+                validatedUsername = botUsername;
+
+                feedback.className = 'feedback-message success';
+                feedback.textContent = `✓ Bot verified: @${botUsername}`;
+                connectBtn.innerHTML = '<span class="btn-icon">🚀</span> <span>Configure Bot</span>';
+
+                // Step 2: Configure on server (simulated - replace with actual API endpoint)
+                await new Promise(resolve => setTimeout(resolve, 800));
+                connectBtn.innerHTML = '<span class="spinner"></span> <span>Configuring...</span>';
+                feedback.textContent = '⚙️ Writing configuration...';
+
+                // TODO: Replace this with actual Control Panel API call
+                // For now, we'll simulate success after validation
+                // Actual endpoint should be: POST /gateway/api/configure-telegram
+                
+                // Simulate API call
+                const configSuccess = await simulateConfigWrite(token);
+                
+                if (!configSuccess) {
+                    throw new Error('Configuration write failed - please try manually via Control Panel');
+                }
+
+                // Success!
+                showSuccess(botUsername);
+
+            } catch (error) {
+                feedback.className = 'feedback-message error';
+                feedback.textContent = `❌ ${error.message}`;
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = '<span class="btn-icon">🔄</span> <span>Retry Connection</span>';
+            }
+        });
+
+        // Simulate config write (replace with actual API call)
+        async function simulateConfigWrite(token) {
+            try {
+                // Try to write config via Control Panel API
+                // This is a placeholder - actual implementation depends on Control Panel structure
+                
+                // For demo purposes, we'll just return success
+                // In production, this should be:
+                // const res = await fetch('/gateway/api/configure-telegram', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ botToken: token, dmPolicy: 'open' })
+                // });
+                // return res.ok;
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return true; // Simulated success
+            } catch {
+                return false;
+            }
+        }
+
+        function showSuccess(username) {
+            botUsernameSpan.textContent = `@${username}`;
+            botUsernameLink.textContent = `@${username}`;
+            step3.classList.remove('hidden');
+            
+            // Smooth scroll to success
+            setTimeout(() => {
+                step3.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+            
+            // Fade out previous steps slightly
+            document.getElementById('step-1').style.opacity = '0.5';
+            document.getElementById('step-2').style.opacity = '0.5';
+
+            // Confetti effect (optional)
+            createConfetti();
+        }
+
+        // Simple confetti effect
+        function createConfetti() {
+            const colors = ['#1d9bf0', '#00ba7c', '#ff6b6b', '#ffd93d'];
+            const confettiCount = 30;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.width = '10px';
+                    confetti.style.height = '10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-20px';
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.pointerEvents = 'none';
+                    confetti.style.zIndex = '9999';
+                    confetti.style.opacity = '0.8';
+                    document.body.appendChild(confetti);
+                    
+                    const duration = 3000 + Math.random() * 2000;
+                    const endY = window.innerHeight + 20;
+                    const endX = parseFloat(confetti.style.left) + (Math.random() - 0.5) * 200;
+                    
+                    confetti.animate([
+                        { transform: 'translateY(0) translateX(0) rotate(0deg)', opacity: 0.8 },
+                        { transform: `translateY(${endY}px) translateX(${endX - parseFloat(confetti.style.left)}px) rotate(720deg)`, opacity: 0 }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    }).onfinish = () => confetti.remove();
+                }, i * 50);
+            }
+        }
+
+        // Auto-focus token input on page load (after short delay for better UX)
+        setTimeout(() => {
+            if (window.innerWidth > 768) { // Only on desktop
+                tokenInput.focus();
+            }
+        }, 800);
+
+        // Check if Telegram bot is already configured (optional)
+        // Uncomment this when Control Panel API is available
+        /*
+        async function checkExistingConfig() {
+            try {
+                const res = await fetch('/gateway/api/telegram-status');
+                const data = await res.json();
+                if (data.configured && data.botUsername) {
+                    showSuccess(data.botUsername);
+                }
+            } catch {}
+        }
+        checkExistingConfig();
+        */
+    })();
+    </script>
+</body>
+</html>
