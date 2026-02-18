@@ -2,7 +2,7 @@
 # Update provision-openclaw.sh to use web chat interface
 
 SCRIPT_FILE="scripts/provision-openclaw.sh"
-WEB_CHAT_FILE="public/instance-landing-v2/index.html"
+WEB_CHAT_FILE="public/instance-landing-v3/index.html"
 
 # Read the web chat HTML and escape it for sed
 WEB_CHAT_CONTENT=$(cat "$WEB_CHAT_FILE" | sed 's/[&/\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g')

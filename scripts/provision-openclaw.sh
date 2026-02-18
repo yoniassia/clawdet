@@ -392,7 +392,6 @@ log "Creating Clawdet-branded landing page..."
 mkdir -p /var/www/html
 
 cat > /var/www/html/index.html <<'EOLANDING'
-cat > /var/www/html/index.html <<'EOLANDING'
 <!DOCTYPE html>
 <html lang="en">
 <head>
