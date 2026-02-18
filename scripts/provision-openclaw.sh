@@ -391,6 +391,8 @@ log "Creating Clawdet-branded landing page..."
 
 mkdir -p /var/www/html
 
+# Download the latest landing page from GitHub or use embedded version
+# For now, using embedded version with token placeholder
 cat > /var/www/html/index.html <<'EOLANDING'
 <!DOCTYPE html>
 <html lang="en">
@@ -1486,17 +1488,13 @@ cat > /var/www/html/index.html <<'EOLANDING'
                 role: 'operator',
                 scopes: ['operator.read', 'operator.write'],
                 caps: [],
-                auth: {},
+                auth: {
+                    token: '{{ GATEWAY_TOKEN }}'
+                },
                 userAgent: navigator.userAgent,
                 locale: navigator.language || 'en-US'
             };
 
-            if (connectNonce) {
-                connectParams.device = {
-                    id: 'webchat-' + generateId(),
-                    nonce: connectNonce
-                };
-            }
 
             const connectRequest = {
                 type: 'req',
@@ -1945,6 +1943,10 @@ cat > /var/www/html/index.html <<'EOLANDING'
 </body>
 </html>
 EOLANDING
+
+# Replace gateway token placeholder
+log "Injecting gateway token into landing page..."
+sed -i "s/{{ GATEWAY_TOKEN }}/${GATEWAY_TOKEN}/g" /var/www/html/index.html
 
 log "Landing page created at /var/www/html/index.html"
 

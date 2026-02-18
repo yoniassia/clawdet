@@ -1080,7 +1080,9 @@
                 role: 'operator',
                 scopes: ['operator.read', 'operator.write'],
                 caps: [],
-                auth: {},
+                auth: {
+                    token: '{{ GATEWAY_TOKEN }}'
+                },
                 userAgent: navigator.userAgent,
                 locale: navigator.language || 'en-US'
             };
