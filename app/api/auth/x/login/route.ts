@@ -8,10 +8,16 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_API_URL
   : 'http://localhost:3000/api/auth/x/callback'
 
 // Helper function to build OAuth URL
-function buildOAuthUrl(baseUrl: string): { url: string; state: string } {
+function buildOAuthUrl(): { url: string; state: string } {
+  // Use public URL for OAuth flows (fixes localhost:3002 redirect bug)
+  const publicBaseUrl = process.env.NEXT_PUBLIC_API_URL || 
+                        (process.env.NODE_ENV === 'production' 
+                          ? 'https://clawdet.com' 
+                          : 'http://localhost:3000')
+  
   // If no OAuth credentials, use mock mode
   if (!TWITTER_CLIENT_ID) {
-    const mockCallbackUrl = new URL('/api/auth/x/callback', baseUrl)
+    const mockCallbackUrl = new URL('/api/auth/x/callback', publicBaseUrl)
     mockCallbackUrl.searchParams.set('mock', 'true')
     mockCallbackUrl.searchParams.set('code', 'mock_auth_code_' + Date.now())
     mockCallbackUrl.searchParams.set('state', 'mock_state')
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { url, state } = buildOAuthUrl(request.url)
+    const { url, state } = buildOAuthUrl()
     
     return NextResponse.json({
       url,
@@ -87,7 +93,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { url, state } = buildOAuthUrl(request.url)
+    const { url, state } = buildOAuthUrl()
     
     // Store state in session/cookie for verification (unless mock mode)
     const response = NextResponse.redirect(url)

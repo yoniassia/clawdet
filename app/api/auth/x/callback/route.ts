@@ -20,8 +20,14 @@ export async function GET(request: NextRequest) {
   const state = searchParams.get('state')
   const isMock = searchParams.get('mock') === 'true'
 
+  // Use public URL for redirects (fixes localhost:3002 redirect bug)
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
+                  (process.env.NODE_ENV === 'production' 
+                    ? 'https://clawdet.com' 
+                    : 'http://localhost:3000')
+
   if (!code) {
-    return NextResponse.redirect(new URL('/signup?error=no_code', request.url))
+    return NextResponse.redirect(new URL('/signup?error=no_code', baseUrl))
   }
 
   try {
@@ -41,7 +47,7 @@ export async function GET(request: NextRequest) {
       // Verify state
       const storedState = request.cookies.get('oauth_state')?.value
       if (state !== storedState) {
-        return NextResponse.redirect(new URL('/signup?error=invalid_state', request.url))
+        return NextResponse.redirect(new URL('/signup?error=invalid_state', baseUrl))
       }
 
       // Exchange code for token
@@ -98,11 +104,11 @@ export async function GET(request: NextRequest) {
     })
 
     // Check if user already has email/terms accepted (returning user)
-    const redirectUrl = user.email && user.termsAccepted
+    const redirectPath = user.email && user.termsAccepted
       ? (user.paid ? '/dashboard' : '/checkout')
       : '/signup/details'
-
-    const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+    
+    const response = NextResponse.redirect(new URL(redirectPath, baseUrl))
     
     // Set secure session cookie
     response.cookies.set('user_session', sessionToken, {
@@ -119,8 +125,15 @@ export async function GET(request: NextRequest) {
     return response
   } catch (error) {
     console.error('OAuth callback error:', error)
+    
+    // Use public URL for error redirect
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
+                    (process.env.NODE_ENV === 'production' 
+                      ? 'https://clawdet.com' 
+                      : 'http://localhost:3000')
+    
     return NextResponse.redirect(
-      new URL('/signup?error=oauth_failed', request.url)
+      new URL('/signup?error=oauth_failed', baseUrl)
     )
   }
 }
