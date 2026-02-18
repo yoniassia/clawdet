@@ -184,10 +184,8 @@
         @keyframes typing {
             0%, 60%, 100% {
                 transform: translateY(0);
-            }
             30% {
                 transform: translateY(-10px);
-            }
         }
 
         /* Input Area */
@@ -342,23 +340,18 @@
         @media (max-width: 768px) {
             .message {
                 max-width: 85%;
-            }
 
             .welcome-suggestions {
                 grid-template-columns: 1fr;
-            }
 
             .header {
                 padding: 12px 16px;
-            }
 
             .chat-container {
                 padding: 16px;
-            }
 
             .input-container {
                 padding: 16px;
-            }
         }
     </style>
 </head>
@@ -435,7 +428,7 @@
         let sessionKey = null;
         let isConnected = false;
         let pendingRequests = new Map();
-        let connectNonce = null;
+        
         let currentStreamedMessage = '';
 
         const chatContainer = document.getElementById('chatContainer');
@@ -520,12 +513,6 @@
             };
 
             // Add nonce if we received a challenge
-            if (connectNonce) {
-                connectParams.device = {
-                    id: 'webchat-' + generateId(),
-                    nonce: connectNonce
-                };
-            }
 
             const connectRequest = {
                 type: 'req',
@@ -542,7 +529,6 @@
             if (!ws || ws.readyState !== WebSocket.OPEN) {
                 console.error('Cannot send request: WebSocket not open');
                 return Promise.reject(new Error('WebSocket not connected'));
-            }
 
             return new Promise((resolve, reject) => {
                 pendingRequests.set(request.id, { resolve, reject });
@@ -565,7 +551,6 @@
                 handleEvent(data);
             } else if (data.type === 'res') {
                 handleResponse(data);
-            }
         }
 
         function handleEvent(event) {
@@ -577,7 +562,6 @@
                 handleAgentEvent(event.payload);
             } else if (event.event === 'chat') {
                 handleChatEvent(event.payload);
-            }
         }
 
         function handleResponse(response) {
@@ -594,7 +578,6 @@
                 } else {
                     pending.reject(new Error(response.error?.message || 'Request failed'));
                 }
-            }
         }
 
         function handleHelloOk(payload) {
@@ -643,7 +626,6 @@
                 removeTypingIndicator();
                 addMessage(`Error: ${payload.error?.message || 'Unknown error'}`, 'system');
                 currentStreamedMessage = '';
-            }
         }
 
         function handleChatEvent(payload) {
@@ -670,7 +652,6 @@
                 removeTypingIndicator();
                 addMessage(`Error: ${payload.errorMessage || 'Unknown error'}`, 'system');
                 currentStreamedMessage = '';
-            }
         }
 
         function extractTextContent(message) {
@@ -683,7 +664,6 @@
                         .map(part => part.text)
                         .join('');
                 }
-            }
             return '';
         }
 
@@ -694,7 +674,6 @@
                 indicator.id = 'streamingMessage';
                 indicator.className = 'message assistant';
                 chatContainer.appendChild(indicator);
-            }
             indicator.textContent = currentStreamedMessage;
             scrollToBottom();
         }
@@ -706,7 +685,6 @@
             // Hide welcome screen on first message
             if (welcomeScreen && welcomeScreen.style.display !== 'none') {
                 welcomeScreen.style.display = 'none';
-            }
 
             addMessage(message, 'user');
             messageInput.value = '';
@@ -734,7 +712,6 @@
                 console.error('Failed to send message:', error);
                 removeTypingIndicator();
                 addMessage(`Error: ${error.message}`, 'system');
-            }
         }
 
         function sendSuggestion(text) {
@@ -763,11 +740,9 @@
             const indicator = document.getElementById('typingIndicator');
             if (indicator) {
                 indicator.remove();
-            }
             const streaming = document.getElementById('streamingMessage');
             if (streaming) {
                 streaming.remove();
-            }
         }
 
         function scrollToBottom() {
@@ -781,7 +756,6 @@
             } else {
                 statusDot.classList.add('disconnected');
                 statusText.textContent = 'Disconnected';
-            }
         }
 
         function showConnectionBanner(message) {
@@ -799,7 +773,6 @@
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
-            }
         });
 
         // Connect on load
