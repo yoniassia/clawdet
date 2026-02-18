@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clawdet Test Instance - Beta Preview</title>
+    <title>Beta Test Instance | Clawdet</title>
     <style>
         * {
             margin: 0;
@@ -20,32 +20,33 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
         }
 
         .badge {
             display: inline-block;
             background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
             color: #ffffff;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(29, 155, 240, 0.3);
         }
 
         h1 {
-            font-size: 48px;
+            font-size: 52px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -53,169 +54,221 @@
         }
 
         .subtitle {
-            font-size: 20px;
+            font-size: 22px;
             color: #71767b;
             margin-bottom: 40px;
+            font-weight: 400;
         }
 
-        .status {
+        .status-card {
+            background: #16181c;
+            border: 2px solid #00ba7c;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 32px rgba(0, 186, 124, 0.15);
+        }
+
+        .status-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 12px;
-            padding: 16px 24px;
-            max-width: 400px;
-            margin: 0 auto 40px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: #00ba7c;
             border-radius: 50%;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 16px rgba(0, 186, 124, 0.6);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
         }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 60px;
-        }
-
-        .feature-card {
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 32px;
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            border-color: #1d9bf0;
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .feature-card h3 {
+        .status-text {
             font-size: 20px;
-            margin-bottom: 12px;
-            color: #e7e9ea;
-        }
-
-        .feature-card p {
-            color: #71767b;
-            font-size: 16px;
-        }
-
-        .feature-card ul {
-            list-style: none;
-            margin-top: 16px;
-        }
-
-        .feature-card li {
-            padding: 8px 0;
-            color: #e7e9ea;
-            font-size: 15px;
-        }
-
-        .feature-card li::before {
-            content: "✓ ";
+            font-weight: 600;
             color: #00ba7c;
-            font-weight: bold;
-            margin-right: 8px;
         }
 
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            max-width: 600px;
-            margin: 0 auto;
+        .status-details {
+            font-size: 16px;
+            color: #71767b;
+            line-height: 1.8;
         }
 
-        .button {
+        .status-details strong {
+            color: #e7e9ea;
+        }
+
+        .cta-section {
+            margin: 50px 0;
+        }
+
+        .primary-button {
             display: block;
             width: 100%;
-            padding: 16px 32px;
-            border-radius: 24px;
-            font-size: 16px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+            color: #ffffff;
+            padding: 24px 32px;
+            border-radius: 32px;
+            font-size: 20px;
             font-weight: 700;
             text-align: center;
             text-decoration: none;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .button-primary {
-            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
-            color: #ffffff;
-        }
-
-        .button-primary:hover {
-            transform: translateY(-2px);
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
             box-shadow: 0 8px 24px rgba(29, 155, 240, 0.3);
+            margin-bottom: 16px;
         }
 
-        .button-secondary {
+        .primary-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(29, 155, 240, 0.5);
+        }
+
+        .secondary-button {
+            display: block;
+            width: 100%;
             background: transparent;
-            border: 1px solid #2f3336;
             color: #e7e9ea;
+            padding: 18px 32px;
+            border-radius: 32px;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 2px solid #2f3336;
+            margin-bottom: 12px;
         }
 
-        .button-secondary:hover {
+        .secondary-button:hover {
             background: #16181c;
             border-color: #1d9bf0;
         }
 
-        .info {
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .info-card {
             background: #16181c;
             border: 1px solid #2f3336;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 24px;
-            margin-top: 40px;
+            transition: all 0.3s;
         }
 
-        .info h3 {
-            color: #1d9bf0;
-            margin-bottom: 16px;
+        .info-card:hover {
+            border-color: #1d9bf0;
+            transform: translateY(-2px);
         }
 
-        .info p {
-            color: #71767b;
+        .info-icon {
+            font-size: 36px;
             margin-bottom: 12px;
         }
 
-        .info code {
+        .info-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #e7e9ea;
+        }
+
+        .info-card p {
+            color: #71767b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .specs {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 40px;
+        }
+
+        .specs h3 {
+            color: #1d9bf0;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .spec-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #2f3336;
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-size: 13px;
+            color: #71767b;
+            margin-bottom: 4px;
+        }
+
+        .spec-value {
+            font-size: 16px;
+            color: #e7e9ea;
+            font-weight: 600;
+        }
+
+        code {
             background: #000000;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
             color: #00ba7c;
             font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #2f3336;
+            text-align: center;
+            color: #71767b;
+            font-size: 15px;
         }
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 32px;
+                font-size: 36px;
             }
 
             .subtitle {
                 font-size: 18px;
             }
 
-            .features {
+            .primary-button {
+                font-size: 18px;
+                padding: 20px 24px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .spec-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -224,78 +277,105 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="badge">🎁 BETA TEST INSTANCE</div>
-            <h1>🐾 Clawdet Test Instance</h1>
-            <p class="subtitle">This is a live demo of what beta users get</p>
-            
-            <div class="status">
+            <div class="badge">🎁 FREE BETA TEST INSTANCE</div>
+            <h1>🐾 Your OpenClaw Instance</h1>
+            <p class="subtitle">This is what you'll get with your free beta signup</p>
+        </div>
+
+        <div class="status-card">
+            <div class="status-header">
                 <div class="status-indicator"></div>
-                <span><strong>Status:</strong> Online & Ready</span>
+                <span class="status-text">Instance Online & Ready</span>
+            </div>
+            <div class="status-details">
+                <p><strong>Gateway Status:</strong> Running and accessible</p>
+                <p><strong>AI Model:</strong> Grok 4.2 by xAI</p>
+                <p><strong>Mode:</strong> Advanced (all features enabled)</p>
             </div>
         </div>
 
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>Grok AI Integration</h3>
-                <p>Powered by xAI's Grok 4.2 - fast, intelligent responses with advanced reasoning.</p>
-                <ul>
-                    <li>Extended context window</li>
-                    <li>Advanced mode enabled</li>
-                    <li>Real-time conversations</li>
-                </ul>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🔧</div>
-                <h3>Full Tool Suite</h3>
-                <p>Complete access to OpenClaw's powerful tool ecosystem.</p>
-                <ul>
-                    <li>Browser automation</li>
-                    <li>Cron job scheduling</li>
-                    <li>File operations</li>
-                    <li>Code execution</li>
-                    <li>Sub-agent spawning</li>
-                    <li>Memory system</li>
-                </ul>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🌐</div>
-                <h3>Custom Subdomain</h3>
-                <p>Your own dedicated URL with HTTPS and Cloudflare protection.</p>
-                <ul>
-                    <li>Secure SSL/TLS</li>
-                    <li>DDoS protection</li>
-                    <li>Custom branding</li>
-                    <li>Always accessible</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="actions">
-            <a href="/gateway" class="button button-primary">
+        <div class="cta-section">
+            <a href="/gateway/" class="primary-button">
                 🚀 Open OpenClaw Gateway
             </a>
-            <a href="https://clawdet.com" class="button button-secondary">
+            <p style="text-align: center; color: #71767b; margin-bottom: 20px;">
+                Click to access the full OpenClaw control interface
+            </p>
+            <a href="https://clawdet.com" class="secondary-button">
                 ← Back to Clawdet.com
             </a>
-            <a href="https://clawdet.com/signup" class="button button-secondary">
+            <a href="https://clawdet.com/signup" class="secondary-button">
                 🎁 Get Your Free Beta Instance
             </a>
         </div>
 
-        <div class="info">
-            <h3>📋 Instance Information</h3>
-            <p><strong>VPS:</strong> Hetzner Cloud CX23 (Helsinki)</p>
-            <p><strong>Specs:</strong> 2 vCPU, 4GB RAM, 40GB NVMe SSD</p>
-            <p><strong>OS:</strong> Ubuntu 22.04 LTS</p>
-            <p><strong>Gateway:</strong> OpenClaw (latest version)</p>
-            <p><strong>AI:</strong> Grok 4.2 by xAI</p>
-            <p><strong>Reverse Proxy:</strong> Caddy with automatic SSL</p>
-            <p style="margin-top: 20px;">
-                <strong>Access Gateway:</strong> Navigate to <code>/gateway</code> or click the button above.
-                The gateway requires authentication for full access.
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">🤖</div>
+                <h3>Grok AI Integration</h3>
+                <p>Powered by xAI's Grok 4.2 with advanced reasoning and extended context window</p>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">🔧</div>
+                <h3>Full Tool Suite</h3>
+                <p>Browser automation, cron scheduling, file operations, code execution, and more</p>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">🌐</div>
+                <h3>Custom Subdomain</h3>
+                <p>Your own URL with automatic HTTPS and Cloudflare protection</p>
+            </div>
+        </div>
+
+        <div class="specs">
+            <h3>📋 Instance Specifications</h3>
+            <div class="spec-grid">
+                <div class="spec-item">
+                    <div class="spec-label">Server Type</div>
+                    <div class="spec-value">Hetzner Cloud CX23</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Location</div>
+                    <div class="spec-value">Helsinki, Finland</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">CPU</div>
+                    <div class="spec-value">2 vCPU Cores</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">RAM</div>
+                    <div class="spec-value">4GB DDR4</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Storage</div>
+                    <div class="spec-value">40GB NVMe SSD</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">OS</div>
+                    <div class="spec-value">Ubuntu 22.04 LTS</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">AI Model</div>
+                    <div class="spec-value">Grok 4.2 (xAI)</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Gateway</div>
+                    <div class="spec-value">OpenClaw (Latest)</div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 24px; color: #71767b;">
+                <strong style="color: #e7e9ea;">Access:</strong> The gateway runs on port 18789 and is proxied through Caddy for automatic SSL. 
+                You can access it at <code>/gateway/</code> on this domain.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p><strong>This is a live demo instance</strong></p>
+            <p style="margin-top: 8px;">
+                Sign up at <a href="https://clawdet.com" style="color: #1d9bf0;">clawdet.com</a> to get your own instance (first 20 users free!)
             </p>
         </div>
     </div>
