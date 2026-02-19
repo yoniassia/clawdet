@@ -196,7 +196,7 @@ ssh root@188.34.197.212
 
 # Run provisioning script manually
 cd /root/.openclaw/workspace/clawdet
-export XAI_API_KEY="xai-RTMTaf517Hg2PJ2Gnznsb5ArBZGqagXbaKelw6YXQULfFr0A9RBQPGhMkM1vh6VR1uJPWxsIgyywuBTx"
+export XAI_API_KEY="<from .env.local>"
 export USERNAME="test-user-2"
 export SUBDOMAIN="test-user-2"
 
@@ -278,7 +278,7 @@ ls -la /root/.openclaw/workspace/
 # /root/.openclaw/workspace/clawdet/.env.local
 
 # Grok API
-XAI_API_KEY=xai-RTMTaf517Hg2PJ2Gnznsb5ArBZGqagXbaKelw6YXQULfFr0A9RBQPGhMkM1vh6VR1uJPWxsIgyywuBTx
+XAI_API_KEY=<from .env.local>
 
 # X OAuth
 TWITTER_CLIENT_ID=UUx2N1g2V3dhRHEyci0xaXpoSEw6MTpjaQ

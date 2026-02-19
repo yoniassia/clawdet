@@ -105,7 +105,7 @@ create_vps() {
     echo "  🚀 Running OpenClaw provisioning..."
     
     # Set environment variables for provision script
-    export XAI_API_KEY="xai-RTMTaf517Hg2PJ2Gnznsb5ArBZGqagXbaKelw6YXQULfFr0A9RBQPGhMkM1vh6VR1uJPWxsIgyywuBTx"
+    export XAI_API_KEY="<from .env.local>"
     export USERNAME="test-user"
     export SUBDOMAIN="$NAME"
     

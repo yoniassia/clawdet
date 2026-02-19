@@ -174,7 +174,7 @@ hcloud server create \
 
 # Wait 60 seconds, then provision
 export VPS_IP="<new-vps-ip>"
-export XAI_API_KEY="xai-RTMTaf517Hg2PJ2Gnznsb5ArBZGqagXbaKelw6YXQULfFr0A9RBQPGhMkM1vh6VR1uJPWxsIgyywuBTx"
+export XAI_API_KEY="<from .env.local>"
 
 ssh -i ~/.ssh/id_ed25519 root@$VPS_IP \
   "export XAI_API_KEY='$XAI_API_KEY' USERNAME='test-user-3' SUBDOMAIN='test-user-3' && \

@@ -17,7 +17,7 @@
 ## APIs & Credentials Available
 
 ### ✅ Grok 4.2 API (xAI)
-- **Key:** `xai-RTMTaf517Hg2PJ2Gnznsb5ArBZGqagXbaKelw6YXQULfFr0A9RBQPGhMkM1vh6VR1uJPWxsIgyywuBTx`
+- **Key:** `<from .env.local>`
 - **Endpoint:** https://api.x.ai/v1
 - **Model:** `grok-4-2` (main) or `grok-4-1-fast-non-reasoning` (faster)
 - **Use for:** 
