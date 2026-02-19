@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateUser } from '@/lib/db'
+import { requireAuth } from '@/lib/auth-middleware'
+import { SECURITY_HEADERS } from '@/lib/security'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get user session
-    const sessionCookie = request.cookies.get('user_session')
-    if (!sessionCookie) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
+    // Verify authentication
+    const user = requireAuth(request)
+    if (user instanceof NextResponse) {
+      return user // Return auth error
     }
-
-    const session = JSON.parse(sessionCookie.value)
     
     // Get form data
     const { email, termsAccepted } = await request.json()
@@ -34,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Update user in database
-    const updatedUser = updateUser(session.userId, {
+    const updatedUser = updateUser(user.id, {
       email,
       termsAccepted
     })
@@ -42,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (!updatedUser) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404 }
+        { status: 404, headers: SECURITY_HEADERS }
       )
     }
     
@@ -53,12 +50,12 @@ export async function POST(request: NextRequest) {
         email: updatedUser.email,
         termsAccepted: updatedUser.termsAccepted
       }
-    })
+    }, { headers: SECURITY_HEADERS })
   } catch (error) {
     console.error('Signup complete error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: SECURITY_HEADERS }
     )
   }
 }
