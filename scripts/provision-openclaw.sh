@@ -319,8 +319,7 @@ cat > /root/.openclaw/openclaw.json <<EOF
 {
   "agents": {
     "defaults": {
-      "workspace": "/root/.openclaw/workspace",
-      "model": "xai/grok-beta"
+      "workspace": "/root/.openclaw/workspace"
     }
   },
   "env": {
