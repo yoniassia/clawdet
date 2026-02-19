@@ -1,0 +1,15 @@
+{
+  "name": "clawdet-tests",
+  "version": "1.0.0",
+  "description": "Testing infrastructure for Clawdet platform",
+  "scripts": {
+    "smoke": "node smoke/smoke-test.js",
+    "e2e": "playwright test",
+    "test": "npm run smoke && npm run e2e"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "@playwright/test": "^1.40.0"
+  },
+  "devDependencies": {}
+}
