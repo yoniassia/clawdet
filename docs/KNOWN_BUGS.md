@@ -13,6 +13,109 @@ Track known issues, workarounds, and planned fixes. Updated after each Test Gate
 
 ## Active Issues
 
+### 🔴 P0-004: Provision Script Generates Invalid OpenClaw Config
+**Reported:** 2026-02-19 02:00 UTC
+**Component:** `provision-openclaw.sh` (line ~220-230)
+**Status:** **BLOCKING PRODUCTION DEPLOYMENT**
+
+**Description:**
+The provisioning script generates an invalid `openclaw.json` config file that causes the gateway service to crash immediately on startup. The script sets `agents.defaults.model` to a string value (`"xai/grok-beta"`), but OpenClaw's config validation expects this field to either be omitted (for defaults) or to be an object.
+
+**Impact:**
+- **100% failure rate** - Every new instance provisioned fails
+- Gateway enters infinite crash-loop (40+ restarts before manual fix)
+- All `/gateway/` endpoints return 502 Bad Gateway
+- Platform appears completely broken to users
+- Requires manual SSH intervention to fix each instance
+
+**Error Message:**
+```
+Invalid config at /root/.openclaw/openclaw.json:
+- agents.defaults.model: Invalid input: expected object, received string
+```
+
+**Root Cause:**
+```bash
+# Line ~220 in provision-openclaw.sh
+cat > /root/.openclaw/openclaw.json <<EOF
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/root/.openclaw/workspace",
+      "model": "xai/grok-beta"   # ❌ INVALID: String value
+    }
+  },
+  ...
+}
+EOF
+```
+
+**Workaround (Manual Fix Required):**
+```bash
+# SSH into affected instance
+ssh root@<INSTANCE_IP>
+
+# Remove invalid model key from config
+python3 -c "
+import json
+with open('/root/.openclaw/openclaw.json', 'r') as f:
+    config = json.load(f)
+if 'agents' in config and 'defaults' in config['agents']:
+    if 'model' in config['agents']['defaults']:
+        del config['agents']['defaults']['model']
+with open('/root/.openclaw/openclaw.json', 'w') as f:
+    json.dump(config, f, indent=2)
+"
+
+# Restart gateway service
+systemctl restart openclaw-gateway
+
+# Verify service is running
+systemctl status openclaw-gateway
+```
+
+**Fix Plan:**
+Update `provision-openclaw.sh` to omit the `model` key entirely:
+
+```bash
+# Line ~220 in provision-openclaw.sh
+cat > /root/.openclaw/openclaw.json <<EOF
+{
+  "agents": {
+    "defaults": {
+      "workspace": "/root/.openclaw/workspace"
+      # model key removed - OpenClaw will use default (anthropic/claude-opus-4-6)
+    }
+  },
+  ...
+}
+EOF
+```
+
+**Testing Steps:**
+1. Update provision-openclaw.sh with fix
+2. Provision fresh test instance (test-fresh-3)
+3. Verify gateway starts without errors: `systemctl status openclaw-gateway`
+4. Check logs show no config errors: `journalctl -u openclaw-gateway -n 50`
+5. Verify `/gateway/` endpoint returns 200: `curl -sI https://test-fresh-3.clawdet.com/gateway/`
+6. Test browser WebSocket connection
+
+**Affected Instances (Manual Fix Applied):**
+- test-fresh-1.clawdet.com (fixed 2026-02-19 02:01 UTC)
+- test-fresh-2.clawdet.com (fixed 2026-02-19 02:02 UTC)
+
+**Verification:**
+E2E test report: `/root/.openclaw/workspace/clawdet/docs/E2E-FRESH-PROVISIONING-TEST.md`
+
+**Assigned:** **URGENT - MUST FIX BEFORE NEXT DEPLOYMENT**  
+**ETA:** 30 minutes (simple one-line change + test)
+
+**Related Issues:**
+- Discovered during Phase 2 of E2E Fresh Provisioning Test
+- Blocked browser verification (Phase 5) until fixed and re-tested
+
+---
+
 ### 🟢 P3-001: Health Monitor Path Issues
 **Reported:** 2026-02-18
 **Component:** Cron health monitor

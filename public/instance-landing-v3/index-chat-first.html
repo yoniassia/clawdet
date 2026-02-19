@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clawdet - Your AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #e7e9ea;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Compact Header - minimal branding at top */
+        .compact-header {
+            background: #16181c;
+            border-bottom: 1px solid #2f3336;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .status-compact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ba7c;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: #f91880;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Input at TOP - most prominent */
+        .input-top {
+            background: #16181c;
+            border-bottom: 1px solid #2f3336;
+            padding: 16px;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 8px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            background: #000000;
+            border: 1px solid #2f3336;
+            border-radius: 24px;
+            padding: 14px 20px;
+            color: #e7e9ea;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #1d9bf0;
+        }
+
+        .input-wrapper input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-wrapper button {
+            background: #1d9bf0;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper button:hover:not(:disabled) {
+            background: #1a8cd8;
+            transform: scale(1.05);
+        }
+
+        .input-wrapper button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Chat messages area - fills remaining space */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Welcome screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .welcome-logo {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            color: #71767b;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .welcome-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .suggestion-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .suggestion-card:hover {
+            border-color: #1d9bf0;
+            background: #1a1d23;
+            transform: translateY(-2px);
+        }
+
+        .suggestion-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .suggestion-text {
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        /* Message bubbles */
+        .message {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .message:hover {
+            background: #16181c;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #f91880 0%, #ff6b9d 100%);
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-text {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-text {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #71767b;
+            margin-top: 4px;
+            padding: 0 16px;
+        }
+
+        /* Connection banner */
+        .connection-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffd60a;
+            color: #000;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+
+        .connection-banner.show {
+            transform: translateY(0);
+        }
+
+        /* Tab navigation - moved to bottom as secondary */
+        .bottom-nav {
+            background: #16181c;
+            border-top: 1px solid #2f3336;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            color: #e7e9ea;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        .nav-btn.active {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        /* Loading spinner */
+        .thinking-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #71767b;
+            font-size: 14px;
+            padding: 12px 16px;
+        }
+
+        .thinking-indicator.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2f3336;
+            border-top-color: #1d9bf0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar styling */
+        .messages-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #2f3336;
+            border-radius: 4px;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: #3f4346;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 24px;
+            }
+
+            .welcome-suggestions {
+                grid-template-columns: 1fr;
+            }
+
+            .compact-header {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .input-top {
+                padding: 12px;
+            }
+
+            .input-wrapper input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .input-wrapper button {
+                width: 44px;
+                height: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-banner" id="connectionBanner">
+        ⚠️ Connecting to your AI assistant...
+    </div>
+
+    <!-- Minimal branding at top -->
+    <div class="compact-header">
+        <div class="brand">
+            <span>🐾</span>
+            <span>Clawdet</span>
+        </div>
+        <div class="status-compact">
+            <div class="status-dot disconnected" id="statusDot"></div>
+            <span id="statusText">Connecting...</span>
+        </div>
+    </div>
+
+    <!-- Chat input at TOP - most prominent -->
+    <div class="input-top">
+        <div class="input-wrapper">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Ask me anything..." 
+                disabled
+            />
+            <button id="sendBtn" disabled>
+                <span>▶</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Messages area - main content -->
+    <div class="messages-area" id="messagesArea">
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-logo">🐾</div>
+                <h1 class="welcome-title">Your Personal AI</h1>
+                <p class="welcome-subtitle">Powered by Grok & OpenClaw. Ready to help!</p>
+                
+                <div class="welcome-suggestions">
+                    <div class="suggestion-card" onclick="sendSuggestion('Search the web for latest AI news')">
+                        <div class="suggestion-icon">🌐</div>
+                        <div class="suggestion-title">Web Search</div>
+                        <div class="suggestion-text">Find information online</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('Remind me in 1 hour to check email')">
+                        <div class="suggestion-icon">⏰</div>
+                        <div class="suggestion-title">Reminders</div>
+                        <div class="suggestion-text">Schedule notifications</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('Help me code a Python function')">
+                        <div class="suggestion-icon">💻</div>
+                        <div class="suggestion-title">Code Help</div>
+                        <div class="suggestion-text">Write & debug code</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('What can you do?')">
+                        <div class="suggestion-icon">✨</div>
+                        <div class="suggestion-title">Explore</div>
+                        <div class="suggestion-text">Discover features</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="thinking-indicator" id="thinkingIndicator">
+                <div class="spinner"></div>
+                <span>Thinking...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom navigation - secondary -->
+    <div class="bottom-nav">
+        <button class="nav-btn active">
+            <span>💬</span>
+            <span>Chat</span>
+        </button>
+        <button class="nav-btn" onclick="window.location.href='/setup'">
+            <span>🤖</span>
+            <span>Telegram Setup</span>
+        </button>
+        <button class="nav-btn" onclick="window.open('/gateway/', '_blank')">
+            <span>⚙️</span>
+            <span>Settings</span>
+        </button>
+    </div>
+
+    <script>
+        // PLACEHOLDER_GATEWAY_TOKEN will be replaced by provision script
+        const GATEWAY_TOKEN = 'PLACEHOLDER_GATEWAY_TOKEN';
+        
+        let ws = null;
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+
+        // DOM elements
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messagesArea = document.getElementById('messagesArea');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const connectionBanner = document.getElementById('connectionBanner');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const thinkingIndicator = document.getElementById('thinkingIndicator');
+
+        // Connect to OpenClaw Gateway
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/gateway/`;
+            
+            console.log('Connecting to:', wsUrl);
+            connectionBanner.classList.add('show');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('WebSocket opened, sending connect message...');
+                    
+                    // Send OpenClaw Gateway connect message
+                    ws.send(JSON.stringify({
+                        type: 'connect',
+                        auth: {
+                            token: GATEWAY_TOKEN
+                        },
+                        client: {
+                            id: 'openclaw-control-ui',
+                            version: '1.0.0',
+                            capabilities: []
+                        }
+                    }));
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('Received:', data.type, data);
+                        
+                        if (data.type === 'hello-ok') {
+                            console.log('Connected successfully!');
+                            onConnected();
+                        } else if (data.type === 'message') {
+                            handleMessage(data);
+                        } else if (data.type === 'error') {
+                            console.error('Gateway error:', data);
+                            addSystemMessage('Error: ' + (data.message || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error('Failed to parse message:', err, event.data);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    updateStatus(false, 'Connection error');
+                };
+                
+                ws.onclose = () => {
+                    console.log('WebSocket closed');
+                    onDisconnected();
+                };
+            } catch (err) {
+                console.error('Failed to create WebSocket:', err);
+                updateStatus(false, 'Failed to connect');
+            }
+        }
+
+        function onConnected() {
+            isConnected = true;
+            reconnectAttempts = 0;
+            updateStatus(true, 'Connected');
+            connectionBanner.classList.remove('show');
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            messageInput.focus();
+        }
+
+        function onDisconnected() {
+            isConnected = false;
+            updateStatus(false, 'Disconnected');
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            // Attempt reconnection
+            if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                reconnectAttempts++;
+                const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+                console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+                setTimeout(connect, delay);
+            } else {
+                addSystemMessage('Connection lost. Please refresh the page to reconnect.');
+            }
+        }
+
+        function updateStatus(connected, text) {
+            statusDot.classList.toggle('disconnected', !connected);
+            statusText.textContent = text;
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !isConnected) return;
+            
+            // Add user message to UI
+            addMessage(text, 'user');
+            messageInput.value = '';
+            welcomeScreen.style.display = 'none';
+            
+            // Show thinking indicator
+            thinkingIndicator.classList.add('show');
+            scrollToBottom();
+            
+            // Send to gateway
+            ws.send(JSON.stringify({
+                type: 'message',
+                text: text
+            }));
+        }
+
+        function handleMessage(data) {
+            // Hide thinking indicator
+            thinkingIndicator.classList.remove('show');
+            
+            if (data.text) {
+                addMessage(data.text, 'assistant');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '👤' : '🐾';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.textContent = text;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            content.appendChild(textDiv);
+            content.appendChild(time);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function addSystemMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.textAlign = 'center';
+            messageDiv.style.padding = '12px';
+            messageDiv.style.color = '#71767b';
+            messageDiv.style.fontSize = '14px';
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function sendSuggestion(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Connect on load
+        connect();
+    </script>
+</body>
+</html>

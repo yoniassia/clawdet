@@ -108,5 +108,17 @@
     "updatedAt": 1771402692697,
     "sessionToken": "5a63b840cb398e0a6a4fda5da9496cf6e6d60741b323d8a373cbe0ed40253f7b",
     "sessionCreatedAt": 1771402692697
+  },
+  {
+    "id": "user_1771454979833_nw5e9a",
+    "xId": "1969849072338051072",
+    "xUsername": "NatiLevin1",
+    "xName": "Nati Levin",
+    "termsAccepted": false,
+    "paid": false,
+    "createdAt": 1771454979833,
+    "updatedAt": 1771455068405,
+    "sessionToken": "23842bbe80b7d4047a0a7d0bd1b56ed2bc4f1a2dc20c5a5c80f0f52825c66adf",
+    "sessionCreatedAt": 1771455068405
   }
 ]
