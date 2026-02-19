@@ -1955,15 +1955,16 @@ cat > /etc/caddy/Caddyfile <<EOF
 # Clawdet Instance - Simplified Landing + Gateway
 
 $FULL_DOMAIN {
-    # Root serves Clawdet-branded landing page
-    handle / {
-        root * /var/www/html
-        file_server
-    }
-    
     # Gateway at /gateway/* with all assets
     handle_path /gateway* {
         reverse_proxy localhost:18789
+    }
+    
+    # Root serves Clawdet-branded landing page (catchall)
+    handle {
+        root * /var/www/html
+        try_files {path} /index.html
+        file_server
     }
     
     # Cloudflare SSL (internal TLS)
@@ -1977,13 +1978,14 @@ $FULL_DOMAIN {
 
 # HTTP also works
 $FULL_DOMAIN:80 {
-    handle / {
-        root * /var/www/html
-        file_server
-    }
-    
     handle_path /gateway* {
         reverse_proxy localhost:18789
+    }
+    
+    handle {
+        root * /var/www/html
+        try_files {path} /index.html
+        file_server
     }
 }
 EOF
