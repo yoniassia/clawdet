@@ -120,5 +120,17 @@
     "updatedAt": 1771455068405,
     "sessionToken": "23842bbe80b7d4047a0a7d0bd1b56ed2bc4f1a2dc20c5a5c80f0f52825c66adf",
     "sessionCreatedAt": 1771455068405
+  },
+  {
+    "id": "user_1771505172930_39uh6h",
+    "xId": "354536334",
+    "xUsername": "lavielad",
+    "xName": "Elad Lavi",
+    "termsAccepted": false,
+    "paid": false,
+    "createdAt": 1771505172930,
+    "updatedAt": 1771505192798,
+    "sessionToken": "d0affe152fda2e0827002c2e7d414467d307e64cb021d34a45afd20f1cb5adaf",
+    "sessionCreatedAt": 1771505192798
   }
 ]
