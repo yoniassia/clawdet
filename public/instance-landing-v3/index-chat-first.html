@@ -516,7 +516,7 @@
                                 id: 'openclaw-control-ui',
                                 version: '1.0.0',
                                 platform: 'web',
-                                mode: 'control-ui'
+                                mode: 'ui'
                             },
                             role: 'operator',
                             scopes: ['operator.read', 'operator.write'],
@@ -533,14 +533,25 @@
                         console.log('Received:', data.type, data);
                         
                         // Handle connect response
-                        if (data.type === 'resp' && data.ok) {
-                            console.log('Connected successfully!');
-                            onConnected();
-                        } else if (data.type === 'resp' && !data.ok) {
-                            console.error('Connect failed:', data);
-                            addSystemMessage('Connection failed: ' + (data.error?.message || 'Unknown error'));
-                        } else if (data.type === 'event' && data.event === 'message') {
-                            handleMessage(data.payload);
+                        if (data.type === 'res' && data.ok) {
+                            if (data.payload && data.payload.type === 'hello-ok') {
+                                console.log('Connected successfully!');
+                                onConnected();
+                            }
+                            // Handle agent response acceptance
+                            else if (data.payload && data.payload.runId) {
+                                console.log('Agent run started:', data.payload.runId);
+                            }
+                        } else if (data.type === 'res' && !data.ok) {
+                            console.error('Request failed:', data);
+                            if (data.id && data.id.startsWith('connect-')) {
+                                addSystemMessage('Connection failed: ' + (data.error?.message || 'Unknown error'));
+                            } else {
+                                thinkingIndicator.classList.remove('show');
+                                addSystemMessage('Error: ' + (data.error?.message || 'Unknown error'));
+                            }
+                        } else if (data.type === 'event' && data.event === 'agent') {
+                            handleAgentEvent(data.payload);
                         } else if (data.type === 'error') {
                             console.error('Gateway error:', data);
                             addSystemMessage('Error: ' + (data.message || 'Unknown error'));
@@ -610,15 +621,56 @@
             thinkingIndicator.classList.add('show');
             scrollToBottom();
             
-            // Send to gateway
+            // Send to gateway using OpenClaw protocol
+            const requestId = 'msg-' + Date.now();
             ws.send(JSON.stringify({
-                type: 'message',
-                text: text
+                type: 'req',
+                id: requestId,
+                method: 'agent',
+                params: {
+                    message: text,
+                    agentId: 'main',
+                    idempotencyKey: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+                }
             }));
         }
 
+        let currentAssistantMessage = null;
+        let currentMessageText = '';
+        
+        function handleAgentEvent(payload) {
+            console.log('Agent event:', payload);
+            
+            // Handle assistant text output
+            if (payload.stream === 'assistant' && payload.data && payload.data.text) {
+                if (!currentAssistantMessage) {
+                    thinkingIndicator.classList.remove('show');
+                    currentMessageText = '';
+                    currentAssistantMessage = addMessage('', 'assistant');
+                }
+                // Use full text (not delta) for simplicity
+                updateMessageContent(currentAssistantMessage, payload.data.text);
+            }
+            // Handle lifecycle events
+            else if (payload.stream === 'lifecycle' && payload.data) {
+                if (payload.data.phase === 'end' || payload.data.phase === 'error') {
+                    thinkingIndicator.classList.remove('show');
+                    currentAssistantMessage = null;
+                    currentMessageText = '';
+                }
+            }
+        }
+        
+        function updateMessageContent(messageDiv, text) {
+            const textDiv = messageDiv.querySelector('.message-text');
+            if (textDiv) {
+                textDiv.textContent = text;
+                scrollToBottom();
+            }
+        }
+        
         function handleMessage(data) {
-            // Hide thinking indicator
+            // Legacy handler - kept for compatibility
             thinkingIndicator.classList.remove('show');
             
             if (data.text) {
@@ -652,6 +704,8 @@
             
             messagesContainer.appendChild(messageDiv);
             scrollToBottom();
+            
+            return messageDiv;
         }
 
         function addSystemMessage(text) {
