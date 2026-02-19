@@ -1944,7 +1944,7 @@ EOLANDING
 
 # Replace gateway token placeholder
 log "Injecting gateway token into landing page..."
-sed -i "s/{{ GATEWAY_TOKEN }}/${GATEWAY_TOKEN}/g" /var/www/html/index.html
+sed -i "s/{{ GATEWAY_TOKEN }}/${GATEWAY_TOKEN}/g; s/PLACEHOLDER_GATEWAY_TOKEN/${GATEWAY_TOKEN}/g" /var/www/html/index.html
 
 log "Landing page created at /var/www/html/index.html"
 
