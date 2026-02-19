@@ -2030,6 +2030,15 @@ systemctl start openclaw-gateway
 log "Waiting for services to start..."
 sleep 5
 
+# Step 9.5: Set default model to Grok (XAI)
+log "Configuring default AI model..."
+openclaw models set xai/grok-beta
+log "✅ Default model set to xai/grok-beta"
+
+# Restart gateway to apply model changes
+systemctl restart openclaw-gateway
+sleep 3
+
 # Step 10: Verify services
 log "Verifying services..."
 
