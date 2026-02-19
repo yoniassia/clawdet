@@ -19,6 +19,7 @@ export default function SignupDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [isFreeBeta, setIsFreeBeta] = useState(false)
 
   useEffect(() => {
     // Verify user is authenticated
@@ -27,8 +28,17 @@ export default function SignupDetailsPage() {
       .then(data => {
         if (data.authenticated) {
           setUser(data.user)
+          // Check free beta eligibility
+          return fetch('/api/provisioning/free-beta')
         } else {
           router.push('/signup')
+          return null
+        }
+      })
+      .then(res => res ? res.json() : null)
+      .then(data => {
+        if (data) {
+          setIsFreeBeta(data.eligible)
         }
         setLoading(false)
       })
@@ -58,8 +68,14 @@ export default function SignupDetailsPage() {
       const data = await res.json()
       
       if (res.ok) {
-        // Redirect to checkout
-        router.push('/checkout')
+        // Check if user got free beta access
+        if (data.freeBeta) {
+          // Start provisioning immediately
+          router.push('/dashboard')
+        } else {
+          // Redirect to checkout
+          router.push('/checkout')
+        }
       } else {
         setError(data.error || 'Failed to save details')
         setSubmitting(false)
@@ -144,13 +160,25 @@ export default function SignupDetailsPage() {
             disabled={submitting || !email || !termsAccepted}
             className={styles.submitButton}
           >
-            {submitting ? 'Saving...' : 'Continue to Payment'}
+            {submitting 
+              ? 'Saving...' 
+              : isFreeBeta 
+                ? '🎉 Claim Free Beta Access' 
+                : 'Continue to Payment'}
           </button>
         </form>
 
         <div className={styles.pricing}>
           <p className={styles.pricingText}>
-            Next: Pay <strong>$20/month</strong> to provision your instance
+            {isFreeBeta ? (
+              <>
+                <strong>🎉 FREE BETA ACCESS!</strong> You're one of the first 20 users — lifetime free!
+              </>
+            ) : (
+              <>
+                Next: Pay <strong>$20/month</strong> to provision your instance
+              </>
+            )}
           </p>
         </div>
       </div>

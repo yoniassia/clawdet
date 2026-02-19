@@ -15,6 +15,8 @@ export interface User {
   paid?: boolean
   paidAt?: string
   paymentMethod?: string
+  subscriptionStatus?: 'active' | 'inactive' | 'cancelled'
+  subscriptionPlan?: 'free_beta' | 'paid' | 'trial'
   provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
   instanceUrl?: string
   hetznerVpsId?: string
@@ -45,6 +47,12 @@ export function loadUsers(): User[] {
 // Get all users (alias for loadUsers)
 export function getAllUsers(): User[] {
   return loadUsers()
+}
+
+// Get total user count
+export function getUserCount(): number {
+  const users = loadUsers()
+  return users.length
 }
 
 // Save all users
