@@ -142,71 +142,59 @@
             gap: 16px;
         }
 
-        /* Welcome screen */
+        /* Welcome screen - minimal and elegant */
         .welcome-screen {
             text-align: center;
-            padding: 40px 20px;
-            max-width: 600px;
+            padding: 20px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
         .welcome-logo {
-            font-size: 64px;
-            margin-bottom: 24px;
+            font-size: 32px;
+            margin-bottom: 8px;
+            opacity: 0.8;
         }
 
         .welcome-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .welcome-subtitle {
-            color: #71767b;
             font-size: 16px;
-            margin-bottom: 32px;
+            font-weight: 500;
+            color: #71767b;
+            margin-bottom: 20px;
         }
 
         .welcome-suggestions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
         }
 
         .suggestion-card {
-            background: #16181c;
+            background: transparent;
             border: 1px solid #2f3336;
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 8px 14px;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
         }
 
         .suggestion-card:hover {
             border-color: #1d9bf0;
-            background: #1a1d23;
-            transform: translateY(-2px);
+            background: #16181c;
         }
 
         .suggestion-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
+            font-size: 16px;
         }
 
         .suggestion-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .suggestion-text {
-            font-size: 12px;
-            color: #71767b;
+            font-weight: 400;
+            color: #e7e9ea;
         }
 
         /* Message bubbles */
@@ -437,29 +425,24 @@
         <div class="messages-container" id="messagesContainer">
             <div class="welcome-screen" id="welcomeScreen">
                 <div class="welcome-logo">🐾</div>
-                <h1 class="welcome-title">Your Personal AI</h1>
-                <p class="welcome-subtitle">Powered by Grok & OpenClaw. Ready to help!</p>
+                <h1 class="welcome-title">Start typing to chat</h1>
                 
                 <div class="welcome-suggestions">
                     <div class="suggestion-card" onclick="sendSuggestion('Search the web for latest AI news')">
-                        <div class="suggestion-icon">🌐</div>
-                        <div class="suggestion-title">Web Search</div>
-                        <div class="suggestion-text">Find information online</div>
+                        <span class="suggestion-icon">🌐</span>
+                        <span class="suggestion-title">Search web</span>
                     </div>
                     <div class="suggestion-card" onclick="sendSuggestion('Remind me in 1 hour to check email')">
-                        <div class="suggestion-icon">⏰</div>
-                        <div class="suggestion-title">Reminders</div>
-                        <div class="suggestion-text">Schedule notifications</div>
+                        <span class="suggestion-icon">⏰</span>
+                        <span class="suggestion-title">Set reminder</span>
                     </div>
                     <div class="suggestion-card" onclick="sendSuggestion('Help me code a Python function')">
-                        <div class="suggestion-icon">💻</div>
-                        <div class="suggestion-title">Code Help</div>
-                        <div class="suggestion-text">Write & debug code</div>
+                        <span class="suggestion-icon">💻</span>
+                        <span class="suggestion-title">Code help</span>
                     </div>
                     <div class="suggestion-card" onclick="sendSuggestion('What can you do?')">
-                        <div class="suggestion-icon">✨</div>
-                        <div class="suggestion-title">Explore</div>
-                        <div class="suggestion-text">Discover features</div>
+                        <span class="suggestion-icon">✨</span>
+                        <span class="suggestion-title">Explore</span>
                     </div>
                 </div>
             </div>
