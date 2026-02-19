@@ -322,6 +322,9 @@ cat > /root/.openclaw/openclaw.json <<EOF
       "workspace": "/root/.openclaw/workspace"
     }
   },
+  "env": {
+    "XAI_API_KEY": "$XAI_API_KEY"
+  },
   "gateway": {
     "port": 18789,
     "mode": "local",
@@ -351,11 +354,6 @@ cat > /root/.openclaw/openclaw.json <<EOF
       "172.64.0.0/13",
       "131.0.72.0/22"
     ]
-  },
-  "providers": {
-    "xai": {
-      "apiKey": "$XAI_API_KEY"
-    }
   },
   "commands": {
     "native": "auto",
@@ -1431,7 +1429,7 @@ cat > /var/www/html/index.html <<'EOLANDING'
         // Connect to OpenClaw Gateway with proper protocol
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}`;
+            const wsUrl = `${protocol}//${window.location.host}/gateway/`;
             
             console.log('Connecting to:', wsUrl);
             showConnectionBanner('Connecting to your AI assistant...');
