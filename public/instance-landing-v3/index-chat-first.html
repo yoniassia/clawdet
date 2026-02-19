@@ -504,16 +504,25 @@
                 ws.onopen = () => {
                     console.log('WebSocket opened, sending connect message...');
                     
-                    // Send OpenClaw Gateway connect message
+                    // Send OpenClaw Gateway connect message (v3 protocol)
                     ws.send(JSON.stringify({
-                        type: 'connect',
-                        auth: {
-                            token: GATEWAY_TOKEN
-                        },
-                        client: {
-                            id: 'openclaw-control-ui',
-                            version: '1.0.0',
-                            capabilities: []
+                        type: 'req',
+                        id: 'connect-' + Date.now(),
+                        method: 'connect',
+                        params: {
+                            minProtocol: 3,
+                            maxProtocol: 3,
+                            client: {
+                                id: 'openclaw-control-ui',
+                                version: '1.0.0',
+                                platform: 'web',
+                                mode: 'control-ui'
+                            },
+                            role: 'operator',
+                            scopes: ['operator.read', 'operator.write'],
+                            auth: {
+                                token: GATEWAY_TOKEN
+                            }
                         }
                     }));
                 };
@@ -523,11 +532,15 @@
                         const data = JSON.parse(event.data);
                         console.log('Received:', data.type, data);
                         
-                        if (data.type === 'hello-ok') {
+                        // Handle connect response
+                        if (data.type === 'resp' && data.ok) {
                             console.log('Connected successfully!');
                             onConnected();
-                        } else if (data.type === 'message') {
-                            handleMessage(data);
+                        } else if (data.type === 'resp' && !data.ok) {
+                            console.error('Connect failed:', data);
+                            addSystemMessage('Connection failed: ' + (data.error?.message || 'Unknown error'));
+                        } else if (data.type === 'event' && data.event === 'message') {
+                            handleMessage(data.payload);
                         } else if (data.type === 'error') {
                             console.error('Gateway error:', data);
                             addSystemMessage('Error: ' + (data.message || 'Unknown error'));
