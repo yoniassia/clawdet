@@ -2,11 +2,14 @@
 
 **Automated AI Assistant Provisioning Platform**
 
-[![Status](https://img.shields.io/badge/status-beta-blue.svg)](https://clawdet.com)
+[![Version](https://img.shields.io/badge/version-0.1.0--alpha-brightgreen.svg)](./VERSION.md)
+[![Status](https://img.shields.io/badge/status-working-success.svg)](https://clawdet.com)
 [![Node.js](https://img.shields.io/badge/node.js-22.x-green.svg)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/next.js-15-black.svg)](https://nextjs.org)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-complete-success.svg)](./DOCUMENTATION-INDEX.md)
+
+> **🎉 v0.1.0-alpha "WebSocket Working"** - First functional alpha release! WebSocket chat protocol fully operational, test instances verified working. [Release Notes](./VERSION.md)
 
 Clawdet makes it easy for anyone to get their own personal AI assistant running in the cloud. Sign up, pay $20/month, and get a fully configured OpenClaw instance on your own VPS in minutes.
 
@@ -38,6 +41,28 @@ npm run dev
 ```
 
 📖 **Developer docs:** [DEVELOPER-GUIDE.md](./DEVELOPER-GUIDE.md)
+
+---
+
+## 🎯 Alpha Release Status
+
+**v0.1.0-alpha "WebSocket Working"** - Feb 19, 2026
+
+✅ **What's Working:**
+- Landing page and authentication (X/Twitter OAuth)
+- Free beta system (20 spots available)
+- **Fully automated VPS provisioning** (7-10 minutes)
+- **WebSocket chat protocol** - Real-time streaming chat ✨
+- Test instances verified: [test-fresh-1](https://test-fresh-1.clawdet.com) | [test-fresh-2](https://test-fresh-2.clawdet.com)
+- Smoke tests: 4/4 passing
+- Production uptime: 28+ hours
+
+🔧 **In Progress:**
+- Telegram setup wizard integration
+- Email notifications
+- PostgreSQL migration
+
+📋 **Full details:** [VERSION.md](./VERSION.md)
 
 ---
 
