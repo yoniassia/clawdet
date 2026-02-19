@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit, getClientIP, SECURITY_HEADERS } from '@/lib/security'
+import { logOAuthStart } from '@/lib/onboarding-logger'
 
 const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID
 const TWITTER_AUTHORIZE_URL = 'https://twitter.com/i/oauth2/authorize'
@@ -95,13 +96,16 @@ export async function GET(request: NextRequest) {
   try {
     const { url, state } = buildOAuthUrl()
     
+    // Log OAuth start
+    logOAuthStart()
+    
     // Store state in session/cookie for verification (unless mock mode)
     const response = NextResponse.redirect(url)
     if (TWITTER_CLIENT_ID) {
       response.cookies.set('oauth_state', state, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 600, // 10 minutes
+        maxAge: 600, // 10 minutes,
         sameSite: 'lax'
       })
     }
