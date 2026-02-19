@@ -21,49 +21,35 @@
             overflow: hidden;
         }
 
-        /* Header */
-        .header {
+        /* Compact Header - minimal branding at top */
+        .compact-header {
             background: #16181c;
             border-bottom: 1px solid #2f3336;
-            padding: 16px 24px;
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo {
-            font-size: 32px;
-        }
-
-        .title {
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
             font-size: 14px;
         }
 
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .status-compact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #00ba7c;
             animation: pulse 2s infinite;
@@ -79,572 +65,285 @@
             50% { opacity: 0.5; }
         }
 
-        .settings-btn {
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            color: #e7e9ea;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .settings-btn:hover {
-            background: #1d9bf0;
-            border-color: #1d9bf0;
-        }
-
-        /* Tab Navigation */
-        .tab-navigation {
+        /* Input at TOP - most prominent */
+        .input-top {
             background: #16181c;
             border-bottom: 1px solid #2f3336;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 0 24px;
-            flex-shrink: 0;
-        }
-
-        .tab-btn {
-            padding: 16px 32px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: #71767b;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn:hover {
-            color: #e7e9ea;
-        }
-
-        .tab-btn.active {
-            color: #1d9bf0;
-            border-bottom-color: #1d9bf0;
-        }
-
-        .tab-icon {
-            font-size: 18px;
-        }
-
-        /* Main Content Area */
-        .content-area {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tab-panel {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-        }
-
-        .tab-panel.active {
-            display: flex;
-        }
-
-        /* Chat Panel Styles */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: #000000;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: #2f3336;
-            border-radius: 4px;
-        }
-
-        .message {
-            max-width: 70%;
-            padding: 16px 20px;
-            border-radius: 20px;
-            line-height: 1.6;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            background: #1d9bf0;
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.assistant {
-            align-self: flex-start;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            color: #e7e9ea;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.system {
-            align-self: center;
-            background: transparent;
-            color: #71767b;
-            font-size: 13px;
-            border: none;
-            padding: 8px;
-        }
-
-        .typing-indicator {
-            align-self: flex-start;
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            border-bottom-left-radius: 4px;
-            padding: 16px 20px;
-            display: flex;
-            gap: 6px;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #71767b;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Input Area */
-        .input-container {
-            background: #16181c;
-            border-top: 1px solid #2f3336;
-            padding: 20px 24px;
+            padding: 16px;
             flex-shrink: 0;
         }
 
         .input-wrapper {
             display: flex;
-            gap: 12px;
-            align-items: center;
+            gap: 8px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper input {
+            flex: 1;
             background: #000000;
-            border: 2px solid #2f3336;
+            border: 1px solid #2f3336;
             border-radius: 24px;
-            padding: 4px 4px 4px 20px;
+            padding: 14px 20px;
+            color: #e7e9ea;
+            font-size: 15px;
+            outline: none;
             transition: border-color 0.2s;
         }
 
-        .input-wrapper:focus-within {
+        .input-wrapper input:focus {
             border-color: #1d9bf0;
         }
 
-        #messageInput {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #e7e9ea;
-            font-size: 16px;
-            padding: 12px 0;
-            outline: none;
-        }
-
-        #messageInput::placeholder {
-            color: #71767b;
-        }
-
-        #sendBtn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
-            border: none;
-            color: #ffffff;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: transform 0.2s;
-        }
-
-        #sendBtn:hover:not(:disabled) {
-            transform: scale(1.05);
-        }
-
-        #sendBtn:disabled {
+        .input-wrapper input:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* Welcome Screen */
-        .welcome-screen {
+        .input-wrapper button {
+            background: #1d9bf0;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper button:hover:not(:disabled) {
+            background: #1a8cd8;
+            transform: scale(1.05);
+        }
+
+        .input-wrapper button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Chat messages area - fills remaining space */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 24px;
+        }
+
+        .messages-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Welcome screen */
+        .welcome-screen {
             text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .welcome-logo {
-            font-size: 80px;
+            font-size: 64px;
             margin-bottom: 24px;
         }
 
         .welcome-title {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .welcome-subtitle {
-            font-size: 18px;
             color: #71767b;
-            margin-bottom: 40px;
-            max-width: 500px;
+            font-size: 16px;
+            margin-bottom: 32px;
         }
 
         .welcome-suggestions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            width: 100%;
-            max-width: 800px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 24px;
         }
 
         .suggestion-card {
             background: #16181c;
             border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 12px;
+            padding: 16px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
         }
 
         .suggestion-card:hover {
-            background: #1e2025;
             border-color: #1d9bf0;
+            background: #1a1d23;
             transform: translateY(-2px);
         }
 
         .suggestion-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
+            font-size: 24px;
+            margin-bottom: 8px;
         }
 
         .suggestion-title {
-            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: #e7e9ea;
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
         .suggestion-text {
-            font-size: 14px;
-            color: #71767b;
-            line-height: 1.5;
-        }
-
-        /* Setup Panel Styles */
-        .setup-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px 24px;
-        }
-
-        .setup-content {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .setup-header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .setup-header h2 {
-            font-size: 36px;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .setup-header p {
-            font-size: 18px;
+            font-size: 12px;
             color: #71767b;
         }
 
-        /* Telegram Setup Wizard */
-        .telegram-setup-wizard {
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 32px;
-        }
-
-        .wizard-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .wizard-header h3 {
-            font-size: 28px;
-            margin-bottom: 12px;
-            color: #1d9bf0;
-        }
-
-        .wizard-header p {
-            color: #71767b;
-            font-size: 16px;
-        }
-
-        .setup-step {
+        /* Message bubbles */
+        .message {
             display: flex;
-            gap: 24px;
-            padding: 32px 0;
-            border-bottom: 1px solid #2f3336;
-            transition: opacity 0.3s;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s;
         }
 
-        .setup-step:last-child {
-            border-bottom: none;
+        .message:hover {
+            background: #16181c;
         }
 
-        .step-number {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 24px;
-            color: #ffffff;
+            font-size: 20px;
             flex-shrink: 0;
         }
 
-        .step-number.success {
-            background: linear-gradient(135deg, #00ba7c 0%, #008f5d 100%);
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #f91880 0%, #ff6b9d 100%);
         }
 
-        .step-content {
+        .message-content {
             flex: 1;
+            min-width: 0;
         }
 
-        .step-content h4 {
-            font-size: 22px;
-            margin-bottom: 16px;
-            color: #e7e9ea;
-        }
-
-        .sub-steps {
-            list-style: none;
-            counter-reset: sub-step;
-            padding-left: 0;
-            margin: 16px 0;
-        }
-
-        .sub-steps li {
-            counter-increment: sub-step;
-            padding-left: 32px;
-            position: relative;
-            margin-bottom: 12px;
-            color: #71767b;
-            line-height: 1.6;
-        }
-
-        .sub-steps li:before {
-            content: counter(sub-step);
-            position: absolute;
-            left: 0;
-            top: 2px;
-            width: 20px;
-            height: 20px;
-            background: #2f3336;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 600;
-            color: #71767b;
-        }
-
-        .telegram-link {
-            color: #1d9bf0;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .telegram-link:hover {
-            text-decoration: underline;
-        }
-
-        .visual-example {
-            background: #000000;
+        .message-text {
+            background: #16181c;
             border: 1px solid #2f3336;
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+            word-wrap: break-word;
         }
 
-        .example-label {
+        .message.user .message-text {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        .message-time {
             font-size: 12px;
             color: #71767b;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-top: 4px;
+            padding: 0 16px;
         }
 
-        .token-example {
-            color: #00ba7c;
-            font-size: 14px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Token Input */
-        .token-input {
-            width: 100%;
-            background: #000000;
-            border: 2px solid #2f3336;
-            border-radius: 12px;
-            padding: 14px 16px;
-            color: #e7e9ea;
-            font-family: 'Courier New', monospace;
-            font-size: 15px;
-            transition: all 0.2s;
-            margin-bottom: 12px;
-        }
-
-        .token-input:focus {
-            outline: none;
-            border-color: #1d9bf0;
-            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
-        }
-
-        .token-input::placeholder {
-            color: #71767b;
-        }
-
-        /* Feedback Messages */
-        .feedback-message {
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            display: none;
-        }
-
-        .feedback-message.error,
-        .feedback-message.success,
-        .feedback-message.info {
-            display: block;
-        }
-
-        .feedback-message.error {
-            background: rgba(244, 67, 54, 0.1);
-            border: 1px solid rgba(244, 67, 54, 0.3);
-            color: #ff6b6b;
-        }
-
-        .feedback-message.success {
-            background: rgba(0, 186, 124, 0.1);
-            border: 1px solid rgba(0, 186, 124, 0.3);
-            color: #00ba7c;
-        }
-
-        .feedback-message.info {
-            background: rgba(29, 155, 240, 0.1);
-            border: 1px solid rgba(29, 155, 240, 0.3);
-            color: #1d9bf0;
-        }
-
-        .feedback-message code {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
-        /* Connect Button */
-        .btn-connect {
-            background: linear-gradient(135deg, #1d9bf0 0%, #0084c7 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            padding: 14px 28px;
-            font-size: 16px;
+        /* Connection banner */
+        .connection-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffd60a;
+            color: #000;
+            padding: 12px 20px;
+            text-align: center;
             font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+
+        .connection-banner.show {
+            transform: translateY(0);
+        }
+
+        /* Tab navigation - moved to bottom as secondary */
+        .bottom-nav {
+            background: #16181c;
+            border-top: 1px solid #2f3336;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #2f3336;
+            border-radius: 20px;
+            color: #e7e9ea;
             cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        .nav-btn.active {
+            background: #1d9bf0;
+            border-color: #1d9bf0;
+        }
+
+        /* Loading spinner */
+        .thinking-indicator {
+            display: none;
             align-items: center;
             gap: 8px;
+            color: #71767b;
+            font-size: 14px;
+            padding: 12px 16px;
         }
 
-        .btn-connect:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(29, 155, 240, 0.4);
+        .thinking-indicator.show {
+            display: flex;
         }
 
-        .btn-connect:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-icon {
-            font-size: 20px;
-        }
-
-        /* Spinner */
         .spinner {
             width: 16px;
             height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
+            border: 2px solid #2f3336;
+            border-top-color: #1d9bf0;
             border-radius: 50%;
-            display: inline-block;
             animation: spin 0.8s linear infinite;
         }
 
@@ -652,142 +351,51 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Success Section */
-        .hidden {
-            display: none !important;
+        /* Scrollbar styling */
+        .messages-area::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .success-message {
-            font-size: 16px;
-            color: #71767b;
-            margin-bottom: 20px;
-        }
-
-        .success-message strong {
-            color: #00ba7c;
-        }
-
-        .next-steps {
+        .messages-area::-webkit-scrollbar-track {
             background: #000000;
-            border: 1px solid #2f3336;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 16px;
         }
 
-        .next-steps p {
-            margin-bottom: 16px;
-            color: #71767b;
-            font-size: 15px;
-        }
-
-        .btn-secondary {
-            display: inline-block;
+        .messages-area::-webkit-scrollbar-thumb {
             background: #2f3336;
-            color: #e7e9ea;
-            padding: 12px 24px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
-            margin-right: 12px;
+            border-radius: 4px;
         }
 
-        .btn-secondary:hover {
-            background: #3f4447;
-            transform: translateY(-1px);
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: #3f4346;
         }
 
-        /* Connection Banner */
-        .connection-banner {
-            background: #f91880;
-            color: #ffffff;
-            padding: 12px 24px;
-            text-align: center;
-            font-size: 14px;
-            display: none;
-        }
-
-        .connection-banner.show {
-            display: block;
-        }
-
-        /* Info Cards */
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 32px;
-        }
-
-        .info-card {
-            background: #16181c;
-            border: 1px solid #2f3336;
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.2s;
-        }
-
-        .info-card:hover {
-            border-color: #1d9bf0;
-            transform: translateY(-2px);
-        }
-
-        .info-card h4 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-card p {
-            color: #71767b;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
+        /* Mobile responsive */
         @media (max-width: 768px) {
-            .message {
-                max-width: 85%;
+            .welcome-title {
+                font-size: 24px;
             }
 
             .welcome-suggestions {
                 grid-template-columns: 1fr;
             }
 
-            .header {
-                padding: 12px 16px;
+            .compact-header {
+                font-size: 12px;
+                padding: 6px 12px;
             }
 
-            .tab-btn {
-                padding: 12px 20px;
+            .input-top {
+                padding: 12px;
+            }
+
+            .input-wrapper input {
+                padding: 12px 16px;
                 font-size: 14px;
             }
 
-            .chat-container {
-                padding: 16px;
-            }
-
-            .input-container {
-                padding: 16px;
-            }
-
-            .setup-container {
-                padding: 24px 16px;
-            }
-
-            .telegram-setup-wizard {
-                padding: 24px;
-            }
-
-            .setup-step {
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .step-number {
-                align-self: flex-start;
+            .input-wrapper button {
+                width: 44px;
+                height: 44px;
             }
         }
     </style>
@@ -797,511 +405,272 @@
         ⚠️ Connecting to your AI assistant...
     </div>
 
-    <div class="header">
-        <div class="logo-section">
-            <div class="logo">🐾</div>
-            <div class="title">Clawdet</div>
+    <!-- Minimal branding at top -->
+    <div class="compact-header">
+        <div class="brand">
+            <span>🐾</span>
+            <span>Clawdet</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div class="status-indicator">
-                <div class="status-dot disconnected" id="statusDot"></div>
-                <span id="statusText">Connecting...</span>
-            </div>
-            <button class="settings-btn" onclick="window.open('/gateway/', '_blank')">
-                <span>⚙️</span>
-                <span>Settings</span>
+        <div class="status-compact">
+            <div class="status-dot disconnected" id="statusDot"></div>
+            <span id="statusText">Connecting...</span>
+        </div>
+    </div>
+
+    <!-- Chat input at TOP - most prominent -->
+    <div class="input-top">
+        <div class="input-wrapper">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Ask me anything..." 
+                disabled
+            />
+            <button id="sendBtn" disabled>
+                <span>▶</span>
             </button>
         </div>
     </div>
 
-    <div class="tab-navigation">
-        <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')">
-            <span class="tab-icon">💬</span>
-            <span>Chat Now</span>
-        </button>
-        <button class="tab-btn" data-tab="setup" onclick="switchTab('setup')">
-            <span class="tab-icon">🤖</span>
-            <span>Setup Telegram</span>
-        </button>
+    <!-- Messages area - main content -->
+    <div class="messages-area" id="messagesArea">
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-logo">🐾</div>
+                <h1 class="welcome-title">Your Personal AI</h1>
+                <p class="welcome-subtitle">Powered by Grok & OpenClaw. Ready to help!</p>
+                
+                <div class="welcome-suggestions">
+                    <div class="suggestion-card" onclick="sendSuggestion('Search the web for latest AI news')">
+                        <div class="suggestion-icon">🌐</div>
+                        <div class="suggestion-title">Web Search</div>
+                        <div class="suggestion-text">Find information online</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('Remind me in 1 hour to check email')">
+                        <div class="suggestion-icon">⏰</div>
+                        <div class="suggestion-title">Reminders</div>
+                        <div class="suggestion-text">Schedule notifications</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('Help me code a Python function')">
+                        <div class="suggestion-icon">💻</div>
+                        <div class="suggestion-title">Code Help</div>
+                        <div class="suggestion-text">Write & debug code</div>
+                    </div>
+                    <div class="suggestion-card" onclick="sendSuggestion('What can you do?')">
+                        <div class="suggestion-icon">✨</div>
+                        <div class="suggestion-title">Explore</div>
+                        <div class="suggestion-text">Discover features</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="thinking-indicator" id="thinkingIndicator">
+                <div class="spinner"></div>
+                <span>Thinking...</span>
+            </div>
+        </div>
     </div>
 
-    <div class="content-area">
-        <!-- Chat Panel -->
-        <div class="tab-panel active" id="chat-panel">
-            <div class="chat-container" id="chatContainer">
-                <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-logo">🐾</div>
-                    <h1 class="welcome-title">Welcome to Your Clawdet</h1>
-                    <p class="welcome-subtitle">Your personal AI assistant powered by Grok and OpenClaw. Ask me anything!</p>
-                    
-                    <div class="welcome-suggestions">
-                        <div class="suggestion-card" onclick="sendSuggestion('Search the web for the latest news about AI')">
-                            <div class="suggestion-icon">🌐</div>
-                            <div class="suggestion-title">Browse the Web</div>
-                            <div class="suggestion-text">Search for information, news, and updates</div>
-                        </div>
-                        <div class="suggestion-card" onclick="sendSuggestion('Remind me to check email in 1 hour')">
-                            <div class="suggestion-icon">⏰</div>
-                            <div class="suggestion-title">Set Reminders</div>
-                            <div class="suggestion-text">Schedule tasks and get notifications</div>
-                        </div>
-                        <div class="suggestion-card" onclick="sendSuggestion('Help me write a Python script to sort a list')">
-                            <div class="suggestion-icon">💻</div>
-                            <div class="suggestion-title">Code Assistant</div>
-                            <div class="suggestion-text">Write, debug, and explain code</div>
-                        </div>
-                        <div class="suggestion-card" onclick="sendSuggestion('What can you help me with?')">
-                            <div class="suggestion-icon">✨</div>
-                            <div class="suggestion-title">Explore Features</div>
-                            <div class="suggestion-text">Discover what I can do for you</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <input 
-                        type="text" 
-                        id="messageInput" 
-                        placeholder="Message your AI assistant..." 
-                        disabled
-                    />
-                    <button id="sendBtn" disabled>
-                        <span>▶</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Setup Panel -->
-        <div class="tab-panel" id="setup-panel">
-            <div class="setup-container">
-                <div class="setup-content">
-                    <div class="setup-header">
-                        <h2>🤖 Connect Your Telegram Bot</h2>
-                        <p>Get your AI assistant on Telegram in just 3 simple steps</p>
-                    </div>
-
-                    <div class="telegram-setup-wizard">
-                        <!-- Step 1: Instructions -->
-                        <div class="setup-step" id="step-1">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h4>Create Your Bot with @BotFather</h4>
-                                <p style="color: #71767b; margin-bottom: 16px;">
-                                    BotFather is Telegram's official bot that helps you create and manage bots. It only takes 30 seconds!
-                                </p>
-                                <ol class="sub-steps">
-                                    <li>Open Telegram and search for <a href="https://t.me/BotFather" target="_blank" class="telegram-link">@BotFather</a></li>
-                                    <li>Send the command: <code style="background: #000; padding: 2px 8px; border-radius: 4px; color: #00ba7c;">/newbot</code></li>
-                                    <li>Choose a display name for your bot (e.g., "My AI Assistant")</li>
-                                    <li>Choose a username ending in "bot" (e.g., "myai_assistant_bot")</li>
-                                    <li>Copy the bot token that BotFather sends you</li>
-                                </ol>
-                                <div class="visual-example">
-                                    <div class="example-label">Example Token Format:</div>
-                                    <code class="token-example">1234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxx</code>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Token Input -->
-                        <div class="setup-step" id="step-2">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h4>Paste Your Bot Token</h4>
-                                <p style="color: #71767b; margin-bottom: 16px;">
-                                    Copy the entire token from BotFather (numbers, colon, and letters) and paste it below:
-                                </p>
-                                <input 
-                                    type="text" 
-                                    id="telegram-token" 
-                                    class="token-input" 
-                                    placeholder="1234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxx"
-                                    spellcheck="false"
-                                    autocomplete="off"
-                                >
-                                <div id="token-feedback" class="feedback-message"></div>
-                                <button id="connect-bot-btn" class="btn-connect" disabled>
-                                    <span class="btn-icon">🤖</span>
-                                    <span id="btn-text">Connect Bot</span>
-                                </button>
-                                <div style="margin-top: 16px;">
-                                    <a href="https://core.telegram.org/bots#how-do-i-create-a-bot" target="_blank" style="color: #71767b; font-size: 13px; text-decoration: none;">
-                                        Need help? Read Telegram's bot creation guide →
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Step 3: Success -->
-                        <div class="setup-step hidden" id="step-3">
-                            <div class="step-number success">✅</div>
-                            <div class="step-content">
-                                <h4>Bot Connected Successfully!</h4>
-                                <p class="success-message">
-                                    Your bot <strong id="bot-username">@your_bot</strong> is now connected and ready to chat!
-                                </p>
-                                <div class="next-steps">
-                                    <p><strong>What's next?</strong></p>
-                                    <p>📱 Open Telegram and send a message to <strong id="bot-username-link">@your_bot</strong> to start chatting with your AI!</p>
-                                    <p style="margin-bottom: 0;">💡 <strong>Pro tip:</strong> Your bot has access to web browsing, code execution, reminders, and more. Just ask!</p>
-                                </div>
-                                <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
-                                    <a href="https://t.me/" target="_blank" class="btn-connect" style="text-decoration: none;">
-                                        <span class="btn-icon">✈️</span>
-                                        Open Telegram
-                                    </a>
-                                    <a href="/gateway/" class="btn-secondary">View Control Panel</a>
-                                    <button class="btn-secondary" onclick="switchTab('chat')">Try Web Chat</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info Cards -->
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <h4>
-                                <span>🔒</span>
-                                <span>Private & Secure</span>
-                            </h4>
-                            <p>Your conversations are private. Your bot token is encrypted and stored securely on your instance.</p>
-                        </div>
-                        <div class="info-card">
-                            <h4>
-                                <span>⚡</span>
-                                <span>Instant Responses</span>
-                            </h4>
-                            <p>Chat with your AI assistant in real-time. Get answers, insights, and help whenever you need it.</p>
-                        </div>
-                        <div class="info-card">
-                            <h4>
-                                <span>🛠️</span>
-                                <span>Full Control</span>
-                            </h4>
-                            <p>Configure everything from the Control Panel. Manage allowlists, customize settings, and more.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Bottom navigation - secondary -->
+    <div class="bottom-nav">
+        <button class="nav-btn active">
+            <span>💬</span>
+            <span>Chat</span>
+        </button>
+        <button class="nav-btn" onclick="window.location.href='/setup'">
+            <span>🤖</span>
+            <span>Telegram Setup</span>
+        </button>
+        <button class="nav-btn" onclick="window.open('/gateway/', '_blank')">
+            <span>⚙️</span>
+            <span>Settings</span>
+        </button>
     </div>
 
     <script>
-        // Tab Switching Logic
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.dataset.tab === tabName) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Update tab panels
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                if (panel.id === tabName + '-panel') {
-                    panel.classList.add('active');
-                } else {
-                    panel.classList.remove('active');
-                }
-            });
-        }
-
-        // OpenClaw Gateway Protocol Client Implementation (Chat Tab)
-        let ws = null;
-        let sessionKey = null;
-        let isConnected = false;
-        let pendingRequests = new Map();
+        // PLACEHOLDER_GATEWAY_TOKEN will be replaced by provision script
+        const GATEWAY_TOKEN = 'PLACEHOLDER_GATEWAY_TOKEN';
         
-        let connectNonce = null;
-        let currentStreamedMessage = '';
+        let ws = null;
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
 
-        const chatContainer = document.getElementById('chatContainer');
+        // DOM elements
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messagesArea = document.getElementById('messagesArea');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const connectionBanner = document.getElementById('connectionBanner');
         const welcomeScreen = document.getElementById('welcomeScreen');
+        const thinkingIndicator = document.getElementById('thinkingIndicator');
 
-        // Generate a random request ID
-        function generateId() {
-            return Math.random().toString(36).substring(2) + Date.now().toString(36);
-        }
-
-        // Connect to OpenClaw Gateway with proper protocol
-        function connectWebSocket() {
+        // Connect to OpenClaw Gateway
+        function connect() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${protocol}//${window.location.host}/gateway/`;
             
             console.log('Connecting to:', wsUrl);
-            showConnectionBanner('Connecting to your AI assistant...');
+            connectionBanner.classList.add('show');
             
-            ws = new WebSocket(wsUrl);
-
-            ws.onopen = () => {
-                console.log('WebSocket opened, waiting for connect challenge or sending connect...');
-                setTimeout(() => {
-                    if (!isConnected && ws && ws.readyState === WebSocket.OPEN) {
-                        sendConnectRequest();
-                    }
-                }, 750);
-            };
-
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleMessage(data);
-                } catch (error) {
-                    console.error('Failed to parse message:', error, event.data);
-                }
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                showConnectionBanner('Connection error. Retrying...');
-            };
-
-            ws.onclose = (event) => {
-                console.log('WebSocket closed:', event.code, event.reason);
-                isConnected = false;
-                updateStatus('disconnected');
-                messageInput.disabled = true;
-                sendBtn.disabled = true;
+            try {
+                ws = new WebSocket(wsUrl);
                 
-                showConnectionBanner(`Connection lost: ${event.reason || 'Unknown reason'}. Reconnecting...`);
-                setTimeout(connectWebSocket, 3000);
-            };
-        }
-
-        function sendConnectRequest() {
-            if (!ws || ws.readyState !== WebSocket.OPEN) return;
-
-            const connectParams = {
-                minProtocol: 3,
-                maxProtocol: 3,
-                client: {
-                    id: 'openclaw-control-ui',
-                    version: '1.0.0',
-                    platform: navigator.platform || 'web',
-                    mode: 'webchat'
-                },
-                role: 'operator',
-                scopes: ['operator.read', 'operator.write'],
-                caps: [],
-                auth: {
-                    token: '{{ GATEWAY_TOKEN }}'
-                },
-                userAgent: navigator.userAgent,
-                locale: navigator.language || 'en-US'
-            };
-
-
-            const connectRequest = {
-                type: 'req',
-                id: generateId(),
-                method: 'connect',
-                params: connectParams
-            };
-
-            console.log('Sending connect request:', connectRequest);
-            sendRequest(connectRequest);
-        }
-
-        function sendRequest(request) {
-            if (!ws || ws.readyState !== WebSocket.OPEN) {
-                console.error('Cannot send request: WebSocket not open');
-                return Promise.reject(new Error('WebSocket not connected'));
-            }
-
-            return new Promise((resolve, reject) => {
-                pendingRequests.set(request.id, { resolve, reject });
-                ws.send(JSON.stringify(request));
-                
-                setTimeout(() => {
-                    if (pendingRequests.has(request.id)) {
-                        pendingRequests.delete(request.id);
-                        reject(new Error('Request timeout'));
-                    }
-                }, 30000);
-            });
-        }
-
-        function handleMessage(data) {
-            console.log('Received message:', data);
-
-            if (data.type === 'event') {
-                handleEvent(data);
-            } else if (data.type === 'res') {
-                handleResponse(data);
-            }
-        }
-
-        function handleEvent(event) {
-            if (event.event === 'connect.challenge') {
-                console.log('Received connect challenge:', event.payload);
-                connectNonce = event.payload?.nonce || null;
-                sendConnectRequest();
-            } else if (event.event === 'agent') {
-                handleAgentEvent(event.payload);
-            } else if (event.event === 'chat') {
-                handleChatEvent(event.payload);
-            }
-        }
-
-        function handleResponse(response) {
-            const pending = pendingRequests.get(response.id);
-            if (pending) {
-                pendingRequests.delete(response.id);
-                if (response.ok) {
-                    pending.resolve(response.payload);
+                ws.onopen = () => {
+                    console.log('WebSocket opened, sending connect message...');
                     
-                    if (response.payload?.type === 'hello-ok') {
-                        handleHelloOk(response.payload);
+                    // Send OpenClaw Gateway connect message
+                    ws.send(JSON.stringify({
+                        type: 'connect',
+                        auth: {
+                            token: GATEWAY_TOKEN
+                        },
+                        client: {
+                            id: 'openclaw-control-ui',
+                            version: '1.0.0',
+                            capabilities: []
+                        }
+                    }));
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        console.log('Received:', data.type, data);
+                        
+                        if (data.type === 'hello-ok') {
+                            console.log('Connected successfully!');
+                            onConnected();
+                        } else if (data.type === 'message') {
+                            handleMessage(data);
+                        } else if (data.type === 'error') {
+                            console.error('Gateway error:', data);
+                            addSystemMessage('Error: ' + (data.message || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error('Failed to parse message:', err, event.data);
                     }
-                } else {
-                    pending.reject(new Error(response.error?.message || 'Request failed'));
-                }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    updateStatus(false, 'Connection error');
+                };
+                
+                ws.onclose = () => {
+                    console.log('WebSocket closed');
+                    onDisconnected();
+                };
+            } catch (err) {
+                console.error('Failed to create WebSocket:', err);
+                updateStatus(false, 'Failed to connect');
             }
         }
 
-        function handleHelloOk(payload) {
-            console.log('Connected to gateway! Hello payload:', payload);
+        function onConnected() {
             isConnected = true;
-            updateStatus('connected');
-            hideConnectionBanner();
+            reconnectAttempts = 0;
+            updateStatus(true, 'Connected');
+            connectionBanner.classList.remove('show');
             messageInput.disabled = false;
             sendBtn.disabled = false;
             messageInput.focus();
+        }
+
+        function onDisconnected() {
+            isConnected = false;
+            updateStatus(false, 'Disconnected');
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
             
-            sessionKey = payload.snapshot?.sessionDefaults?.mainSessionKey || 'agent:main:main';
-            console.log('Using session key:', sessionKey);
+            // Attempt reconnection
+            if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                reconnectAttempts++;
+                const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+                console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+                setTimeout(connect, delay);
+            } else {
+                addSystemMessage('Connection lost. Please refresh the page to reconnect.');
+            }
         }
 
-        function handleAgentEvent(payload) {
-            console.log('Agent event:', payload);
+        function updateStatus(connected, text) {
+            statusDot.classList.toggle('disconnected', !connected);
+            statusText.textContent = text;
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !isConnected) return;
             
-            if (payload.state === 'stream' && payload.stream) {
-                if (payload.stream.role === 'assistant' && payload.stream.content) {
-                    const content = payload.stream.content;
-                    if (Array.isArray(content)) {
-                        for (const part of content) {
-                            if (part.type === 'text') {
-                                currentStreamedMessage += part.text || '';
-                            }
-                        }
-                    }
-                    updateStreamingMessage();
-                }
-            } else if (payload.state === 'final') {
-                removeTypingIndicator();
-                if (currentStreamedMessage) {
-                    addMessage(currentStreamedMessage, 'assistant');
-                    currentStreamedMessage = '';
-                } else if (payload.finalMessage) {
-                    const textContent = extractTextContent(payload.finalMessage);
-                    if (textContent) {
-                        addMessage(textContent, 'assistant');
-                    }
-                }
-            } else if (payload.state === 'error') {
-                removeTypingIndicator();
-                addMessage(`Error: ${payload.error?.message || 'Unknown error'}`, 'system');
-                currentStreamedMessage = '';
-            }
-        }
-
-        function handleChatEvent(payload) {
-            console.log('Chat event:', payload);
+            // Add user message to UI
+            addMessage(text, 'user');
+            messageInput.value = '';
+            welcomeScreen.style.display = 'none';
             
-            if (payload.state === 'delta' && payload.message) {
-                const textContent = extractTextContent(payload.message);
-                if (textContent) {
-                    currentStreamedMessage = textContent;
-                    updateStreamingMessage();
-                }
-            } else if (payload.state === 'final') {
-                removeTypingIndicator();
-                if (currentStreamedMessage) {
-                    addMessage(currentStreamedMessage, 'assistant');
-                    currentStreamedMessage = '';
-                } else if (payload.message) {
-                    const textContent = extractTextContent(payload.message);
-                    if (textContent) {
-                        addMessage(textContent, 'assistant');
-                    }
-                }
-            } else if (payload.state === 'error') {
-                removeTypingIndicator();
-                addMessage(`Error: ${payload.errorMessage || 'Unknown error'}`, 'system');
-                currentStreamedMessage = '';
+            // Show thinking indicator
+            thinkingIndicator.classList.add('show');
+            scrollToBottom();
+            
+            // Send to gateway
+            ws.send(JSON.stringify({
+                type: 'message',
+                text: text
+            }));
+        }
+
+        function handleMessage(data) {
+            // Hide thinking indicator
+            thinkingIndicator.classList.remove('show');
+            
+            if (data.text) {
+                addMessage(data.text, 'assistant');
             }
         }
 
-        function extractTextContent(message) {
-            if (typeof message === 'string') return message;
-            if (message.content) {
-                if (typeof message.content === 'string') return message.content;
-                if (Array.isArray(message.content)) {
-                    return message.content
-                        .filter(part => part.type === 'text')
-                        .map(part => part.text)
-                        .join('');
-                }
-            }
-            return '';
-        }
-
-        function updateStreamingMessage() {
-            let indicator = document.getElementById('streamingMessage');
-            if (!indicator) {
-                indicator = document.createElement('div');
-                indicator.id = 'streamingMessage';
-                indicator.className = 'message assistant';
-                chatContainer.appendChild(indicator);
-            }
-            indicator.textContent = currentStreamedMessage;
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? '👤' : '🐾';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.textContent = text;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            content.appendChild(textDiv);
+            content.appendChild(time);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesContainer.appendChild(messageDiv);
             scrollToBottom();
         }
 
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || !isConnected || !sessionKey) return;
+        function addSystemMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.textAlign = 'center';
+            messageDiv.style.padding = '12px';
+            messageDiv.style.color = '#71767b';
+            messageDiv.style.fontSize = '14px';
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
 
-            if (welcomeScreen && welcomeScreen.style.display !== 'none') {
-                welcomeScreen.style.display = 'none';
-            }
-
-            addMessage(message, 'user');
-            messageInput.value = '';
-            currentStreamedMessage = '';
-
-            addTypingIndicator();
-
-            try {
-                const request = {
-                    type: 'req',
-                    id: generateId(),
-                    method: 'chat.send',
-                    params: {
-                        sessionKey: sessionKey,
-                        message: message,
-                        deliver: false,
-                        idempotencyKey: generateId()
-                    }
-                };
-
-                console.log('Sending chat message:', request);
-                await sendRequest(request);
-            } catch (error) {
-                console.error('Failed to send message:', error);
-                removeTypingIndicator();
-                addMessage(`Error: ${error.message}`, 'system');
-            }
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
         function sendSuggestion(text) {
@@ -1309,58 +678,7 @@
             sendMessage();
         }
 
-        function addMessage(content, role) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            messageDiv.textContent = content;
-            chatContainer.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        function addTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = '<span></span><span></span><span></span>';
-            chatContainer.appendChild(indicator);
-            scrollToBottom();
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
-            const streaming = document.getElementById('streamingMessage');
-            if (streaming) {
-                streaming.remove();
-            }
-        }
-
-        function scrollToBottom() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function updateStatus(status) {
-            if (status === 'connected') {
-                statusDot.classList.remove('disconnected');
-                statusText.textContent = 'Connected';
-            } else {
-                statusDot.classList.add('disconnected');
-                statusText.textContent = 'Disconnected';
-            }
-        }
-
-        function showConnectionBanner(message) {
-            connectionBanner.textContent = message;
-            connectionBanner.classList.add('show');
-        }
-
-        function hideConnectionBanner() {
-            connectionBanner.classList.remove('show');
-        }
-
-        // Event listeners for chat
+        // Event listeners
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1369,181 +687,8 @@
             }
         });
 
-        // Telegram Setup Logic (Setup Tab)
-        (function() {
-            const tokenInput = document.getElementById('telegram-token');
-            const connectBtn = document.getElementById('connect-bot-btn');
-            const btnText = document.getElementById('btn-text');
-            const feedback = document.getElementById('token-feedback');
-            const step3 = document.getElementById('step-3');
-            const botUsernameSpan = document.getElementById('bot-username');
-            const botUsernameLink = document.getElementById('bot-username-link');
-
-            const TOKEN_REGEX = /^\d{8,10}:[A-Za-z0-9_-]{35}$/;
-
-            let validatedToken = null;
-            let validatedUsername = null;
-
-            tokenInput.addEventListener('input', function() {
-                const token = tokenInput.value.trim();
-                
-                if (!token) {
-                    feedback.className = 'feedback-message';
-                    feedback.textContent = '';
-                    connectBtn.disabled = true;
-                    return;
-                }
-
-                if (!TOKEN_REGEX.test(token)) {
-                    feedback.className = 'feedback-message error';
-                    feedback.innerHTML = '⚠️ Invalid token format. Expected: <code>number:letters</code>';
-                    connectBtn.disabled = true;
-                    validatedToken = null;
-                    return;
-                }
-
-                feedback.className = 'feedback-message success';
-                feedback.textContent = '✓ Valid format - click Connect to verify';
-                connectBtn.disabled = false;
-            });
-
-            tokenInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !connectBtn.disabled) {
-                    connectBtn.click();
-                }
-            });
-
-            connectBtn.addEventListener('click', async function() {
-                const token = tokenInput.value.trim();
-                
-                if (!TOKEN_REGEX.test(token)) {
-                    return;
-                }
-
-                connectBtn.disabled = true;
-                btnText.textContent = 'Validating...';
-                connectBtn.innerHTML = '<span class="spinner"></span> <span>Validating...</span>';
-                feedback.className = 'feedback-message info';
-                feedback.textContent = '🔄 Checking with Telegram API...';
-
-                try {
-                    // Step 1: Validate token with Telegram
-                    const tgRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
-                    const tgData = await tgRes.json();
-
-                    if (!tgData.ok) {
-                        throw new Error('Token rejected by Telegram - please check your token and try again');
-                    }
-
-                    const botUsername = tgData.result.username;
-                    validatedToken = token;
-                    validatedUsername = botUsername;
-
-                    feedback.className = 'feedback-message success';
-                    feedback.textContent = `✓ Bot verified: @${botUsername}`;
-                    connectBtn.innerHTML = '<span class="btn-icon">🚀</span> <span>Configure Bot</span>';
-
-                    // Step 2: Configure on server
-                    await new Promise(resolve => setTimeout(resolve, 800));
-                    connectBtn.innerHTML = '<span class="spinner"></span> <span>Configuring...</span>';
-                    feedback.textContent = '⚙️ Writing configuration...';
-
-                    // Try to configure via Control Panel API
-                    const configRes = await fetch('/gateway/api/configure-telegram', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            botToken: token,
-                            dmPolicy: 'open'
-                        })
-                    });
-
-                    if (!configRes.ok) {
-                        // If API doesn't exist, show success anyway with manual instructions
-                        throw new Error('AUTO_CONFIG_NOT_AVAILABLE');
-                    }
-
-                    showSuccess(botUsername);
-
-                } catch (error) {
-                    if (error.message === 'AUTO_CONFIG_NOT_AVAILABLE') {
-                        // Show success with manual config instructions
-                        feedback.className = 'feedback-message info';
-                        feedback.innerHTML = '✓ Bot validated! <strong>Manual step:</strong> Copy this token and paste it in <a href="/gateway/" target="_blank" style="color: #1d9bf0;">Control Panel → Telegram Settings</a>';
-                        connectBtn.innerHTML = '<span class="btn-icon">📋</span> <span>Copy Token</span>';
-                        connectBtn.disabled = false;
-                        connectBtn.onclick = function() {
-                            navigator.clipboard.writeText(token);
-                            feedback.textContent = '✓ Token copied! Now paste it in Control Panel';
-                        };
-                    } else {
-                        feedback.className = 'feedback-message error';
-                        feedback.textContent = `❌ ${error.message}`;
-                        connectBtn.disabled = false;
-                        connectBtn.innerHTML = '<span class="btn-icon">🔄</span> <span>Retry Connection</span>';
-                    }
-                }
-            });
-
-            function showSuccess(username) {
-                botUsernameSpan.textContent = `@${username}`;
-                botUsernameLink.textContent = `@${username}`;
-                step3.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    step3.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 100);
-                
-                document.getElementById('step-1').style.opacity = '0.5';
-                document.getElementById('step-2').style.opacity = '0.5';
-
-                createConfetti();
-            }
-
-            function createConfetti() {
-                const colors = ['#1d9bf0', '#00ba7c', '#ff6b6b', '#ffd93d'];
-                const confettiCount = 30;
-                
-                for (let i = 0; i < confettiCount; i++) {
-                    setTimeout(() => {
-                        const confetti = document.createElement('div');
-                        confetti.style.position = 'fixed';
-                        confetti.style.width = '10px';
-                        confetti.style.height = '10px';
-                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                        confetti.style.left = Math.random() * window.innerWidth + 'px';
-                        confetti.style.top = '-20px';
-                        confetti.style.borderRadius = '50%';
-                        confetti.style.pointerEvents = 'none';
-                        confetti.style.zIndex = '9999';
-                        confetti.style.opacity = '0.8';
-                        document.body.appendChild(confetti);
-                        
-                        const duration = 3000 + Math.random() * 2000;
-                        const endY = window.innerHeight + 20;
-                        const endX = parseFloat(confetti.style.left) + (Math.random() - 0.5) * 200;
-                        
-                        confetti.animate([
-                            { transform: 'translateY(0) translateX(0) rotate(0deg)', opacity: 0.8 },
-                            { transform: `translateY(${endY}px) translateX(${endX - parseFloat(confetti.style.left)}px) rotate(720deg)`, opacity: 0 }
-                        ], {
-                            duration: duration,
-                            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                        }).onfinish = () => confetti.remove();
-                    }, i * 50);
-                }
-            }
-
-            setTimeout(() => {
-                if (window.innerWidth > 768) {
-                    tokenInput.focus();
-                }
-            }, 800);
-        })();
-
         // Connect on load
-        console.log('Starting WebSocket connection...');
-        connectWebSocket();
+        connect();
     </script>
 </body>
 </html>
