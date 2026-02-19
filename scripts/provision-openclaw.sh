@@ -2034,8 +2034,8 @@ sleep 5
 
 # Step 9.5: Set default model to Grok (XAI)
 log "Configuring default AI model..."
-openclaw models set xai/grok-beta
-log "✅ Default model set to xai/grok-beta"
+openclaw models set xai/grok-2
+log "✅ Default model set to xai/grok-2"
 
 # Restart gateway to apply model changes
 systemctl restart openclaw-gateway
