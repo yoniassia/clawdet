@@ -3,10 +3,10 @@
  * Orchestrates VPS creation, DNS setup, and OpenClaw installation
  */
 
-import { createServer, waitForServer, generateCloudInit, HetznerServer } from './hetzner'
-import { updateUser, findUserById, User } from './db'
-import { installOpenClawViaSSH, testSSHConnection } from './ssh-installer'
-import { createSubdomain, waitForDNSPropagation, mockMode as cloudflareMock } from './cloudflare'
+import { createServer, waitForServer, generateCloudInit, HetznerServer } from '../hetzner'
+import { updateUser, findUserById, User } from '../db'
+import { installOpenClawViaSSH, testSSHConnection } from '../ssh-installer'
+import { createSubdomain, waitForDNSPropagation, mockMode as cloudflareMock } from '../cloudflare'
 
 const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY
 const MOCK_DNS = process.env.CLOUDFLARE_MOCK_MODE === 'true'

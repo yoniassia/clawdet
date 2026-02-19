@@ -1,8 +1,27 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import styles from './signup.module.css'
 
 export default function SignupPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          // User is logged in, redirect to details
+          router.push('/signup/details')
+        }
+      })
+      .catch(() => {
+        // Not authenticated, stay on signup page
+      })
+  }, [router])
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
