@@ -4,136 +4,81 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-}
-
-.content {
-  max-width: 500px;
-  width: 100%;
-  text-align: center;
-}
-
-.title {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #e7e9ea;
-}
-
-.subtitle {
-  font-size: 18px;
-  color: #71767b;
-  margin-bottom: 40px;
+  background: #000;
 }
 
 .card {
   background: #16181c;
   border: 1px solid #2f3336;
   border-radius: 16px;
-  padding: 40px;
-  margin-bottom: 24px;
+  padding: 48px;
+  max-width: 480px;
+  width: 100%;
 }
 
-.price {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.logoContainer {
+  text-align: center;
   margin-bottom: 32px;
 }
 
-.betaBadge {
-  display: inline-block;
-  background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
-  color: #ffffff;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: 0.5px;
-}
-
-.originalPrice {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.strikethrough {
-  font-size: 28px;
-  color: #71767b;
-  text-decoration: line-through;
-}
-
-.freePrice {
-  font-size: 72px;
-  font-weight: 700;
-  color: #00ba7c;
-  text-shadow: 0 0 20px rgba(0, 186, 124, 0.3);
-}
-
-.betaNote {
-  font-size: 14px;
-  color: #71767b;
-  margin: 0;
-}
-
-.currency {
+.logo {
   font-size: 32px;
-  color: #71767b;
-  margin-right: 4px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.amount {
-  font-size: 72px;
+.title {
+  font-size: 28px;
   font-weight: 700;
   color: #e7e9ea;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
-.period {
-  font-size: 24px;
-  color: #71767b;
-  margin-left: 4px;
-}
-
-.features {
-  list-style: none;
-  margin-bottom: 32px;
-  text-align: left;
-}
-
-.features li {
-  padding: 12px 0;
+.subtitle {
   font-size: 16px;
-  color: #e7e9ea;
-  border-bottom: 1px solid #2f3336;
+  color: #71767b;
+  text-align: center;
+  margin-bottom: 32px;
+  line-height: 1.5;
 }
 
-.features li:last-child {
-  border-bottom: none;
+.error {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: #f44336;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
 }
 
 .xButton {
   width: 100%;
-  background: #000000;
-  color: #e7e9ea;
+  background: #000;
+  color: #fff;
   border: 1px solid #2f3336;
-  border-radius: 24px;
   padding: 14px 24px;
+  border-radius: 24px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  transition: background 0.2s;
-  margin-bottom: 16px;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.xButton:not(:disabled):hover {
-  background: #16181c;
+.xButton:hover:not(:disabled) {
+  background: #1d1d1d;
+  border-color: #1d9bf0;
 }
 
 .xButton:disabled {
@@ -141,104 +86,141 @@
   cursor: not-allowed;
 }
 
-.xIcon {
-  width: 20px;
-  height: 20px;
-}
-
-.note {
-  font-size: 14px;
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 24px 0;
   color: #71767b;
-  font-style: italic;
+  font-size: 14px;
 }
 
-.backLink {
-  display: inline-block;
-  color: #1d9bf0;
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #2f3336;
+}
+
+.divider span {
+  padding: 0 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  color: #e7e9ea;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input {
+  background: #000;
+  border: 1px solid #2f3336;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #e7e9ea;
   font-size: 16px;
-  padding: 12px;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.backLink:hover {
+.field input:focus {
+  border-color: #1d9bf0;
+}
+
+.field input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field input::placeholder {
+  color: #71767b;
+}
+
+.submitButton {
+  width: 100%;
+  background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(29, 155, 240, 0.4);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle {
+  text-align: center;
+  margin-top: 24px;
+  color: #71767b;
+  font-size: 14px;
+}
+
+.toggle button {
+  background: none;
+  border: none;
+  color: #1d9bf0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.toggle button:hover {
   text-decoration: underline;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-
-  .title {
-    font-size: 28px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    margin-bottom: 32px;
-  }
-
-  .card {
-    padding: 28px 24px;
-  }
-
-  .price {
-    margin-bottom: 24px;
-  }
-
-  .currency {
-    font-size: 24px;
-  }
-
-  .amount {
-    font-size: 56px;
-  }
-
-  .period {
-    font-size: 20px;
-  }
-
-  .features {
-    margin-bottom: 24px;
-  }
-
-  .features li {
-    padding: 10px 0;
-    font-size: 15px;
-  }
-
-  .xButton {
-    padding: 12px 20px;
-    font-size: 15px;
-  }
-
-  .note {
-    font-size: 13px;
-  }
-
-  .backLink {
-    font-size: 15px;
-  }
+.terms {
+  text-align: center;
+  margin-top: 24px;
+  color: #71767b;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-@media (max-width: 480px) {
+.terms a {
+  color: #1d9bf0;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 32px 24px;
+  }
+
   .title {
     font-size: 24px;
   }
 
   .subtitle {
-    font-size: 15px;
-  }
-
-  .card {
-    padding: 24px 20px;
-  }
-
-  .amount {
-    font-size: 48px;
-  }
-
-  .features li {
     font-size: 14px;
   }
 }

@@ -58,8 +58,8 @@ export default function SignupDetailsPage() {
       const data = await res.json()
       
       if (res.ok) {
-        // Redirect to checkout
-        router.push('/checkout')
+        // Redirect to dashboard (free beta - skip payment)
+        router.push('/dashboard')
       } else {
         setError(data.error || 'Failed to save details')
         setSubmitting(false)
@@ -144,13 +144,13 @@ export default function SignupDetailsPage() {
             disabled={submitting || !email || !termsAccepted}
             className={styles.submitButton}
           >
-            {submitting ? 'Saving...' : 'Continue to Payment'}
+            {submitting ? 'Saving...' : 'Complete Setup'}
           </button>
         </form>
 
         <div className={styles.pricing}>
           <p className={styles.pricingText}>
-            Next: Pay <strong>$20/month</strong> to provision your instance
+            🎉 <strong>Free Beta Access</strong> - Your instance will be ready in minutes!
           </p>
         </div>
       </div>

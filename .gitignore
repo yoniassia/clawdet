@@ -1,41 +1,36 @@
 # Dependencies
 node_modules/
-.pnp
+/.pnp
 .pnp.js
 
 # Testing
-coverage/
-.nyc_output
+/coverage
 
 # Next.js
-.next/
-out/
-build/
-dist/
+/.next/
+/out/
 
 # Production
-*.log
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment
+# Local env files
 .env
-.env*.local
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
+.env*.local
+**/.env
+**/.env.local
 
 # Vercel
 .vercel
@@ -44,16 +39,45 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Database (contains user data - do not commit!)
+data/users.json
+data/*.json
 
-# Misc
-.turbo
-data/
+# SSH Keys
+*.pem
+*.key
+id_rsa
+id_ed25519
+**/.ssh/
 
-# Dev-only files - not for production
-public/instance-chat/
-public/dev-archive/
-public/test-instance/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# PM2
+.pm2/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

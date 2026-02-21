@@ -1,0 +1,39 @@
+# Clawdet Free Tier - Multi-Tenant Configuration
+# Multiple users share one VPS with resource limits
+
+services:
+  openclaw:
+    image: coollabsio/openclaw:latest
+    ports:
+      - "80:8080"
+    environment:
+      - XAI_API_KEY=${XAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - OPENCLAW_PRIMARY_MODEL=${OPENCLAW_PRIMARY_MODEL:-x-ai/grok-420-0220-5p1m-reasoning}
+      - OPENCLAW_STATE_DIR=/data/.openclaw
+      - OPENCLAW_WORKSPACE_DIR=/data/workspace
+      - OPENCLAW_MAX_SESSIONS=5
+      - OPENCLAW_MAX_WORKSPACE_SIZE=100MB
+    volumes:
+      - openclaw-data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  openclaw-data:

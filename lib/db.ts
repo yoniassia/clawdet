@@ -6,11 +6,17 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json')
 
 export interface User {
   id: string
-  xId: string
-  xUsername: string
-  xName: string
+  // X OAuth fields (optional for email users)
+  xId?: string
+  xUsername?: string
+  xName?: string
   xProfileImage?: string
-  email?: string
+  // Email auth fields
+  email: string
+  passwordHash?: string
+  name?: string
+  emailVerified?: boolean
+  // Common fields
   termsAccepted?: boolean
   paid?: boolean
   paidAt?: string
@@ -59,6 +65,12 @@ export function findUserByXId(xId: string): User | undefined {
   return users.find(u => u.xId === xId)
 }
 
+// Find user by email
+export function findUserByEmail(email: string): User | undefined {
+  const users = loadUsers()
+  return users.find(u => u.email?.toLowerCase() === email.toLowerCase())
+}
+
 // Find user by internal ID
 export function findUserById(id: string): User | undefined {
   const users = loadUsers()
@@ -71,7 +83,7 @@ export function findUserBySessionToken(sessionToken: string): User | undefined {
   return users.find(u => u.sessionToken === sessionToken)
 }
 
-// Create or update user
+// Create or update user (X OAuth)
 export function upsertUser(userData: Partial<User> & { xId: string }): User {
   const users = loadUsers()
   const existingIndex = users.findIndex(u => u.xId === userData.xId)
@@ -95,7 +107,7 @@ export function upsertUser(userData: Partial<User> & { xId: string }): User {
       xUsername: userData.xUsername || 'unknown',
       xName: userData.xName || 'Unknown User',
       xProfileImage: userData.xProfileImage,
-      email: userData.email,
+      email: userData.email || `${userData.xUsername}@x.twitter.com`,
       termsAccepted: userData.termsAccepted || false,
       paid: userData.paid || false,
       provisioningStatus: userData.provisioningStatus,
@@ -109,6 +121,38 @@ export function upsertUser(userData: Partial<User> & { xId: string }): User {
     saveUsers(users)
     return newUser
   }
+}
+
+// Create email user
+export function createEmailUser(data: {
+  email: string
+  passwordHash: string
+  name: string
+}): User {
+  const users = loadUsers()
+  
+  // Check if email already exists
+  const existing = users.find(u => u.email?.toLowerCase() === data.email.toLowerCase())
+  if (existing) {
+    throw new Error('Email already registered')
+  }
+  
+  const now = Date.now()
+  const newUser: User = {
+    id: `user_${now}_${Math.random().toString(36).substring(7)}`,
+    email: data.email,
+    passwordHash: data.passwordHash,
+    name: data.name,
+    emailVerified: false,
+    termsAccepted: false,
+    paid: false,
+    createdAt: now,
+    updatedAt: now
+  }
+  
+  users.push(newUser)
+  saveUsers(users)
+  return newUser
 }
 
 // Update user by ID

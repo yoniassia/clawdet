@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit, getClientIP, sanitizeInput, SECURITY_HEADERS } from '@/lib/security'
+import Anthropic from '@anthropic-ai/sdk'
 
 const MAX_MESSAGES = 5
-const GROK_API_KEY = process.env.GROK_API_KEY || process.env.XAI_API_KEY
-const GROK_API_URL = 'https://api.x.ai/v1/chat/completions'
-const GROK_MODEL = 'grok-4-1-fast-non-reasoning' // Fast model for trial chat
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
 const SYSTEM_PROMPT = `You are Clawdet, an AI assistant helping users understand our platform.
 
@@ -65,36 +65,24 @@ export async function POST(request: NextRequest) {
       }, { headers: SECURITY_HEADERS })
     }
 
-    // Call real Grok API
-    if (!GROK_API_KEY) {
-      throw new Error('Grok API key not configured')
+    // Call Anthropic Claude API
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('Anthropic API key not configured')
     }
 
-    const grokResponse = await fetch(GROK_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${GROK_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: GROK_MODEL,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: sanitizedMessage }
-        ],
-        temperature: 0.7,
-        max_tokens: 300,
-      }),
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 300,
+      system: SYSTEM_PROMPT,
+      messages: [
+        { role: 'user', content: sanitizedMessage }
+      ],
+      temperature: 0.7,
     })
 
-    if (!grokResponse.ok) {
-      const errorText = await grokResponse.text()
-      console.error('Grok API Error:', grokResponse.status, errorText)
-      throw new Error(`Grok API returned ${grokResponse.status}`)
-    }
-
-    const grokData = await grokResponse.json()
-    const aiResponse = grokData.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that. Please try again."
+    const aiResponse = response.content[0].type === 'text' 
+      ? response.content[0].text 
+      : "I'm sorry, I couldn't process that. Please try again."
 
     return NextResponse.json({
       response: aiResponse,

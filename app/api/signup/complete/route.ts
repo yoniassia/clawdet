@@ -33,10 +33,13 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Update user in database
+    // Update user in database - mark as paid (free tier during beta)
     const updatedUser = updateUser(session.userId, {
       email,
-      termsAccepted
+      termsAccepted,
+      paid: true,
+      paymentMethod: 'free_beta',
+      paidAt: new Date().toISOString()
     })
     
     if (!updatedUser) {
@@ -46,12 +49,19 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    console.log('[Signup Complete] User marked as free beta:', {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      paid: true
+    })
+    
     return NextResponse.json({
       success: true,
       user: {
         id: updatedUser.id,
         email: updatedUser.email,
-        termsAccepted: updatedUser.termsAccepted
+        termsAccepted: updatedUser.termsAccepted,
+        paid: true
       }
     })
   } catch (error) {

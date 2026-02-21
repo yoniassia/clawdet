@@ -3,10 +3,10 @@
  * Orchestrates VPS creation, DNS setup, and OpenClaw installation
  */
 
-import { createServer, waitForServer, generateCloudInit, HetznerServer } from './hetzner'
-import { updateUser, findUserById, User } from './db'
+import { createServer, waitForServer, generateCloudInit, HetznerServer } from '../hetzner'
+import { updateUser, findUserById, User } from '../db'
 import { installOpenClawViaSSH, testSSHConnection } from './ssh-installer'
-import { createSubdomain, waitForDNSPropagation, mockMode as cloudflareMock } from './cloudflare'
+import { createSubdomain, waitForDNSPropagation, mockMode as cloudflareMock } from '../cloudflare'
 
 const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY
 const MOCK_DNS = process.env.CLOUDFLARE_MOCK_MODE === 'true'
@@ -40,12 +40,13 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     })
 
     // Step 1: Create VPS
-    console.log(`[PROVISIONER] Creating VPS for ${user.xUsername}`)
-    const subdomain = user.xUsername.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    const username = user.xUsername || user.email?.split('@')[0] || user.id
+    console.log(`[PROVISIONER] Creating VPS for ${username}`)
+    const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
     
     const cloudInit = generateCloudInit({
       xaiApiKey: XAI_API_KEY || '',
-      username: user.xUsername,
+      username: username,
       subdomain
     })
 
@@ -56,7 +57,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
       location: 'fsn1', // Falkenstein, Germany
       labels: {
         'project': 'clawdet',
-        'user': user.xUsername,
+        'user': username,
         'user_id': userId
       },
       user_data: cloudInit
@@ -144,7 +145,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
       host: vpsIp,
       password: rootPassword,
       username: 'root',
-      xUsername: user.xUsername,
+      xUsername: username,
       subdomain,
       xaiApiKey: XAI_API_KEY
     })
@@ -181,12 +182,13 @@ export function generateHandoffInfo(user: User): {
   setupInstructions: string;
   credentials: string;
 } {
-  const subdomain = user.xUsername.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  const username = user.xUsername || user.email?.split('@')[0] || user.id
+  const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
   const instanceUrl = `https://${subdomain}.clawdet.com`
   
   return {
     instanceUrl,
-    username: user.xUsername,
+    username: username,
     setupInstructions: `
 🎉 Your OpenClaw instance is ready!
 

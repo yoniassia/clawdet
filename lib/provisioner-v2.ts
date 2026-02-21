@@ -45,8 +45,9 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     })
 
     // Step 1: Create VPS
-    console.log(`[PROVISIONER] Creating VPS for ${user.xUsername}`)
-    const subdomain = user.xUsername.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    const username = user.xUsername || user.email?.split('@')[0] || user.id
+    console.log(`[PROVISIONER] Creating VPS for ${username}`)
+    const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
     
     const serverResponse = await createServer({
       name: `clawdet-${subdomain}`,
@@ -56,7 +57,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
       ssh_keys: [HETZNER_SSH_KEY_ID],
       labels: {
         'project': 'clawdet',
-        'user': user.xUsername,
+        'user': username,
         'user_id': userId
       }
     })
@@ -106,7 +107,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     await installOpenClawViaSSH({
       host: vpsIp,
       sshKeyPath: SSH_KEY_PATH,
-      xUsername: user.xUsername,
+      xUsername: username,
       subdomain,
       xaiApiKey: XAI_API_KEY
     })
@@ -143,12 +144,13 @@ export function generateHandoffInfo(user: User): {
   setupInstructions: string;
   credentials: string;
 } {
-  const subdomain = user.xUsername.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  const username = user.xUsername || user.email?.split('@')[0] || user.id
+  const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
   const instanceUrl = `https://${subdomain}.clawdet.com`
   
   return {
     instanceUrl,
-    username: user.xUsername,
+    username: username,
     setupInstructions: `
 🎉 Your OpenClaw instance is ready!
 

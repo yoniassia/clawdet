@@ -1,0 +1,67 @@
+# Clawdet Enterprise Tier - Full Featured
+
+services:
+  openclaw:
+    image: coollabsio/openclaw:latest
+    ports:
+      - "80:8080"
+    environment:
+      - XAI_API_KEY=${XAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - AUTH_USERNAME=${AUTH_USERNAME:-admin}
+      - OPENCLAW_PRIMARY_MODEL=${OPENCLAW_PRIMARY_MODEL:-x-ai/grok-420-0220-5p1m-reasoning}
+      - OPENCLAW_STATE_DIR=/data/.openclaw
+      - OPENCLAW_WORKSPACE_DIR=/data/workspace
+      # Browser automation
+      - BROWSER_CDP_URL=http://browser:9223
+      - BROWSER_DEFAULT_PROFILE=openclaw
+      - BROWSER_EVALUATE_ENABLED=true
+      # Telegram (optional)
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_DM_POLICY=${TELEGRAM_DM_POLICY:-pairing}
+      - TELEGRAM_ALLOW_FROM=${TELEGRAM_ALLOW_FROM:-}
+    volumes:
+      - openclaw-data:/data
+    depends_on:
+      - browser
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  browser:
+    image: coollabsio/openclaw-browser:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - CHROME_CLI=--remote-debugging-port=9222
+    volumes:
+      - browser-data:/config
+    shm_size: 2g
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+
+volumes:
+  openclaw-data:
+  browser-data:
