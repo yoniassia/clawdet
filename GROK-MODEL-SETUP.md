@@ -8,7 +8,7 @@
 
 **Key:**
 ```
-xai-YOUR_API_KEY_HERE
+xai-REDACTED
 ```
 
 **Added to:**
@@ -47,7 +47,7 @@ environment:
 **Generated .env:**
 ```bash
 # AI API Keys
-XAI_API_KEY=xai-YOUR_API_KEY_HERE
+XAI_API_KEY=xai-REDACTED
 ANTHROPIC_API_KEY=$API_KEY
 
 # Model: Grok 4.2 with reasoning (5p1m)
@@ -92,7 +92,7 @@ curl -fsSL https://clawdet.com/provision.sh | head -50
 Should show:
 ```bash
 # AI API Keys
-XAI_API_KEY=xai-YOUR_API_KEY_HERE
+XAI_API_KEY=xai-REDACTED
 
 # Model: Grok 4.2 with reasoning (5p1m)
 OPENCLAW_PRIMARY_MODEL=x-ai/grok-420-0220-5p1m-reasoning

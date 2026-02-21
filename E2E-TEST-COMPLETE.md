@@ -124,7 +124,7 @@ All variables generated correctly with proper values.
 ### .env File (Instance 1)
 ```env
 # Test Instance: test-instance-1
-ANTHROPIC_API_KEY=sk-ant-YOUR_API_KEY_HERE
+ANTHROPIC_API_KEY=sk-ant-REDACTED
 OPENCLAW_GATEWAY_TOKEN=480bb811c56c6b2e32ea1a063d36002dcb9e313885f435dfe55837eba7b6a156
 AUTH_PASSWORD=480bb811c56c6b2e
 AUTH_USERNAME=admin

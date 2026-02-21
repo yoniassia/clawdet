@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { upsertUser, updateUser } from '@/lib/db'
 import { generateSessionToken } from '@/lib/security'
+import { logOAuthCallback } from '@/lib/onboarding-logger'
 
 const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID
 const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET
@@ -49,6 +50,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    console.log('[OAuth Callback] Received callback')
+    console.log('[OAuth Callback] Code:', code ? 'present' : 'missing')
+    console.log('[OAuth Callback] State:', state ? 'present' : 'missing')
+    console.log('[OAuth Callback] Mock mode:', isMock)
+    
     let userData: MockUser
 
     if (isMock || !TWITTER_CLIENT_ID) {
@@ -103,6 +109,8 @@ export async function GET(request: NextRequest) {
         })
       })
 
+      console.log('[OAuth Callback] Token response status:', tokenResponse.status)
+      
       if (!tokenResponse.ok) {
         const errorText = await tokenResponse.text()
         console.error('[X OAuth Callback] Token exchange failed:', tokenResponse.status, errorText)
@@ -117,10 +125,12 @@ export async function GET(request: NextRequest) {
       console.log('[X OAuth Callback] Fetching user info from Twitter API')
       const userResponse = await fetch(TWITTER_USER_URL, {
         headers: {
-          'Authorization': `Bearer ${access_token}`
+          'Authorization': `Bearer ${tokenData.access_token}`
         }
       })
 
+      console.log('[OAuth Callback] User info response status:', userResponse.status)
+      
       if (!userResponse.ok) {
         const errorText = await userResponse.text()
         console.error('[X OAuth Callback] User info fetch failed:', userResponse.status, errorText)
@@ -153,6 +163,8 @@ export async function GET(request: NextRequest) {
         termsAccepted: true
       })
     })
+    
+    console.log('[OAuth Callback] User created/updated:', user.id)
 
     console.log('[X OAuth Callback] User upserted:', user.id)
 
@@ -164,6 +176,8 @@ export async function GET(request: NextRequest) {
       sessionToken,
       sessionCreatedAt: Date.now()
     })
+    
+    console.log('[OAuth Callback] Session token saved to user')
 
     console.log('[X OAuth Callback] User session updated')
 
@@ -187,6 +201,8 @@ export async function GET(request: NextRequest) {
       sameSite: 'strict', // CSRF protection
       path: '/'
     })
+    
+    console.log('[OAuth Callback] Session cookie set')
 
     console.log('[X OAuth Callback] Session cookie set')
 
@@ -200,6 +216,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[X OAuth Callback] Caught error:', error)
     console.error('[X OAuth Callback] Error stack:', error instanceof Error ? error.stack : 'N/A')
+    
+    // Log failed OAuth callback
+    logOAuthCallback(false, undefined, undefined, error instanceof Error ? error.message : 'Unknown error')
     
     // Use public URL for error redirect
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 

@@ -19,20 +19,42 @@ export default function SignupDetailsPage() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [isFreeBeta, setIsFreeBeta] = useState(false)
 
   useEffect(() => {
+    console.log('[SignupDetails] Page loaded, checking auth...')
+    
     // Verify user is authenticated
     fetch('/api/auth/me')
       .then(res => res.json())
       .then(data => {
+        console.log('[SignupDetails] Auth response:', data)
+        
         if (data.authenticated) {
           setUser(data.user)
+          console.log('[SignupDetails] User authenticated:', data.user.username)
+          
+          // Check free beta eligibility
+          console.log('[SignupDetails] Checking free beta eligibility...')
+          return fetch('/api/provisioning/free-beta')
         } else {
+          console.log('[SignupDetails] Not authenticated, redirecting to /signup')
           router.push('/signup')
+          return null
+        }
+      })
+      .then(res => res ? res.json() : null)
+      .then(data => {
+        if (data) {
+          console.log('[SignupDetails] Free beta check:', data)
+          setIsFreeBeta(data.eligible)
+          console.log('[SignupDetails] Is free beta?', data.eligible)
         }
         setLoading(false)
+        console.log('[SignupDetails] Page ready')
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('[SignupDetails] Error during load:', error)
         router.push('/signup')
       })
   }, [router])
@@ -40,8 +62,14 @@ export default function SignupDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('[SignupDetails] Form submitted')
+    console.log('[SignupDetails] Email:', email)
+    console.log('[SignupDetails] Terms accepted:', termsAccepted)
+    
     if (!email || !termsAccepted) {
-      setError('Please fill in all fields and accept the terms')
+      const errorMsg = 'Please fill in all fields and accept the terms'
+      console.error('[SignupDetails] Validation failed:', errorMsg)
+      setError(errorMsg)
       return
     }
     
@@ -49,23 +77,32 @@ export default function SignupDetailsPage() {
     setError('')
     
     try {
+      console.log('[SignupDetails] Sending POST to /api/signup/complete...')
+      
       const res = await fetch('/api/signup/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, termsAccepted })
       })
       
+      console.log('[SignupDetails] Response status:', res.status)
+      
       const data = await res.json()
+      console.log('[SignupDetails] Response data:', data)
       
       if (res.ok) {
         // Redirect to dashboard (free beta - skip payment)
         router.push('/dashboard')
       } else {
-        setError(data.error || 'Failed to save details')
+        const errorMsg = data.error || 'Failed to save details'
+        console.error('[SignupDetails] API error:', errorMsg)
+        setError(errorMsg)
         setSubmitting(false)
       }
     } catch (err) {
-      setError('An error occurred. Please try again.')
+      const errorMsg = 'An error occurred. Please try again.'
+      console.error('[SignupDetails] Catch error:', err)
+      setError(errorMsg)
       setSubmitting(false)
     }
   }

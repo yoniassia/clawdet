@@ -1,0 +1,72 @@
+Test ID,Feature Area,Test Case Title,Priority,Steps,Expected Result,Status,Notes,Screenshot URL,Tested By,Date
+TC-001,Trial Chat,Load trial chat page,P0,"1. Navigate to https://clawdet.com
+2. Click 'Try It Now'",Chat interface loads within 3 seconds,Not Tested,,,
+TC-002,Trial Chat,Send first message,P0,"1. Open trial chat
+2. Type 'Hello'
+3. Click Send",AI responds within 5 seconds,Not Tested,,,
+TC-003,Trial Chat,5-message limit enforcement,P1,"1. Open trial chat
+2. Send 5 messages
+3. Attempt 6th message",6th message blocked with upgrade prompt,Not Tested,,,
+TC-004,Trial Chat,Trial limit CTA redirect,P1,"1. Complete trial chat (5 messages)
+2. Click 'Sign Up' button",Redirects to /signup page,Not Tested,,,
+TC-005,OAuth Flow,Start OAuth signup,P0,"1. Visit /signup
+2. Click 'Continue with X'",Redirects to twitter.com OAuth page,Not Tested,,,
+TC-006,OAuth Flow,Complete OAuth callback,P0,"1. Complete X authorization
+2. Wait for redirect",Redirects to /signup/details with user name displayed,Not Tested,,,
+TC-007,Signup Details,Free beta eligibility check,P0,"1. Land on /signup/details after OAuth
+2. Check for free beta message","Shows '🎉 FREE BETA ACCESS!' if <20 users",Not Tested,,,
+TC-008,Signup Details,Email validation - valid format,P1,"1. Enter valid email (test@example.com)
+2. Submit form",Form accepts email and proceeds,Not Tested,,,
+TC-009,Signup Details,Email validation - invalid format,P1,"1. Enter invalid email (notanemail)
+2. Submit form",Form shows validation error,Not Tested,,,
+TC-010,Signup Details,Terms checkbox required,P1,"1. Enter email without checking terms
+2. Submit form",Form blocks submission with error,Not Tested,,,
+TC-011,Signup Details,Submit free beta signup,P0,"1. Enter valid email
+2. Check terms
+3. Click 'Claim Free Beta Access'",Redirects to /dashboard and starts provisioning,Not Tested,,,
+TC-012,Dashboard,Provisioning status display,P1,"1. Navigate to /dashboard after signup
+2. Check status field","Shows status: pending → creating_vps → installing → complete",Not Tested,,,
+TC-013,Dashboard,Instance URL appears,P1,"1. Wait for provisioning to complete
+2. Check dashboard",Instance URL displayed and clickable,Not Tested,,,
+TC-014,Instance Chat,Load instance web chat,P0,"1. Visit [username].clawdet.com
+2. Wait for page load",Chat interface loads with 'Connected' status,Not Tested,,,
+TC-015,Instance Chat,WebSocket connection,P0,"1. Open instance chat
+2. Check connection indicator",Green dot shows 'Connected',Not Tested,,,
+TC-016,Instance Chat,Send message to AI,P0,"1. Type 'Hello, who are you?'
+2. Send message",AI responds within 10 seconds,Not Tested,,,
+TC-017,Instance Chat,Multi-turn conversation,P1,"1. Send 5 messages in conversation
+2. Verify responses",AI maintains context across messages,Not Tested,,,
+TC-018,Instance Chat,Code rendering,P1,"1. Ask 'Write Python code to reverse a string'
+2. Check response",Code displays with syntax highlighting,Not Tested,,,
+TC-019,Instance Chat,Empty message validation,P1,"1. Click Send without typing message",Send button disabled or shows error,Not Tested,,,
+TC-020,Instance Chat,Chat history persistence,P1,"1. Send messages
+2. Refresh page
+3. Check chat history",Previous messages still visible after refresh,Not Tested,,,
+TC-021,Admin Dashboard,Token authentication,P2,"1. Visit /admin
+2. Enter token: clawdet-admin-2026
+3. Submit",Dashboard loads with user/VPS data,Not Tested,,,
+TC-022,Admin Dashboard,User list accuracy,P2,"1. Access admin dashboard
+2. Check user count",Matches actual database count,Not Tested,,,
+TC-023,Admin Dashboard,VPS list accuracy,P2,"1. Access admin dashboard
+2. Check VPS count",Matches actual Hetzner VPS count,Not Tested,,,
+TC-024,Mobile Responsive,Homepage on mobile,P1,"1. Visit homepage on iPhone
+2. Check layout",All elements visible and properly sized,Not Tested,,,
+TC-025,Mobile Responsive,Trial chat on mobile,P1,"1. Open trial chat on mobile
+2. Send messages",Chat interface works without layout issues,Not Tested,,,
+TC-026,Mobile Responsive,Signup flow on mobile,P1,"1. Complete OAuth on mobile
+2. Fill signup form",Forms are usable on mobile screen,Not Tested,,,
+TC-027,Performance,Homepage load time,P2,"1. Clear cache
+2. Load homepage
+3. Check DevTools",Page loads in <3 seconds on fast connection,Not Tested,,,
+TC-028,Performance,Trial chat response time,P1,"1. Send message in trial chat
+2. Measure time to response",AI responds in <5 seconds (avg),Not Tested,,,
+TC-029,Performance,Instance chat response time,P1,"1. Send message in instance chat
+2. Measure time to response",AI responds in <10 seconds (avg),Not Tested,,,
+TC-030,Error Handling,Trial chat - API error,P2,"1. Block API in DevTools
+2. Send message",Shows user-friendly error message,Not Tested,,,
+TC-031,Error Handling,Signup - OAuth failure,P1,"1. Cancel OAuth midway
+2. Check redirect",Returns to /signup with error message,Not Tested,,,
+TC-032,Error Handling,Dashboard - provisioning failure,P1,"1. Check dashboard if provisioning fails",Shows clear error message with retry option,Not Tested,,,
+TC-033,Cross-Browser,Chrome compatibility,P0,"1. Test all flows in Chrome latest",All features work without errors,Not Tested,,,
+TC-034,Cross-Browser,Firefox compatibility,P1,"1. Test all flows in Firefox latest",All features work without errors,Not Tested,,,
+TC-035,Cross-Browser,Safari compatibility,P1,"1. Test all flows in Safari latest",All features work without errors,Not Tested,,,

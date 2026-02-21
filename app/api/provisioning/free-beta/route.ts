@@ -5,9 +5,37 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { startProvisioningJob } from '@/lib/provisioner-v2'
-import { updateUser, findUserById, getAllUsers } from '@/lib/db'
+import { updateUser, findUserById, getAllUsers, getUserCount } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-middleware'
 
+const FREE_BETA_LIMIT = 20
+
+/**
+ * GET - Check free beta eligibility
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const totalUsers = getUserCount()
+    const eligible = totalUsers <= FREE_BETA_LIMIT
+    
+    return NextResponse.json({
+      eligible,
+      totalUsers,
+      limit: FREE_BETA_LIMIT,
+      spotsRemaining: Math.max(0, FREE_BETA_LIMIT - totalUsers)
+    })
+  } catch (error: any) {
+    console.error('[FREE BETA] Check error:', error)
+    return NextResponse.json(
+      { error: 'Failed to check eligibility', eligible: false },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * POST - Start free beta provisioning
+ */
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
@@ -41,8 +69,6 @@ export async function POST(request: NextRequest) {
     const provisionedCount = allUsers.filter(u => 
       u.paid || u.provisioningStatus === 'complete' || u.provisioningStatus === 'installing'
     ).length
-
-    const FREE_BETA_LIMIT = 20
 
     if (provisionedCount >= FREE_BETA_LIMIT) {
       return NextResponse.json(

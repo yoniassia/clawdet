@@ -222,7 +222,7 @@ TOKEN=$(openssl rand -hex 32)
 ssh root@vps-ip << 'EOF'
   curl -fsSL https://clawdet.com/provision.sh | bash -s -- \
     --customer-id user1 \
-    --api-key sk-ant-YOUR_API_KEY_HERE \
+    --api-key sk-ant-REDACTED \
     --subdomain user1.clawdet.com \
     --gateway-token $(openssl rand -hex 32) \
     --plan pro

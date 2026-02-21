@@ -1995,6 +1995,14 @@ systemctl restart caddy
 systemctl enable caddy
 
 log "Caddy configured and running"
+# Step 8.5: Clean up any existing OpenClaw processes
+log "Cleaning up any existing OpenClaw processes..."
+pkill -9 -f "openclaw.*gateway" || true
+systemctl --user stop openclaw-gateway 2>/dev/null || true
+systemctl --user disable openclaw-gateway 2>/dev/null || true
+sleep 2
+log "Cleanup complete"
+
 
 # Step 9: Create systemd service
 log "Setting up OpenClaw systemd service..."

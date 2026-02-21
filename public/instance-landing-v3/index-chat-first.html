@@ -599,7 +599,26 @@
                 console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
                 setTimeout(connect, delay);
             } else {
-                addSystemMessage('Connection lost. Please refresh the page to reconnect.');
+                connectionBanner.classList.add('show');
+                connectionBanner.innerHTML = `
+                    <div style="padding: 16px;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">⚠️ Connection Lost</div>
+                        <div style="font-size: 14px; margin-bottom: 12px;">
+                            Unable to connect to your AI assistant. This usually resolves quickly.
+                        </div>
+                        <button onclick="location.reload()" style="
+                            background: #1d9bf0;
+                            color: white;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 14px;
+                        ">
+                            Refresh Page
+                        </button>
+                    </div>
+                `;
             }
         }
 
