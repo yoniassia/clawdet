@@ -14,20 +14,10 @@ export async function GET(request: NextRequest) {
       }, { headers: SECURITY_HEADERS })
     }
     
-    // Get full user from database
-    const { findUserById } = await import('@/lib/db')
-    const user = findUserById(authResult.id)
-    
-    if (!authUser) {
-      return NextResponse.json({ 
-        authenticated: false,
-        user: null 
-      }, { headers: SECURITY_HEADERS })
-    }
-
     // Get full user details from database
-    const user = findUserById(authUser.id)
-    if (!user) {
+    const fullUser = findUserById(authResult.id)
+    
+    if (!fullUser) {
       return NextResponse.json({ 
         authenticated: false,
         user: null 
@@ -37,11 +27,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ 
       authenticated: true,
       user: {
-        userId: user.id,
-        username: user.xUsername || user.email?.split('@')[0] || user.id,
-        name: user.xName || user.name || 'User',
-        profileImage: user.xProfileImage,
-        email: user.email
+        userId: fullUser.id,
+        username: fullUser.xUsername || fullUser.email?.split('@')[0] || fullUser.id,
+        name: fullUser.xName || fullUser.name || 'User',
+        profileImage: fullUser.xProfileImage,
+        email: fullUser.email
       }
     }, { headers: SECURITY_HEADERS })
   } catch (error) {

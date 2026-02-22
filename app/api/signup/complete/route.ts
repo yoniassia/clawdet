@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Update user in database - mark as paid (free tier during beta)
-    const updatedUser = updateUser(session.userId, {
+    const updatedUser = updateUser(user.id, {
       email,
       termsAccepted,
       paid: true,
@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      freeBeta: isFreeBeta,
       user: {
         id: updatedUser.id,
         email: updatedUser.email,

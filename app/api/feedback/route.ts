@@ -10,6 +10,25 @@ import path from 'path'
 const DATA_DIR = path.join(process.cwd(), 'data')
 const FEEDBACK_FILE = path.join(DATA_DIR, 'feedback.json')
 
+// Simple in-memory rate limiting for feedback endpoint
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX = 5 // 5 feedback submissions per minute per IP
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+  entry.count++
+  return true
+}
+
 interface Feedback {
   id: string
   userId?: string
@@ -46,6 +65,16 @@ function saveFeedback(feedback: Feedback[]) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               request.headers.get('x-real-ip') || 'unknown'
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { page, rating, category, message } = body
 

@@ -94,10 +94,11 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {/* Header with Sign Up Button */}
+        {/* Header with Logo + Sign Up */}
         <div className={styles.header}>
           <div className={styles.logoContainer}>
             <span className={styles.logoIcon}>🐾</span>
+            <span className={styles.logoText}>Clawdet</span>
           </div>
           
           <button 
@@ -117,20 +118,67 @@ export default function Home() {
           </button>
         </div>
         
-        <h1 className={styles.title}>
-          <span className={styles.gradient}>Clawdet</span>
-        </h1>
-        
-        <p className={styles.subtitle}>
-          Your AI Detective — Investigate anything, uncover everything
-        </p>
+        {/* Chat Input — always at top, always visible */}
+        {messageCount >= MAX_MESSAGES ? (
+          <div className={styles.upgradePrompt}>
+            <p className={styles.upgradeText}>
+              🎉 <strong>You've tried Clawdet!</strong> Ready for unlimited access?
+            </p>
+            <div className={styles.upgradeButtons}>
+              <button 
+                onClick={handleXOnboarding}
+                className={styles.primaryButton}
+              >
+                <svg 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="currentColor"
+                  style={{ marginRight: '8px' }}
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Sign Up with X
+              </button>
+              <Link 
+                href="/signup"
+                className={styles.secondaryButton}
+              >
+                Other Options
+              </Link>
+            </div>
+            <p className={styles.upgradeSubtext}>
+              Get your own instance: <strong>yourname.clawdet.com</strong>
+            </p>
+          </div>
+        ) : (
+          <div className={styles.inputContainer}>
+            <textarea
+              className={styles.input}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask me anything... (try: 'What can you help me with?')"
+              rows={1}
+              disabled={isLoading}
+              autoFocus
+            />
+            <button
+              className={styles.sendButton}
+              onClick={sendMessage}
+              disabled={!input.trim() || isLoading}
+            >
+              {isLoading ? '...' : '→'}
+            </button>
+          </div>
+        )}
 
         {/* Trial Counter */}
         <div className={styles.trialCounter}>
           {messageCount}/{MAX_MESSAGES} free messages used
         </div>
 
-        {/* Chat Interface */}
+        {/* Chat Messages */}
         <div className={styles.chatContainer}>
           <div className={styles.chatMessages}>
             {messages.length === 0 && (
@@ -160,59 +208,6 @@ export default function Home() {
 
             <div ref={messagesEndRef} />
           </div>
-
-          {messageCount >= MAX_MESSAGES ? (
-            <div className={styles.upgradePrompt}>
-              <p className={styles.upgradeText}>
-                🎉 <strong>You've tried Clawdet!</strong> Ready for unlimited access?
-              </p>
-              <div className={styles.upgradeButtons}>
-                <button 
-                  onClick={handleXOnboarding}
-                  className={styles.primaryButton}
-                >
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="currentColor"
-                    style={{ marginRight: '8px' }}
-                  >
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                  Sign Up with X
-                </button>
-                <Link 
-                  href="/signup"
-                  className={styles.secondaryButton}
-                >
-                  Other Options
-                </Link>
-              </div>
-              <p className={styles.upgradeSubtext}>
-                Get your own instance: <strong>yourname.clawdet.com</strong>
-              </p>
-            </div>
-          ) : (
-            <div className={styles.inputContainer}>
-              <textarea
-                className={styles.input}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask me anything... (try: 'What can you help me with?')"
-                rows={1}
-                disabled={isLoading}
-              />
-              <button
-                className={styles.sendButton}
-                onClick={sendMessage}
-                disabled={!input.trim() || isLoading}
-              >
-                {isLoading ? '...' : '→'}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Features (show before limit) */}

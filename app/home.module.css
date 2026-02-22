@@ -40,13 +40,25 @@
 }
 
 .logoContainer {
-  margin-bottom: 24px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logoIcon {
-  font-size: 80px;
+  font-size: 36px;
   display: inline-block;
   animation: float 3s ease-in-out infinite;
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #1d9bf0 0%, #00ba7c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @keyframes float {

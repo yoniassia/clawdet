@@ -51,7 +51,7 @@ export async function provisionUserInstance(userId: string): Promise<void> {
     
     const serverResponse = await createServer({
       name: `clawdet-${subdomain}`,
-      server_type: 'cx23', // 2 vCPU, 4GB RAM, 40GB SSD - €2.99/month
+      server_type: 'cax11', // ARM 2 vCPU, 4GB RAM, 40GB SSD (cx22/cx23 deprecated)
       image: 'ubuntu-24.04',
       location: 'hel1', // Helsinki, Finland
       ssh_keys: [HETZNER_SSH_KEY_ID],
