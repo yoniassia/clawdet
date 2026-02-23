@@ -1,397 +1,503 @@
+/* ── Base ── */
 .container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background: #0a0a0a;
+  color: #e7e9ea;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .content {
-  max-width: 600px;
+  max-width: 640px;
   width: 100%;
 }
 
-.loading {
+/* ── Loading ── */
+.loadingScreen {
   text-align: center;
-  font-size: 18px;
   color: #71767b;
 }
 
-.title {
-  font-size: 42px;
-  font-weight: 900;
-  margin-bottom: 8px;
-  text-align: center;
-  color: #e7e9ea;
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(46, 230, 138, 0.2);
+  border-top-color: #2EE68A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
 }
 
-.subtitle {
-  font-size: 20px;
-  color: #1d9bf0;
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.card {
-  background: #16181c;
-  border: 1px solid #2f3336;
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 24px;
-}
-
-.card h2 {
-  font-size: 24px;
-  color: #e7e9ea;
-  margin-bottom: 16px;
-}
-
-.card p {
-  font-size: 16px;
-  color: #71767b;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-
-.pricing {
-  margin: 32px 0;
-}
-
-.price {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.currency {
+/* ── Typography ── */
+.heroTitle {
   font-size: 32px;
-  color: #71767b;
-  vertical-align: super;
-}
-
-.amount {
-  font-size: 64px;
-  font-weight: 900;
-  color: #e7e9ea;
-}
-
-.period {
-  font-size: 20px;
-  color: #71767b;
-}
-
-.features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px 0;
-}
-
-.features li {
-  padding: 12px 0;
-  font-size: 16px;
-  color: #e7e9ea;
-  border-bottom: 1px solid #2f3336;
-}
-
-.features li:last-child {
-  border-bottom: none;
-}
-
-.payButton {
-  width: 100%;
-  background: #1d9bf0;
-  color: #ffffff;
-  padding: 16px;
-  border-radius: 24px;
-  font-size: 18px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.payButton:hover {
-  background: #1a8cd8;
-}
-
-.info {
+  font-weight: 800;
   text-align: center;
-  padding: 16px;
-  background: #16181c;
-  border: 1px solid #2f3336;
-  border-radius: 12px;
-}
-
-.info p {
-  font-size: 14px;
-  color: #71767b;
-  margin: 0;
-}
-
-.info strong {
   color: #e7e9ea;
+  margin: 0 0 8px;
+  line-height: 1.2;
 }
 
-/* Instance Ready View */
-.successHeader {
+.heroSub {
   text-align: center;
-  margin-bottom: 32px;
+  color: #71767b;
+  font-size: 15px;
+  margin: 0 0 28px;
 }
 
-.successIcon {
-  font-size: 64px;
-  display: block;
-  margin-bottom: 16px;
+.accentText {
+  color: #2EE68A;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-weight: 600;
 }
 
-.instanceInfo {
-  margin: 24px 0;
+.mono {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
 }
 
-.urlBox {
-  background: #000000;
-  border: 1px solid #2f3336;
-  border-radius: 12px;
-  padding: 20px;
+/* ── Glass Card ── */
+.glassCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 28px;
   margin-bottom: 20px;
 }
 
-.urlBox label {
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e7e9ea;
+  margin: 0 0 16px;
+}
+
+/* ── Success View ── */
+.successView {
+  text-align: center;
+}
+
+.successCheckWrap {
+  margin-bottom: 20px;
+}
+
+.successCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(46, 230, 138, 0.12);
+  color: #2EE68A;
+  font-size: 36px;
+  font-weight: 700;
+  animation: scaleIn 0.4s ease;
+}
+
+.urlDisplay {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.urlLabel {
   display: block;
-  font-size: 14px;
+  font-size: 12px;
   color: #71767b;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.instanceUrl {
+.urlLink {
   display: block;
-  font-size: 20px;
-  color: #1d9bf0;
+  font-size: 18px;
+  color: #2EE68A;
   text-decoration: none;
-  word-break: break-all;
   font-weight: 600;
+  word-break: break-all;
 }
 
-.instanceUrl:hover {
+.urlLink:hover {
   text-decoration: underline;
 }
 
-.details {
-  margin-top: 16px;
-}
-
-.details p {
-  margin: 8px 0;
-  font-size: 15px;
-  color: #e7e9ea;
-}
-
-.details strong {
-  color: #71767b;
-  margin-right: 8px;
-}
-
-.statusActive {
-  color: #00ba7c;
-  font-weight: 700;
-}
-
-.instructions, .features {
-  margin: 24px 0;
-  padding-top: 24px;
-  border-top: 1px solid #2f3336;
-}
-
-.instructions h3, .features h3 {
-  font-size: 18px;
-  color: #e7e9ea;
-  margin-bottom: 16px;
-}
-
-.instructions ol {
-  padding-left: 20px;
-  color: #e7e9ea;
-  line-height: 1.8;
-}
-
-.instructions ol li {
-  margin: 8px 0;
-}
-
-.instructions code {
-  background: #000000;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 14px;
-  color: #1d9bf0;
+  color: #71767b;
 }
 
-.actions {
+.statusBadge {
+  color: #2EE68A;
+  font-weight: 600;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.featureItem {
+  font-size: 14px;
+  color: #ccc;
+  padding: 6px 0;
+}
+
+/* ── CTA Buttons ── */
+.ctaGroup {
   display: flex;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
-.primaryButton {
+.ctaPrimary {
   flex: 1;
-  background: #1d9bf0;
-  color: #ffffff;
-  padding: 16px;
-  border-radius: 24px;
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  background: #2EE68A;
+  color: #000;
   font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-
-.primaryButton:hover {
-  background: #1a8cd8;
-}
-
-.secondaryButton {
-  flex: 1;
-  background: transparent;
-  color: #1d9bf0;
-  padding: 16px;
-  border-radius: 24px;
-  font-size: 18px;
-  font-weight: 700;
-  border: 1px solid #1d9bf0;
+  font-size: 15px;
+  border: none;
+  border-radius: 50px;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.2s;
 }
 
-.secondaryButton:hover {
-  background: rgba(29, 155, 240, 0.1);
+.ctaPrimary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
-.support {
-  background: #16181c;
-  border: 1px solid #2f3336;
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
+.ctaPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.support h3 {
-  font-size: 18px;
-  color: #e7e9ea;
-  margin-bottom: 12px;
-}
-
-.support p {
-  font-size: 14px;
-  color: #71767b;
-  line-height: 1.8;
-  margin: 0;
-}
-
-.support a {
-  color: #1d9bf0;
+.ctaSecondary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  background: transparent;
+  color: #2EE68A;
+  font-weight: 600;
+  font-size: 15px;
+  border: 1px solid rgba(46, 230, 138, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
   text-decoration: none;
+  transition: all 0.2s;
 }
 
-.support a:hover {
-  text-decoration: underline;
+.ctaSecondary:hover {
+  background: rgba(46, 230, 138, 0.08);
 }
 
-/* Provisioning Status */
-.provisioningStatus {
-  margin: 24px 0;
+/* ── Build View ── */
+.buildView {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.buildHeader {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.buildSpinner {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+}
+
+.spinnerRing {
+  position: absolute;
+  inset: 0;
+  border: 3px solid rgba(46, 230, 138, 0.15);
+  border-top-color: #2EE68A;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+.spinnerIcon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+/* ── Progress ── */
+.progressWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .progressBar {
-  width: 100%;
-  height: 8px;
-  background: #2f3336;
-  border-radius: 4px;
+  height: 100%;
+  background: linear-gradient(90deg, #2EE68A, #1DA1F2);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.progressLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2EE68A;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Steps ── */
+.stepsContainer {
+  margin-bottom: 24px;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.stepIcon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.stepInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stepName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stepDots {
+  color: #2EE68A;
+  animation: pulse 1.5s ease infinite;
+}
+
+.stepSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(46, 230, 138, 0.2);
+  border-top-color: #2EE68A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Step states */
+.stepDone {
+  opacity: 0.7;
+}
+
+.stepDone .stepIcon {
+  background: rgba(46, 230, 138, 0.15);
+}
+
+.stepDone .stepName {
+  color: #2EE68A;
+}
+
+.checkIcon {
+  color: #2EE68A;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.stepActive {
+  background: rgba(46, 230, 138, 0.06);
+  border: 1px solid rgba(46, 230, 138, 0.15);
+}
+
+.stepActive .stepName {
+  color: #fff;
+  font-weight: 600;
+}
+
+.stepFuture {
+  opacity: 0.35;
+}
+
+/* ── Terminal ── */
+.terminal {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.terminalHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.terminalDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminalTitle {
+  font-size: 11px;
+  color: #71767b;
+  margin-left: 8px;
+  font-family: 'SF Mono', monospace;
+}
+
+.terminalBody {
+  padding: 12px 14px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.terminalBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.terminalBody::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.logLine {
+  display: flex;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+.logTime {
+  color: #555;
+  flex-shrink: 0;
+}
+
+.log_info { color: #a0a0a0; }
+.log_success { color: #2EE68A; }
+.log_error { color: #ff5f57; }
+.log_warn { color: #ffbd2e; }
+
+/* ── Error / Note ── */
+.errorBanner {
+  background: rgba(255, 95, 87, 0.1);
+  border: 1px solid rgba(255, 95, 87, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #ff5f57;
+  font-weight: 600;
+  font-size: 14px;
   margin-bottom: 16px;
 }
 
-.progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, #1d9bf0, #00ba7c);
-  transition: width 0.3s ease;
-}
-
-.statusMessage {
-  font-size: 18px;
-  color: #e7e9ea;
+.waitNote {
   text-align: center;
-  margin: 16px 0;
-  font-weight: 600;
-}
-
-.statusDetails {
-  display: flex;
-  justify-content: space-around;
-  margin: 24px 0;
-}
-
-.statusDetails p {
-  font-size: 14px;
-  color: #71767b;
+  font-size: 13px;
+  color: #555;
   margin: 0;
 }
 
-.statusDetails strong {
-  color: #e7e9ea;
-  margin-right: 4px;
+/* ── Confetti ── */
+.confettiWrap {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  overflow: hidden;
 }
 
-.estimatedTime {
-  text-align: center;
-  font-size: 16px;
-  color: #71767b;
-  margin: 24px 0 16px;
+.confettiPiece {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
 }
 
-.note {
-  text-align: center;
-  font-size: 14px;
-  color: #71767b;
-  font-style: italic;
+/* ── Animations ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.error {
-  background: rgba(249, 24, 128, 0.1);
-  border: 1px solid #f91880;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
-.error p {
-  color: #f91880;
-  margin: 0;
-  font-weight: 600;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 768px) {
-  .title {
-    font-size: 32px;
-  }
+@keyframes scaleIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
-  .subtitle {
-    font-size: 18px;
-  }
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
 
-  .card {
-    padding: 24px;
-  }
-
-  .amount {
-    font-size: 48px;
-  }
-  
-  .actions {
-    flex-direction: column;
-  }
-  
-  .instanceUrl {
-    font-size: 16px;
-  }
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .heroTitle { font-size: 26px; }
+  .glassCard { padding: 20px; }
+  .ctaGroup { flex-direction: column; }
+  .featureGrid { grid-template-columns: 1fr; }
+  .stepRow { padding: 8px 10px; }
 }

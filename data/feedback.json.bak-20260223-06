@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1771752428408svvlrj12g",
+    "userId": "anonymous",
+    "page": "unknown",
+    "rating": 5,
+    "category": "other",
+    "message": "",
+    "createdAt": "2026-02-22T09:27:08.408Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "1771771163792yf1qdyiq9",
+    "userId": "anonymous",
+    "page": "test",
+    "rating": 5,
+    "category": "test",
+    "message": "",
+    "createdAt": "2026-02-22T14:39:23.792Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717711638938s6p0b1vf",
+    "userId": "anonymous",
+    "page": "test",
+    "rating": 5,
+    "category": "test",
+    "message": "",
+    "createdAt": "2026-02-22T14:39:23.893Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "1771771163966wau6e20t6",
+    "userId": "anonymous",
+    "page": "test",
+    "rating": 5,
+    "category": "test",
+    "message": "",
+    "createdAt": "2026-02-22T14:39:23.966Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717711640679liq6iznl",
+    "userId": "anonymous",
+    "page": "test",
+    "rating": 5,
+    "category": "test",
+    "message": "",
+    "createdAt": "2026-02-22T14:39:24.067Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717711641500fdz7y6eu",
+    "userId": "anonymous",
+    "page": "test",
+    "rating": 5,
+    "category": "test",
+    "message": "",
+    "createdAt": "2026-02-22T14:39:24.150Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717712393257ozkw8pzw",
+    "userId": "anonymous",
+    "page": "unknown",
+    "rating": 5,
+    "category": "other",
+    "message": "",
+    "createdAt": "2026-02-22T14:40:39.325Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717712393991r2gm28cb",
+    "userId": "anonymous",
+    "page": "unknown",
+    "rating": 5,
+    "category": "other",
+    "message": "",
+    "createdAt": "2026-02-22T14:40:39.399Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "17717712394972s3fy0b6i",
+    "userId": "anonymous",
+    "page": "unknown",
+    "rating": 5,
+    "category": "other",
+    "message": "",
+    "createdAt": "2026-02-22T14:40:39.497Z",
+    "userAgent": "curl/8.5.0"
+  },
+  {
+    "id": "1771771239572yh79a6o21",
+    "userId": "anonymous",
+    "page": "unknown",
+    "rating": 5,
+    "category": "other",
+    "message": "",
+    "createdAt": "2026-02-22T14:40:39.572Z",
+    "userAgent": "curl/8.5.0"
+  }
+]

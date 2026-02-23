@@ -111,11 +111,11 @@
     "email": "yoni.assia@gmail.com",
     "paymentMethod": "free-beta",
     "paidAt": "2026-02-23T00:45:05.576Z",
-    "provisioningStatus": "complete",
-    "provisioningStep": 8,
-    "provisioningStepName": "Complete",
-    "provisioningProgress": 100,
-    "provisioningMessage": "Your instance is ready!",
+    "provisioningStatus": "failed",
+    "provisioningStep": 5,
+    "provisioningStepName": "OpenClaw Install",
+    "provisioningProgress": 63,
+    "provisioningMessage": "Installing OpenClaw and configuring gateway...",
     "provisioningLogs": [
       {
         "time": "2026-02-23T00:45:05.580Z",
@@ -178,9 +178,8 @@
         "type": "info"
       }
     ],
-    "hetznerVpsId": 121785277,
-    "hetznerVpsIp": "65.109.226.222",
-    "instanceUrl": "https://yoniassia.clawdet.com"
+    "hetznerVpsId": "121785277",
+    "hetznerVpsIp": "65.109.226.222"
   },
   {
     "id": "user_1771454979833_nw5e9a",

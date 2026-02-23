@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from './dashboard.module.css'
 
@@ -15,28 +15,55 @@ interface UserData {
   hetznerVpsIp?: string
 }
 
+interface LogEntry {
+  time: string
+  msg: string
+  type: 'info' | 'success' | 'error' | 'warn'
+}
+
+interface StepInfo {
+  name: string
+  icon: string
+  description: string
+}
+
 interface ProvisioningStatus {
   status: string
+  step: number
+  totalSteps: number
+  stepName: string
   progress: number
   message: string
   instanceUrl?: string
+  logs: LogEntry[]
+  steps: StepInfo[]
 }
+
+const DEFAULT_STEPS: StepInfo[] = [
+  { name: 'Validation', icon: '🔍', description: 'Validating configuration...' },
+  { name: 'VPS Creation', icon: '🖥️', description: 'Creating your VPS server...' },
+  { name: 'DNS Configuration', icon: '🌐', description: 'Setting up your domain...' },
+  { name: 'SSH Setup', icon: '🔑', description: 'Establishing secure connection...' },
+  { name: 'Dependencies Install', icon: '📦', description: 'Installing system packages...' },
+  { name: 'OpenClaw Install', icon: '🧠', description: 'Installing OpenClaw...' },
+  { name: 'SSL Setup', icon: '🔒', description: 'Configuring HTTPS...' },
+  { name: 'Startup & Verify', icon: '🚀', description: 'Starting services...' },
+]
 
 export default function DashboardPage() {
   const [user, setUser] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [provisioning, setProvisioning] = useState<ProvisioningStatus | null>(null)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const logRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   useEffect(() => {
-    // Check if user is authenticated
     fetch('/api/auth/me')
       .then(res => res.json())
       .then(data => {
         if (data.user) {
           setUser(data.user)
-          
-          // If user is paid, check provisioning status
           if (data.user.paid) {
             fetchProvisioningStatus(data.user.userId)
           }
@@ -54,169 +81,206 @@ export default function DashboardPage() {
       const data = await res.json()
       setProvisioning(data)
       
-      // Poll if provisioning is in progress
+      if (data.status === 'complete' && !showConfetti) {
+        setShowConfetti(true)
+      }
+      
       if (data.status !== 'complete' && data.status !== 'failed') {
-        setTimeout(() => fetchProvisioningStatus(userId), 5000) // Poll every 5s
+        setTimeout(() => fetchProvisioningStatus(userId), 3000)
       }
     } catch (error) {
       console.error('Failed to fetch provisioning status:', error)
     }
   }
 
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight
+    }
+  }, [provisioning?.logs])
+
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading...</div>
+        <div className={styles.loadingScreen}>
+          <div className={styles.spinner} />
+          <p>Loading...</p>
+        </div>
       </div>
     )
   }
 
-  if (!user) {
-    return null
-  }
+  if (!user) return null
 
-  // Show instance ready view
-  if (user.paid && provisioning?.status === 'complete' && user.instanceUrl) {
+  const steps = provisioning?.steps || DEFAULT_STEPS
+  const currentStep = provisioning?.step ?? 0
+  const isComplete = provisioning?.status === 'complete'
+  const isFailed = provisioning?.status === 'failed'
+
+  // Success view
+  if (user.paid && isComplete && (user.instanceUrl || provisioning?.instanceUrl)) {
+    const instanceUrl = user.instanceUrl || provisioning?.instanceUrl || ''
     const subdomain = user.username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
-    
+
     return (
       <div className={styles.container}>
+        {showConfetti && <Confetti />}
         <div className={styles.content}>
-          <div className={styles.successHeader}>
-            <span className={styles.successIcon}>🎉</span>
-            <h1 className={styles.title}>Your Instance is Ready!</h1>
-          </div>
-          
-          <div className={styles.card}>
-            <h2>Access Your OpenClaw Instance</h2>
-            
-            <div className={styles.instanceInfo}>
-              <div className={styles.urlBox}>
-                <label>Your Instance URL:</label>
-                <a href={user.instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.instanceUrl}>
-                  {user.instanceUrl}
+          <div className={styles.successView}>
+            <div className={styles.successCheckWrap}>
+              <div className={styles.successCheck}>✓</div>
+            </div>
+            <h1 className={styles.heroTitle}>Your AI is Ready! 🎉</h1>
+            <p className={styles.heroSub}>
+              Live at <span className={styles.accentText}>{subdomain}.clawdet.com</span>
+            </p>
+
+            <div className={styles.glassCard}>
+              <div className={styles.urlDisplay}>
+                <span className={styles.urlLabel}>Instance URL</span>
+                <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.urlLink}>
+                  {instanceUrl}
                 </a>
               </div>
-              
-              <div className={styles.details}>
-                <p><strong>Subdomain:</strong> {subdomain}.clawdet.com</p>
-                <p><strong>Server IP:</strong> {user.hetznerVpsIp || 'Configuring...'}</p>
-                <p><strong>Status:</strong> <span className={styles.statusActive}>Active</span></p>
+              <div className={styles.infoRow}>
+                <span>Server IP</span>
+                <span className={styles.mono}>{user.hetznerVpsIp || '—'}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span>Status</span>
+                <span className={styles.statusBadge}>● Active</span>
               </div>
             </div>
-            
-            <div className={styles.instructions}>
-              <h3>Getting Started</h3>
-              <ol>
-                <li>Your OpenClaw Gateway is running at port 18789</li>
-                <li>Connect via Telegram by configuring your bot token</li>
-                <li>All workspace files are in <code>~/.openclaw/workspace</code></li>
-                <li>Check logs: <code>journalctl -u openclaw-gateway -f</code></li>
-              </ol>
-            </div>
-            
-            <div className={styles.features}>
-              <h3>What's Included</h3>
-              <ul>
-                <li>✅ Private VPS server (2GB RAM, 1 vCPU)</li>
-                <li>✅ OpenClaw pre-installed and configured</li>
-                <li>✅ Grok AI (xAI) integration enabled</li>
-                <li>✅ Secure HTTPS with Cloudflare SSL</li>
-                <li>✅ Your own subdomain</li>
-              </ul>
-            </div>
-            
-            <div className={styles.actions}>
-              <a href={user.instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.primaryButton}>
+
+            <div className={styles.ctaGroup}>
+              <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
                 Open Your Instance →
               </a>
-              <a href="/onboarding" className={styles.secondaryButton} style={{ textAlign: 'center', textDecoration: 'none' }}>
-                📚 Onboarding Guide
+              <a href={`https://t.me/BotFather`} target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>
+                ✈️ Connect Telegram Bot
               </a>
-              <button className={styles.secondaryButton} onClick={() => window.location.reload()}>
-                Refresh Status
-              </button>
             </div>
-          </div>
-          
-          <div className={styles.support}>
-            <h3>Need Help?</h3>
-            <p>
-              Documentation: <a href="https://clawdet.com/docs" target="_blank">clawdet.com/docs</a><br/>
-              Support: support@clawdet.com<br/>
-              Twitter: <a href="https://twitter.com/clawdet" target="_blank">@clawdet</a>
-            </p>
+
+            <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
+              <h3 className={styles.cardTitle}>What&apos;s Included</h3>
+              <div className={styles.featureGrid}>
+                <div className={styles.featureItem}>✅ Dedicated VPS (4GB RAM)</div>
+                <div className={styles.featureItem}>✅ Pre-configured Grok AI</div>
+                <div className={styles.featureItem}>✅ HTTPS with Cloudflare SSL</div>
+                <div className={styles.featureItem}>✅ Your own subdomain</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // Show provisioning in progress
+  // Provisioning in progress
   if (user.paid && provisioning) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
-          <h1 className={styles.title}>Setting Up Your Instance...</h1>
-          
-          <div className={styles.card}>
-            <div className={styles.provisioningStatus}>
-              <div className={styles.progressBar}>
+          <div className={styles.buildView}>
+            {/* Header */}
+            <div className={styles.buildHeader}>
+              <div className={styles.buildSpinner}>
+                <div className={styles.spinnerRing} />
+                <span className={styles.spinnerIcon}>{isFailed ? '❌' : (steps[currentStep]?.icon || '🚀')}</span>
+              </div>
+              <h1 className={styles.heroTitle}>
+                {isFailed ? 'Provisioning Failed' : 'Building Your Instance...'}
+              </h1>
+              <p className={styles.heroSub}>{provisioning.message}</p>
+            </div>
+
+            {/* Progress bar */}
+            <div className={styles.progressWrap}>
+              <div className={styles.progressTrack}>
                 <div 
-                  className={styles.progressFill} 
+                  className={styles.progressBar}
                   style={{ width: `${provisioning.progress}%` }}
                 />
               </div>
-              
-              <p className={styles.statusMessage}>
-                {provisioning.message}
-              </p>
-              
-              <div className={styles.statusDetails}>
-                <p><strong>Status:</strong> {provisioning.status}</p>
-                <p><strong>Progress:</strong> {provisioning.progress}%</p>
-              </div>
-              
-              {provisioning.status === 'failed' && (
-                <div className={styles.error}>
-                  <p>❌ Provisioning failed. Please contact support.</p>
-                </div>
-              )}
+              <span className={styles.progressLabel}>{provisioning.progress}%</span>
             </div>
-            
-            <p className={styles.estimatedTime}>
-              ⏱️ Estimated time: 5-10 minutes
-            </p>
-            
-            <p className={styles.note}>
-              This page will automatically update. You can safely close this tab and come back later.
-            </p>
+
+            {/* Steps */}
+            <div className={styles.stepsContainer}>
+              {steps.map((step, i) => {
+                const done = i < currentStep
+                const active = i === currentStep && !isFailed
+                const future = i > currentStep
+                return (
+                  <div 
+                    key={i} 
+                    className={`${styles.stepRow} ${done ? styles.stepDone : ''} ${active ? styles.stepActive : ''} ${future ? styles.stepFuture : ''}`}
+                  >
+                    <div className={styles.stepIcon}>
+                      {done ? <span className={styles.checkIcon}>✓</span> : <span>{step.icon}</span>}
+                    </div>
+                    <div className={styles.stepInfo}>
+                      <span className={styles.stepName}>{step.name}</span>
+                      {active && <span className={styles.stepDots}>...</span>}
+                    </div>
+                    {active && <div className={styles.stepSpinner} />}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Terminal log */}
+            {provisioning.logs && provisioning.logs.length > 0 && (
+              <div className={styles.terminal}>
+                <div className={styles.terminalHeader}>
+                  <span className={styles.terminalDot} style={{ background: '#ff5f57' }} />
+                  <span className={styles.terminalDot} style={{ background: '#ffbd2e' }} />
+                  <span className={styles.terminalDot} style={{ background: '#28c840' }} />
+                  <span className={styles.terminalTitle}>build log</span>
+                </div>
+                <div className={styles.terminalBody} ref={logRef}>
+                  {provisioning.logs.map((log, i) => (
+                    <div key={i} className={`${styles.logLine} ${styles[`log_${log.type}`]}`}>
+                      <span className={styles.logTime}>
+                        {new Date(log.time).toLocaleTimeString()}
+                      </span>
+                      <span>{log.msg}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {isFailed && (
+              <div className={styles.errorBanner}>
+                ❌ Provisioning failed. Please contact support@clawdet.com
+              </div>
+            )}
+
+            {!isFailed && (
+              <p className={styles.waitNote}>
+                ⏱️ Estimated time: 5-10 minutes • This page updates automatically
+              </p>
+            )}
           </div>
         </div>
       </div>
     )
   }
 
-  // Show free beta prompt (default)
+  // Free beta prompt (default)
   const handleFreeBeta = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/provisioning/free-beta', {
-        method: 'POST'
-      })
-      
+      const res = await fetch('/api/provisioning/free-beta', { method: 'POST' })
       const data = await res.json()
-      
       if (res.ok) {
-        // Success! Start polling for status
         alert(`🎉 Success! Your instance is being provisioned. (Spot ${data.instanceNumber}/${data.totalLimit})`)
-        
-        // Reload to show provisioning status
         window.location.reload()
       } else {
         alert(data.message || data.error || 'Failed to start provisioning')
       }
-    } catch (error) {
+    } catch {
       alert('Failed to start provisioning. Please try again.')
     } finally {
       setLoading(false)
@@ -226,71 +290,65 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Welcome, {user.name}! 🎉</h1>
-        <p className={styles.subtitle}>@{user.username}</p>
+        <h1 className={styles.heroTitle}>Welcome, {user.name}! 🎉</h1>
+        <p className={styles.heroSub}>@{user.username}</p>
         
-        <div className={styles.card}>
+        <div className={styles.glassCard}>
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ color: '#1DA1F2', marginBottom: '0.5rem' }}>🎉 Limited Time: Free Beta!</h2>
+            <h2 style={{ color: '#2EE68A', marginBottom: '0.5rem' }}>🎉 Limited Time: Free Beta!</h2>
             <p style={{ fontSize: '1.1rem', marginBottom: '0' }}>
               <strong>First 20 users get a FREE instance!</strong>
             </p>
           </div>
           
-          <p>
-            You're almost there! Get your own dedicated OpenClaw instance at{' '}
-            <strong>{user.username}.clawdet.com</strong>
+          <p style={{ color: '#a0a0a0', lineHeight: 1.6 }}>
+            Get your own dedicated OpenClaw instance at{' '}
+            <strong style={{ color: '#2EE68A' }}>{user.username}.clawdet.com</strong>
           </p>
           
-          <div className={styles.pricing}>
-            <div className={styles.price}>
-              <span className={styles.currency} style={{ textDecoration: 'line-through', opacity: 0.5 }}>$</span>
-              <span className={styles.amount} style={{ textDecoration: 'line-through', opacity: 0.5 }}>20</span>
-              <span className={styles.period} style={{ textDecoration: 'line-through', opacity: 0.5 }}>/month</span>
-              <div style={{ fontSize: '2rem', color: '#1DA1F2', marginTop: '0.5rem' }}>
-                <strong>FREE</strong> <span style={{ fontSize: '1rem' }}>(Beta)</span>
-              </div>
-            </div>
-            
-            <ul className={styles.features}>
-              <li>✅ Dedicated VPS (4GB RAM, 2 vCPU)</li>
-              <li>✅ Your own subdomain ({user.username}.clawdet.com)</li>
-              <li>✅ Automatic SSL & DNS</li>
-              <li>✅ Pre-configured with Grok AI</li>
-              <li>✅ Advanced mode enabled</li>
-              <li>✅ Full tool integrations</li>
-            </ul>
+          <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+            <div style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '1.2rem', color: '#888' }}>$20/month</div>
+            <div style={{ fontSize: '2.5rem', color: '#2EE68A', fontWeight: 900 }}>FREE <span style={{ fontSize: '1rem', fontWeight: 400 }}>(Beta)</span></div>
           </div>
           
-          <button 
-            className={styles.payButton}
-            onClick={handleFreeBeta}
-            disabled={loading}
-            style={{ 
-              background: 'linear-gradient(135deg, #1DA1F2 0%, #0084C7 100%)',
-              fontSize: '1.1rem',
-              padding: '1rem 2rem'
-            }}
-          >
+          <div className={styles.featureGrid}>
+            <div className={styles.featureItem}>✅ Dedicated VPS (4GB RAM, 2 vCPU)</div>
+            <div className={styles.featureItem}>✅ Your own subdomain</div>
+            <div className={styles.featureItem}>✅ Automatic SSL & DNS</div>
+            <div className={styles.featureItem}>✅ Pre-configured with Grok AI</div>
+            <div className={styles.featureItem}>✅ Advanced mode enabled</div>
+            <div className={styles.featureItem}>✅ Full tool integrations</div>
+          </div>
+          
+          <button className={styles.ctaPrimary} onClick={handleFreeBeta} disabled={loading} style={{ width: '100%', marginTop: '1.5rem' }}>
             {loading ? 'Starting Provisioning...' : '🚀 Get My Free Instance Now'}
           </button>
           
-          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', opacity: 0.7 }}>
+          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#666' }}>
             No credit card required • Provisioned in 10 minutes
           </p>
         </div>
-        
-        <div className={styles.info}>
-          <p>
-            <strong>Beta Access:</strong> First 20 users get free lifetime access. 
-            After that, regular pricing ($20/month) applies.
-          </p>
-          <p style={{ marginTop: '0.5rem' }}>
-            <strong>What happens next:</strong> Your VPS will be created, DNS configured, 
-            and OpenClaw installed automatically. You'll have full access in ~10 minutes.
-          </p>
-        </div>
       </div>
+    </div>
+  )
+}
+
+function Confetti() {
+  const colors = ['#2EE68A', '#1DA1F2', '#FFD700', '#FF6B6B', '#A855F7', '#fff']
+  return (
+    <div className={styles.confettiWrap} aria-hidden>
+      {Array.from({ length: 50 }).map((_, i) => (
+        <div
+          key={i}
+          className={styles.confettiPiece}
+          style={{
+            left: `${Math.random() * 100}%`,
+            background: colors[i % colors.length],
+            animationDelay: `${Math.random() * 2}s`,
+            animationDuration: `${2 + Math.random() * 2}s`,
+          }}
+        />
+      ))}
     </div>
   )
 }

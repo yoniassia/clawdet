@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getProvisioningStatus } from '@/lib/provisioner-v2'
+import { getProvisioningStatus, STEPS } from '@/lib/provisioner-v2'
 import { requireAuth, requireOwnership } from '@/lib/auth-middleware'
 import { SECURITY_HEADERS } from '@/lib/security'
 
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(status, { headers: SECURITY_HEADERS })
+    return NextResponse.json({ ...status, steps: STEPS }, { headers: SECURITY_HEADERS })
 
   } catch (error: any) {
     console.error('[API] Provisioning status error:', error)

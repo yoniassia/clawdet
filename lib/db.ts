@@ -24,6 +24,11 @@ export interface User {
   subscriptionStatus?: 'active' | 'inactive' | 'cancelled'
   subscriptionPlan?: 'free_beta' | 'paid' | 'trial'
   provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
+  provisioningStep?: number
+  provisioningStepName?: string
+  provisioningProgress?: number
+  provisioningMessage?: string
+  provisioningLogs?: Array<{ time: string; msg: string; type: 'info' | 'success' | 'error' | 'warn' }>
   instanceUrl?: string
   hetznerVpsId?: string
   hetznerVpsIp?: string

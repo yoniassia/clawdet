@@ -31,7 +31,11 @@ export async function GET(request: NextRequest) {
         username: fullUser.xUsername || fullUser.email?.split('@')[0] || fullUser.id,
         name: fullUser.xName || fullUser.name || 'User',
         profileImage: fullUser.xProfileImage,
-        email: fullUser.email
+        email: fullUser.email,
+        paid: fullUser.paid || false,
+        provisioningStatus: fullUser.provisioningStatus || null,
+        instanceUrl: fullUser.instanceUrl || null,
+        hetznerVpsIp: fullUser.hetznerVpsIp || null
       }
     }, { headers: SECURITY_HEADERS })
   } catch (error) {

@@ -55,11 +55,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if already provisioned or in progress
-    if (user.paid || user.provisioningStatus === 'complete') {
+    // Check if already fully provisioned
+    if (user.provisioningStatus === 'complete' && user.instanceUrl) {
       return NextResponse.json({
         success: true,
         message: 'Instance already provisioned',
+        status: user.provisioningStatus,
+        instanceUrl: user.instanceUrl
+      })
+    }
+
+    // If provisioning is actively in progress, don't restart
+    if (user.provisioningStatus && !['failed', 'complete', 'pending'].includes(user.provisioningStatus) && user.provisioningStatus !== null) {
+      return NextResponse.json({
+        success: true,
+        message: 'Provisioning already in progress',
         status: user.provisioningStatus
       })
     }

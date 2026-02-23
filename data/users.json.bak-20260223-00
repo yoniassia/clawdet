@@ -105,82 +105,12 @@
     "termsAccepted": true,
     "paid": true,
     "createdAt": 1771358515818,
-    "updatedAt": 1771807549113,
-    "sessionToken": "c0bedc755ab41d8f320f7717d97fc09cbaf0d7e2144129751769bb73b126d937",
-    "sessionCreatedAt": 1771807411319,
+    "updatedAt": 1771801944000,
+    "sessionToken": "a6c4b4ebce88ed6dc502591c071e242d9dcdab965a0dd94668cb1f339d8a6e82",
+    "sessionCreatedAt": 1771801944000,
     "email": "yoni.assia@gmail.com",
-    "paymentMethod": "free-beta",
-    "paidAt": "2026-02-23T00:45:05.576Z",
-    "provisioningStatus": "complete",
-    "provisioningStep": 8,
-    "provisioningStepName": "Complete",
-    "provisioningProgress": 100,
-    "provisioningMessage": "Your instance is ready!",
-    "provisioningLogs": [
-      {
-        "time": "2026-02-23T00:45:05.580Z",
-        "msg": "Validating configuration...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:05.581Z",
-        "msg": "Configuration validated successfully",
-        "type": "success"
-      },
-      {
-        "time": "2026-02-23T00:45:05.584Z",
-        "msg": "Creating your VPS server...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:05.758Z",
-        "msg": "VPS created (ID: 121785277)",
-        "type": "success"
-      },
-      {
-        "time": "2026-02-23T00:45:05.759Z",
-        "msg": "Waiting for VPS to boot...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:25.992Z",
-        "msg": "VPS ready at 65.109.226.222",
-        "type": "success"
-      },
-      {
-        "time": "2026-02-23T00:45:25.994Z",
-        "msg": "Setting up your domain...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:27.262Z",
-        "msg": "DNS configured: yoniassia.clawdet.com",
-        "type": "success"
-      },
-      {
-        "time": "2026-02-23T00:45:27.264Z",
-        "msg": "Establishing secure SSH connection...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:27.264Z",
-        "msg": "Waiting for SSH to become available...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:27.265Z",
-        "msg": "Installing system dependencies...",
-        "type": "info"
-      },
-      {
-        "time": "2026-02-23T00:45:27.266Z",
-        "msg": "Installing OpenClaw and configuring gateway...",
-        "type": "info"
-      }
-    ],
-    "hetznerVpsId": 121785277,
-    "hetznerVpsIp": "65.109.226.222",
-    "instanceUrl": "https://yoniassia.clawdet.com"
+    "paymentMethod": "free_beta",
+    "paidAt": "2026-02-22T20:07:35.696Z"
   },
   {
     "id": "user_1771454979833_nw5e9a",
