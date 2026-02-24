@@ -14,6 +14,7 @@ import { findUserById } from '@/lib/db'
 
 const PROVISIONER = process.env.PROVISIONER ?? 'coolify'
 
+
 export async function GET(request: NextRequest) {
   try {
     // Require authentication
@@ -42,12 +43,16 @@ export async function GET(request: NextRequest) {
       const user = findUserById(userId)
       if (user?.coolifyAppUuid && user.provisioningStatus !== 'complete' && user.provisioningStatus !== 'failed') {
         try {
-          const { CoolifyClient } = await import('@/scripts/coolify/coolify-client')
-          const coolify = new CoolifyClient({
-            baseUrl: process.env.COOLIFY_BASE_URL!,
-            token: process.env.COOLIFY_API_TOKEN!,
+          const coolifyBaseUrl = process.env.COOLIFY_BASE_URL!.replace(/\/$/, '')
+          const res = await fetch(`${coolifyBaseUrl}/api/v1/applications/${user.coolifyAppUuid}`, {
+            headers: {
+              'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN}`,
+              'Accept': 'application/json',
+            },
+            signal: AbortSignal.timeout(10_000),
           })
-          const app = await coolify.getApplication(user.coolifyAppUuid)
+          if (!res.ok) throw new Error(`Coolify API ${res.status}`)
+          const app = await res.json() as { status?: string; fqdn?: string }
           
           // Map Coolify status to our status shape
           if (app.status === 'running') {

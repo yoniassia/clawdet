@@ -108,23 +108,70 @@ export async function POST(request: NextRequest) {
     console.log(`[FREE BETA] Starting ${PROVISIONER} provisioning for ${username} (${provisionedCount + 1}/${FREE_BETA_LIMIT})`)
 
     if (PROVISIONER === 'coolify') {
-      // Coolify-based provisioning
-      const { provisionTenant } = await import('@/scripts/coolify/provision-tenant')
-      
+      // Coolify-based provisioning — inline to avoid .js import issues with webpack
       const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
-      
-      // Start Coolify provisioning in background
-      const provisionPromise = provisionTenant({
-        id: userId,
-        subdomain,
-        channels: ['web'],
-        model: process.env.DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4-20250514',
-        apiKeys: {},
-      })
+      const baseDomain = process.env.CLAWDET_DOMAIN ?? 'clawdet.com'
+      const fqdn = `https://${subdomain}.${baseDomain}`
+      const coolifyBaseUrl = process.env.COOLIFY_BASE_URL
+      const coolifyToken = process.env.COOLIFY_API_TOKEN
+      const serverUuid = process.env.COOLIFY_SERVER_UUID
+      const projectUuid = process.env.COOLIFY_PROJECT_UUID
 
-      // Don't await — let it run in background
-      provisionPromise.then(result => {
-        if (result.status === 'provisioned') {
+      if (!coolifyBaseUrl || !coolifyToken || !serverUuid || !projectUuid) {
+        console.warn('[FREE BETA] Coolify env vars not set, falling back to Hetzner')
+        const { startProvisioningJob } = await import('@/lib/provisioner-v2')
+        startProvisioningJob(userId)
+      } else {
+        // Start Coolify provisioning in background
+        const provisionPromise = (async () => {
+          const apiUrl = `${coolifyBaseUrl.replace(/\/$/, '')}/api/v1`
+          const headers = {
+            'Authorization': `Bearer ${coolifyToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+
+          // 1. Create Docker image application
+          const createRes = await fetch(`${apiUrl}/applications/dockerimage`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              server_uuid: serverUuid,
+              project_uuid: projectUuid,
+              environment_name: 'production',
+              docker_registry_image_name: 'openclaw/openclaw',
+              docker_registry_image_tag: 'latest',
+              name: `openclaw-${subdomain}`,
+              description: `Clawdet tenant: ${subdomain}`,
+              domains: fqdn,
+              instant_deploy: false,
+            }),
+          })
+          if (!createRes.ok) throw new Error(`Coolify create failed: ${createRes.status}`)
+          const app = await createRes.json()
+
+          // 2. Set env vars
+          const envVars = [
+            { key: 'OPENCLAW_TENANT_ID', value: userId },
+            { key: 'OPENCLAW_MODEL', value: process.env.DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4-20250514' },
+            { key: 'OPENCLAW_CHANNELS', value: 'web' },
+          ]
+          await fetch(`${apiUrl}/applications/${app.uuid}/envs/bulk`, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(envVars),
+          })
+
+          // 3. Deploy
+          await fetch(`${apiUrl}/applications/${app.uuid}/start`, {
+            method: 'POST',
+            headers,
+          })
+
+          return { appUuid: app.uuid, url: fqdn, status: 'provisioned' as const }
+        })()
+
+        provisionPromise.then(result => {
           updateUser(userId, {
             provisioningStatus: 'complete',
             provisioningStep: 8,
@@ -134,20 +181,14 @@ export async function POST(request: NextRequest) {
             coolifyAppUuid: result.appUuid,
           })
           console.log(`[FREE BETA] ✅ Coolify provisioning complete: ${result.url}`)
-        } else {
+        }).catch(err => {
           updateUser(userId, {
             provisioningStatus: 'failed',
-            provisioningMessage: result.error || 'Provisioning failed',
+            provisioningMessage: err.message || 'Provisioning failed',
           })
-          console.error(`[FREE BETA] ❌ Coolify provisioning failed: ${result.error}`)
-        }
-      }).catch(err => {
-        updateUser(userId, {
-          provisioningStatus: 'failed',
-          provisioningMessage: err.message || 'Provisioning failed',
+          console.error(`[FREE BETA] ❌ Coolify provisioning error:`, err)
         })
-        console.error(`[FREE BETA] ❌ Coolify provisioning error:`, err)
-      })
+      }
     } else {
       // Legacy Hetzner provisioner
       const { startProvisioningJob } = await import('@/lib/provisioner-v2')
