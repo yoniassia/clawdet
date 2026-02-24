@@ -5,6 +5,25 @@ import { SECURITY_HEADERS } from '@/lib/security'
 
 export async function GET(request: NextRequest) {
   try {
+    // Test mode: return mock authenticated user
+    if (process.env.TEST_MODE === 'mock') {
+      const mockUsername = request.cookies.get('test-username')?.value || 'test-user'
+      return NextResponse.json({
+        authenticated: true,
+        user: {
+          userId: 'mock-user-id',
+          username: mockUsername,
+          name: `Test User ${mockUsername}`,
+          profileImage: null,
+          email: `${mockUsername}@test.clawdet.com`,
+          paid: false,
+          provisioningStatus: null,
+          instanceUrl: null,
+          hetznerVpsIp: null
+        }
+      }, { headers: SECURITY_HEADERS })
+    }
+
     const authResult = getOptionalAuth(request)
     
     if (!authResult) {

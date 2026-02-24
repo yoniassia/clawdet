@@ -59,6 +59,17 @@ export function getAuthenticatedUser(request: NextRequest) {
  * }
  */
 export function requireAuth(request: NextRequest) {
+  // Test mode bypass
+  if (process.env.TEST_MODE === 'mock') {
+    const mockUsername = request.cookies.get('test-username')?.value || 'test-user'
+    return {
+      id: 'mock-user-id',
+      xUsername: mockUsername,
+      email: `${mockUsername}@test.clawdet.com`,
+      sessionToken: 'mock-session-token',
+    }
+  }
+
   const user = getAuthenticatedUser(request)
   
   if (!user) {
