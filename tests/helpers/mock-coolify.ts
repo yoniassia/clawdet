@@ -176,6 +176,21 @@ export class MockCoolifyServer {
       ]);
     }
 
+    // GET /api/v1/health
+    if (method === 'GET' && path.includes('/health')) {
+      return json({ status: 'ok' });
+    }
+
+    // GET /api/v1/version
+    if (method === 'GET' && path.includes('/version')) {
+      return json({ version: '4.0.0-mock' });
+    }
+
+    // POST /api/v1/deploy
+    if (method === 'POST' && path.includes('/deploy')) {
+      return json({ message: 'Deployment queued', deployment_uuid: randomUUID() });
+    }
+
     // Fallback
     json({ error: 'Not found' }, 404);
   }

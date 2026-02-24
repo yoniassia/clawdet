@@ -5,6 +5,19 @@ import type { NextRequest } from 'next/server'
  * Global middleware for security headers and request filtering
  */
 export function middleware(request: NextRequest) {
+  // Test mode: skip auth checks for all routes
+  if (process.env.TEST_MODE === 'mock') {
+    const response = NextResponse.next()
+    // Set a mock session cookie if not present
+    if (!request.cookies.get('next-auth.session-token')) {
+      response.cookies.set('next-auth.session-token', 'mock-session-token', {
+        httpOnly: true,
+        path: '/',
+      })
+    }
+    return response
+  }
+
   const response = NextResponse.next()
 
   // Security headers

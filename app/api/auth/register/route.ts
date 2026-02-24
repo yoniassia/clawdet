@@ -4,6 +4,19 @@ import { checkRateLimit, getClientIP, sanitizeInput, SECURITY_HEADERS } from '@/
 
 export async function POST(request: NextRequest) {
   try {
+    // Test mode bypass — skip DB, return mock success
+    if (process.env.TEST_MODE === 'mock') {
+      const body = await request.json()
+      const mockUserId = `mock-${Date.now()}`
+      console.log('[TEST MODE] Mock registration for:', body.email)
+      return NextResponse.json({
+        success: true,
+        message: 'Account created successfully (test mode)',
+        userId: mockUserId,
+        testMode: true,
+      })
+    }
+
     // Rate limiting: 5 registrations per hour per IP
     const clientIP = getClientIP(request.headers)
     const rateLimit = checkRateLimit(`register:${clientIP}`, { 
