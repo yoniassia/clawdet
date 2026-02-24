@@ -1,0 +1,11 @@
+FROM node:22-alpine
+WORKDIR /app
+RUN npm init -y && npm install typescript tsx
+COPY helpers/mock-coolify.ts ./
+RUN cat <<'EOF' > server.ts
+import { MockCoolifyServer } from './mock-coolify';
+const s = new MockCoolifyServer();
+s.start(19876).then(() => console.log('Mock Coolify running on :19876'));
+EOF
+EXPOSE 19876
+CMD ["npx", "tsx", "server.ts"]

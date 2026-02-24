@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Mock Coolify API server
+  mock-coolify:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock-coolify
+    ports:
+      - '19876:19876'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:19876/api/v1/servers']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Local OpenClaw instance for integration tests
+  openclaw-test:
+    image: openclaw/openclaw:latest
+    environment:
+      - OPENCLAW_TENANT_ID=test-local
+      - OPENCLAW_MODEL=anthropic/claude-sonnet-4-20250514
+    ports:
+      - '3100:3000'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # PostgreSQL for Clawdet
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: clawdet_test
+      POSTGRES_USER: clawdet
+      POSTGRES_PASSWORD: testpass
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U clawdet']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Test runner
+  test-runner:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile.test-runner
+    environment:
+      - TEST_MODE=mock
+      - COOLIFY_BASE_URL=http://mock-coolify:19876
+      - COOLIFY_API_TOKEN=mock-token
+      - COOLIFY_SERVER_UUID=server-primary
+      - COOLIFY_PROJECT_UUID=project-test
+      - CLAWDET_URL=http://clawdet:3000
+      - DATABASE_URL=postgresql://clawdet:testpass@postgres:5432/clawdet_test
+    depends_on:
+      mock-coolify:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../test-results:/app/test-results
+      - ../playwright-report:/app/playwright-report
+
+volumes:
+  pgdata:
