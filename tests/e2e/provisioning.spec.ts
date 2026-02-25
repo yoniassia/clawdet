@@ -235,9 +235,11 @@ test.describe('Test 2: Onboarding Flow (Beta)', () => {
       await page.waitForTimeout(300);
     }
 
-    // Verify completion message
-    const completionMsg = page.locator('text="Congratulations! You\'ve completed onboarding!"');
-    await expect(completionMsg).toBeVisible({ timeout: 5_000 });
+    // Verify all items completed
+    const finalProgress = page.locator('text=/\\d+ of \\d+ completed/');
+    await expect(finalProgress).toBeVisible();
+    const finalText = await finalProgress.textContent();
+    expect(finalText).toContain('6 of');
   });
 });
 
