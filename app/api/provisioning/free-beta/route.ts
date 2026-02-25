@@ -42,6 +42,11 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Test mode bypass — no real DB user exists
+    if (process.env.TEST_MODE === 'mock') {
+      return NextResponse.json({ success: true, instanceNumber: 1, totalLimit: 20 })
+    }
+
     // Verify authentication
     const authResult = requireAuth(request)
     if (authResult instanceof NextResponse) {

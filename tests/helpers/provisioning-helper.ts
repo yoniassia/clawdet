@@ -2,7 +2,16 @@
  * Provisioning Helper — Provision/deprovision test agents with retry
  */
 
-import type { TenantConfig, ProvisionResult } from '../../scripts/coolify/provision-tenant';
+interface TenantConfig {
+  id: string;
+  subdomain: string;
+  channels: string[];
+  model: string;
+  apiKeys: Record<string, string>;
+  image?: string;
+  tag?: string;
+  memoryLimit?: string;
+}
 
 const TEST_MODE = process.env.TEST_MODE ?? 'mock';
 
@@ -28,14 +37,64 @@ export async function provisionTestAgent(
   };
 
   if (TEST_MODE === 'mock') {
-    // Use the Coolify client directly (which will hit mock server)
-    const { provisionTenant } = await import('../../scripts/coolify/provision-tenant');
-    const result = await provisionTenant(tenant);
+    // Inline Coolify API calls (avoid ESM import issues)
+    const coolifyBase = (process.env.COOLIFY_BASE_URL ?? 'http://localhost:19876').replace(/\/$/, '');
+    const apiUrl = `${coolifyBase}/api/v1`;
+    const headers = {
+      'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN ?? 'mock-token'}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    const baseDomainVal = process.env.CLAWDET_DOMAIN ?? 'clawdet.com';
+    const fqdn = `https://${tenant.subdomain}.${baseDomainVal}`;
+    const image = tenant.image ?? 'openclaw/openclaw';
+    const tag = tenant.tag ?? 'latest';
+
+    // 1. Create Docker image application
+    const createRes = await fetch(`${apiUrl}/applications/dockerimage`, {
+      method: 'POST', headers,
+      body: JSON.stringify({
+        server_uuid: process.env.COOLIFY_SERVER_UUID ?? 'mock-server',
+        project_uuid: process.env.COOLIFY_PROJECT_UUID ?? 'mock-project',
+        environment_name: 'production',
+        docker_registry_image_name: image,
+        docker_registry_image_tag: tag,
+        name: `openclaw-${tenant.id}`,
+        description: `Clawdet tenant: ${tenant.id}`,
+        domains: fqdn,
+        instant_deploy: false,
+      }),
+    });
+    if (!createRes.ok) throw new Error(`Coolify create failed: ${createRes.status}`);
+    const app = await createRes.json();
+
+    // 2. Set env vars
+    const envVars = [
+      { key: 'OPENCLAW_TENANT_ID', value: tenant.id },
+      { key: 'OPENCLAW_MODEL', value: tenant.model },
+      { key: 'OPENCLAW_CHANNELS', value: tenant.channels.join(',') },
+    ];
+    await fetch(`${apiUrl}/applications/${app.uuid}/envs/bulk`, {
+      method: 'PATCH', headers, body: JSON.stringify(envVars),
+    });
+
+    // 3. Configure
+    await fetch(`${apiUrl}/applications/${app.uuid}`, {
+      method: 'PATCH', headers,
+      body: JSON.stringify({
+        health_check_enabled: true, health_check_path: '/health',
+        health_check_interval: 30, limits_memory: tenant.memoryLimit ?? '512m',
+      }),
+    });
+
+    // 4. Deploy
+    await fetch(`${apiUrl}/applications/${app.uuid}/start`, { method: 'POST', headers });
+
     return {
-      tenantId: result.tenantId,
-      appUuid: result.appUuid,
-      url: result.url,
-      status: result.status,
+      tenantId: tenant.id,
+      appUuid: app.uuid,
+      url: fqdn,
+      status: 'provisioned',
     };
   }
 
@@ -66,8 +125,17 @@ export async function provisionTestAgent(
 
 export async function deprovisionTestAgent(appUuid: string): Promise<void> {
   if (TEST_MODE === 'mock') {
-    const { deprovisionTenant } = await import('../../scripts/coolify/deprovision-tenant');
-    await deprovisionTenant('test', appUuid);
+    // Inline Coolify API calls (avoid ESM import issues)
+    const coolifyBase = (process.env.COOLIFY_BASE_URL ?? 'http://localhost:19876').replace(/\/$/, '');
+    const apiUrl = `${coolifyBase}/api/v1`;
+    const headers = {
+      'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN ?? 'mock-token'}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    // Stop then delete
+    await fetch(`${apiUrl}/applications/${appUuid}/stop`, { method: 'POST', headers });
+    await fetch(`${apiUrl}/applications/${appUuid}`, { method: 'DELETE', headers });
     return;
   }
 

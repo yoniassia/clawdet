@@ -146,12 +146,14 @@ test.describe('Test 1: Full Provisioning Flow (Alpha)', () => {
   });
 
   test('subdomain is accessible', async ({ page }) => {
+    test.skip(TEST_MODE === 'mock', 'No real subdomain in mock mode');
     const url = agentUrl ?? `https://${agentName}.clawdet.com`;
     const res = await page.goto(url);
     expect(res?.status()).toBeLessThan(400);
   });
 
   test('chat interface loads and responds', async ({ page }) => {
+    test.skip(TEST_MODE === 'mock', 'No real subdomain in mock mode');
     test.setTimeout(60_000);
 
     const url = agentUrl ?? `https://${agentName}.clawdet.com`;
@@ -275,6 +277,7 @@ test.describe('Test 3: Multi-Agent Stress Test (Gamma)', () => {
   });
 
   test('all 3 respond to chat independently', async ({ page, context }) => {
+    test.skip(TEST_MODE === 'mock', 'No real subdomain in mock mode');
     test.setTimeout(90_000);
 
     for (const agent of agents) {
@@ -298,13 +301,15 @@ test.describe('Test 3: Multi-Agent Stress Test (Gamma)', () => {
 
     if (agents.length < 3) test.skip();
 
-    const { CoolifyClient: CC } = await import('../../scripts/coolify/coolify-client');
-    const coolify = new CC({
-      baseUrl: process.env.COOLIFY_BASE_URL!,
-      token: process.env.COOLIFY_API_TOKEN!,
-    });
+    const coolifyBase = (process.env.COOLIFY_BASE_URL ?? 'http://localhost:19876').replace(/\/$/, '');
+    const apiUrl = `${coolifyBase}/api/v1`;
+    const headers = {
+      'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN ?? 'mock-token'}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
 
-    await coolify.stopApplication(agents[1].appUuid);
+    await fetch(`${apiUrl}/applications/${agents[1].appUuid}/stop`, { method: 'POST', headers });
     await new Promise((r) => setTimeout(r, 5_000));
 
     try {
@@ -319,7 +324,7 @@ test.describe('Test 3: Multi-Agent Stress Test (Gamma)', () => {
       expect(health.status).toBe(200);
     }
 
-    await coolify.restartApplication(agents[1].appUuid);
+    await fetch(`${apiUrl}/applications/${agents[1].appUuid}/restart`, { method: 'POST', headers });
     const recovered = await waitForHealthy(agents[1].url, 60_000);
     expect(recovered.status).toBe(200);
   });
@@ -353,13 +358,15 @@ test.describe('Test 4: Error Recovery (Delta)', () => {
   test('container auto-restarts after crash', async () => {
     test.setTimeout(PROVISION_TIMEOUT);
 
-    const { CoolifyClient: CC } = await import('../../scripts/coolify/coolify-client');
-    const coolify = new CC({
-      baseUrl: process.env.COOLIFY_BASE_URL!,
-      token: process.env.COOLIFY_API_TOKEN!,
-    });
+    const coolifyBase = (process.env.COOLIFY_BASE_URL ?? 'http://localhost:19876').replace(/\/$/, '');
+    const apiUrl = `${coolifyBase}/api/v1`;
+    const headers = {
+      'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN ?? 'mock-token'}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
 
-    await coolify.restartApplication(appUuid);
+    await fetch(`${apiUrl}/applications/${appUuid}/restart`, { method: 'POST', headers });
 
     const health = await waitForHealthy(agentUrl, 60_000);
     expect(health.status).toBe(200);
