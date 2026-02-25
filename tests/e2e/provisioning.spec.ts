@@ -297,6 +297,7 @@ test.describe('Test 3: Multi-Agent Stress Test (Gamma)', () => {
   });
 
   test('stop one agent, others stay up', async () => {
+    test.skip(TEST_MODE === 'mock', 'No real containers in mock mode');
     test.setTimeout(60_000);
 
     if (agents.length < 3) test.skip();
@@ -356,6 +357,7 @@ test.describe('Test 4: Error Recovery (Delta)', () => {
   });
 
   test('container auto-restarts after crash', async () => {
+    test.skip(TEST_MODE === 'mock', 'No real containers in mock mode');
     test.setTimeout(PROVISION_TIMEOUT);
 
     const coolifyBase = (process.env.COOLIFY_BASE_URL ?? 'http://localhost:19876').replace(/\/$/, '');

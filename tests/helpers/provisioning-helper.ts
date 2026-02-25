@@ -158,6 +158,11 @@ export async function waitForHealthy(
   url: string,
   timeoutMs = 60_000,
 ): Promise<{ status: number; timeMs: number }> {
+  // In mock mode, no real containers exist — return immediately
+  if (TEST_MODE === 'mock') {
+    return { status: 200, timeMs: 0 };
+  }
+
   const start = Date.now();
   const interval = 3_000;
 
