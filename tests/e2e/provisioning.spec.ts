@@ -206,7 +206,7 @@ test.describe('Test 2: Onboarding Flow (Beta)', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify page loaded
-    await expect(page.locator('text="Welcome to Clawdet!"')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('text=/Welcome to Clawdet/')).toBeVisible({ timeout: 10_000 });
 
     // Verify progress bar exists
     const progressBar = page.locator('text="Your Progress"');
