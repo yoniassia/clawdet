@@ -40,8 +40,10 @@ yarn-error.log*
 next-env.d.ts
 
 # Database (contains user data - do not commit!)
-data/users.json
-data/*.json
+data/
+*.db
+*.db-shm
+*.db-wal
 
 # SSH Keys
 *.pem

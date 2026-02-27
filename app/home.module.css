@@ -19,24 +19,49 @@
   width: 100%;
 }
 
-.headerSignUpButton {
+.headerButtons {
   display: flex;
+  gap: 10px;
   align-items: center;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #1d9bf0 0%, #7856ff 100%);
-  color: white;
-  border: none;
+}
+
+.headerLoginButton {
+  padding: 10px 20px;
+  background: transparent;
+  color: #e7e9ea;
+  border: 1px solid #2f3336;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(29, 155, 240, 0.3);
+  text-decoration: none;
+}
+
+.headerLoginButton:hover {
+  border-color: #1d9bf0;
+  color: #1d9bf0;
+}
+
+.headerSignUpButton {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #2EE68A 0%, #1d9bf0 100%);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(46, 230, 138, 0.3);
+  text-decoration: none;
 }
 
 .headerSignUpButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(29, 155, 240, 0.4);
+  box-shadow: 0 6px 20px rgba(46, 230, 138, 0.4);
 }
 
 .logoContainer {

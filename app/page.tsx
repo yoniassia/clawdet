@@ -37,10 +37,6 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, messageCount])
 
-  const handleXOnboarding = () => {
-    window.location.href = '/api/auth/x/login'
-  }
-
   const sendMessage = async () => {
     if (!input.trim() || messageCount >= MAX_MESSAGES) return
 
@@ -101,21 +97,14 @@ export default function Home() {
             <span className={styles.logoText}>Clawdet</span>
           </div>
           
-          <button 
-            onClick={handleXOnboarding}
-            className={styles.headerSignUpButton}
-          >
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="currentColor"
-              style={{ marginRight: '6px' }}
-            >
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-            Sign Up with X
-          </button>
+          <div className={styles.headerButtons}>
+            <Link href="/login" className={styles.headerLoginButton}>
+              Log In
+            </Link>
+            <Link href="/signup" className={styles.headerSignUpButton}>
+              Sign Up Free
+            </Link>
+          </div>
         </div>
         
         {/* Chat Input — always at top, always visible */}
@@ -125,26 +114,11 @@ export default function Home() {
               🎉 <strong>You've tried Clawdet!</strong> Ready for unlimited access?
             </p>
             <div className={styles.upgradeButtons}>
-              <button 
-                onClick={handleXOnboarding}
-                className={styles.primaryButton}
-              >
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="currentColor"
-                  style={{ marginRight: '8px' }}
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                Sign Up with X
-              </button>
-              <Link 
-                href="/signup"
-                className={styles.secondaryButton}
-              >
-                Other Options
+              <Link href="/signup" className={styles.primaryButton}>
+                🚀 Sign Up Free
+              </Link>
+              <Link href="/login" className={styles.secondaryButton}>
+                Already have an account? Log in
               </Link>
             </div>
             <p className={styles.upgradeSubtext}>
