@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
         profileImage: fullUser.xProfileImage,
         email: fullUser.email,
         paid: fullUser.paid || false,
+        role: fullUser.role || 'user',
         provisioningStatus: fullUser.provisioningStatus || null,
         instanceUrl: fullUser.instanceUrl || null,
         hetznerVpsIp: fullUser.hetznerVpsIp || null

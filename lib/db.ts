@@ -1,22 +1,36 @@
-import fs from 'fs'
-import path from 'path'
+/**
+ * Database compatibility shim
+ * Delegates all operations to sqlite.ts
+ * 
+ * This file exists so that imports from '@/lib/db' continue to work.
+ * New code should import from '@/lib/sqlite' directly.
+ */
 
-const DATA_DIR = path.join(process.cwd(), 'data')
-const USERS_FILE = path.join(DATA_DIR, 'users.json')
+import {
+  findUserByEmail as _findByEmail,
+  findUserById as _findById,
+  findUserByXId as _findByXId,
+  findUserBySessionToken as _findByToken,
+  findUserByUsername as _findByUsername,
+  createUser as _createUser,
+  updateUserById as _updateById,
+  deleteUserById as _deleteById,
+  getAllUsers as _getAllUsers,
+  getUserCount as _getUserCount,
+  type DbUser,
+} from './sqlite'
 
+// Re-export the User type that routes expect
 export interface User {
   id: string
-  // X OAuth fields (optional for email users)
   xId?: string
   xUsername?: string
   xName?: string
   xProfileImage?: string
-  // Email auth fields
   email: string
   passwordHash?: string
   name?: string
   emailVerified?: boolean
-  // Common fields
   termsAccepted?: boolean
   paid?: boolean
   paidAt?: string
@@ -32,157 +46,185 @@ export interface User {
   instanceUrl?: string
   hetznerVpsId?: string
   hetznerVpsIp?: string
+  coolifyAppUuid?: string
   sessionToken?: string
   sessionCreatedAt?: number
+  role?: string
   createdAt: number
   updatedAt: number
 }
 
-// Ensure data directory exists
-function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
+/** Convert DbUser (snake_case SQLite row) → User (camelCase app model) */
+function toUser(row: DbUser | undefined): User | undefined {
+  if (!row) return undefined
+  return {
+    id: row.id,
+    xId: row.x_id ?? undefined,
+    xUsername: row.x_username ?? undefined,
+    xName: row.x_name ?? undefined,
+    xProfileImage: row.profile_image ?? undefined,
+    email: row.email ?? '',
+    passwordHash: row.password_hash ?? undefined,
+    name: row.name ?? undefined,
+    emailVerified: !!row.email_verified,
+    termsAccepted: !!row.terms_accepted,
+    paid: !!row.paid,
+    paidAt: row.paid_at ?? undefined,
+    paymentMethod: row.payment_method ?? undefined,
+    subscriptionStatus: (row.subscription_status as User['subscriptionStatus']) ?? undefined,
+    subscriptionPlan: (row.subscription_plan as User['subscriptionPlan']) ?? undefined,
+    provisioningStatus: (row.provisioning_status as User['provisioningStatus']) ?? undefined,
+    provisioningStep: row.provisioning_step ?? undefined,
+    provisioningStepName: row.provisioning_step_name ?? undefined,
+    provisioningProgress: row.provisioning_progress ?? undefined,
+    provisioningMessage: row.provisioning_message ?? undefined,
+    provisioningLogs: row.provisioning_logs ? JSON.parse(row.provisioning_logs) : undefined,
+    instanceUrl: row.instance_url ?? undefined,
+    hetznerVpsId: row.hetzner_vps_id ?? undefined,
+    hetznerVpsIp: row.hetzner_vps_ip ?? undefined,
+    coolifyAppUuid: (row as any).coolify_app_uuid ?? undefined,
+    sessionToken: row.session_token ?? undefined,
+    sessionCreatedAt: row.session_created_at ?? undefined,
+    role: row.role ?? 'user',
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   }
 }
 
-// Load all users
-export function loadUsers(): User[] {
-  ensureDataDir()
-  if (!fs.existsSync(USERS_FILE)) {
-    return []
+/** Convert camelCase updates → snake_case for SQLite */
+function toDbUpdates(updates: Partial<User>): Partial<DbUser> {
+  const map: Record<string, string> = {
+    xId: 'x_id',
+    xUsername: 'x_username',
+    xName: 'x_name',
+    xProfileImage: 'profile_image',
+    passwordHash: 'password_hash',
+    emailVerified: 'email_verified',
+    termsAccepted: 'terms_accepted',
+    paidAt: 'paid_at',
+    paymentMethod: 'payment_method',
+    subscriptionStatus: 'subscription_status',
+    subscriptionPlan: 'subscription_plan',
+    provisioningStatus: 'provisioning_status',
+    provisioningStep: 'provisioning_step',
+    provisioningStepName: 'provisioning_step_name',
+    provisioningProgress: 'provisioning_progress',
+    provisioningMessage: 'provisioning_message',
+    provisioningLogs: 'provisioning_logs',
+    instanceUrl: 'instance_url',
+    hetznerVpsId: 'hetzner_vps_id',
+    hetznerVpsIp: 'hetzner_vps_ip',
+    coolifyAppUuid: 'coolify_app_uuid',
+    sessionToken: 'session_token',
+    sessionCreatedAt: 'session_created_at',
   }
-  const data = fs.readFileSync(USERS_FILE, 'utf-8')
-  return JSON.parse(data)
+
+  const result: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(updates)) {
+    if (key === 'id' || key === 'createdAt' || key === 'updatedAt') continue
+    const dbKey = map[key] || key
+    // Convert booleans to integers for SQLite
+    if (typeof value === 'boolean') {
+      result[dbKey] = value ? 1 : 0
+    } else if (key === 'provisioningLogs' && Array.isArray(value)) {
+      result[dbKey] = JSON.stringify(value)
+    } else {
+      result[dbKey] = value
+    }
+  }
+  return result as Partial<DbUser>
 }
 
-// Get all users (alias for loadUsers)
-export function getAllUsers(): User[] {
-  return loadUsers()
-}
+// ── Public API (matches old JSON-based interface) ──
 
-// Get total user count
-export function getUserCount(): number {
-  const users = loadUsers()
-  return users.length
-}
-
-// Save all users
-function saveUsers(users: User[]) {
-  ensureDataDir()
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2))
-}
-
-// Find user by X ID
-export function findUserByXId(xId: string): User | undefined {
-  const users = loadUsers()
-  return users.find(u => u.xId === xId)
-}
-
-// Find user by email
-export function findUserByEmail(email: string): User | undefined {
-  const users = loadUsers()
-  return users.find(u => u.email?.toLowerCase() === email.toLowerCase())
-}
-
-// Find user by internal ID
 export function findUserById(id: string): User | undefined {
-  const users = loadUsers()
-  return users.find(u => u.id === id)
+  return toUser(_findById(id))
 }
 
-// Find user by session token
-export function findUserBySessionToken(sessionToken: string): User | undefined {
-  const users = loadUsers()
-  return users.find(u => u.sessionToken === sessionToken)
+export function findUserByEmail(email: string): User | undefined {
+  return toUser(_findByEmail(email))
 }
 
-// Create or update user (X OAuth)
+export function findUserByXId(xId: string): User | undefined {
+  return toUser(_findByXId(xId))
+}
+
+export function findUserBySessionToken(token: string): User | undefined {
+  return toUser(_findByToken(token))
+}
+
+export function getAllUsers(): User[] {
+  const { users } = _getAllUsers()
+  return users.map(u => toUser(u)!)
+}
+
+export function getUserCount(): number {
+  return _getUserCount()
+}
+
+export function loadUsers(): User[] {
+  return getAllUsers()
+}
+
 export function upsertUser(userData: Partial<User> & { xId: string }): User {
-  const users = loadUsers()
-  const existingIndex = users.findIndex(u => u.xId === userData.xId)
-  
+  const existing = _findByXId(userData.xId)
   const now = Date.now()
-  
-  if (existingIndex >= 0) {
-    // Update existing user
-    users[existingIndex] = {
-      ...users[existingIndex],
-      ...userData,
-      updatedAt: now
-    }
-    saveUsers(users)
-    return users[existingIndex]
-  } else {
-    // Create new user
-    const newUser: User = {
-      id: `user_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-      xId: userData.xId,
-      xUsername: userData.xUsername || 'unknown',
-      xName: userData.xName || 'Unknown User',
-      xProfileImage: userData.xProfileImage,
-      email: userData.email || `${userData.xUsername}@x.twitter.com`,
-      termsAccepted: userData.termsAccepted || false,
-      paid: userData.paid || false,
-      provisioningStatus: userData.provisioningStatus,
-      instanceUrl: userData.instanceUrl,
-      hetznerVpsId: userData.hetznerVpsId,
-      hetznerVpsIp: userData.hetznerVpsIp,
-      createdAt: now,
-      updatedAt: now
-    }
-    users.push(newUser)
-    saveUsers(users)
-    return newUser
-  }
-}
 
-// Create email user
-export function createEmailUser(data: {
-  email: string
-  passwordHash: string
-  name: string
-}): User {
-  const users = loadUsers()
-  
-  // Check if email already exists
-  const existing = users.find(u => u.email?.toLowerCase() === data.email.toLowerCase())
   if (existing) {
-    throw new Error('Email already registered')
+    const updates = toDbUpdates(userData)
+    _updateById(existing.id, updates)
+    return toUser(_findById(existing.id))!
   }
-  
-  const now = Date.now()
-  const newUser: User = {
-    id: `user_${now}_${Math.random().toString(36).substring(7)}`,
-    email: data.email,
-    passwordHash: data.passwordHash,
-    name: data.name,
-    emailVerified: false,
-    termsAccepted: false,
-    paid: false,
-    createdAt: now,
-    updatedAt: now
+
+  const id = `user_${now}_${Math.random().toString(36).substring(7)}`
+  const dbData: Record<string, unknown> = {
+    id,
+    email: userData.email || `${userData.xUsername}@x.twitter.com`,
+    x_id: userData.xId,
+    x_username: userData.xUsername || 'unknown',
+    x_name: userData.xName || 'Unknown User',
+    profile_image: userData.xProfileImage || null,
+    terms_accepted: userData.termsAccepted ? 1 : 0,
+    paid: userData.paid ? 1 : 0,
+    provisioning_status: userData.provisioningStatus || null,
+    instance_url: userData.instanceUrl || null,
+    hetzner_vps_id: userData.hetznerVpsId || null,
+    hetzner_vps_ip: userData.hetznerVpsIp || null,
+    created_at: now,
+    updated_at: now,
   }
-  
-  users.push(newUser)
-  saveUsers(users)
-  return newUser
+  _createUser(dbData as any)
+  return toUser(_findById(id))!
 }
 
-// Update user by ID
+export function createEmailUser(data: { email: string; passwordHash: string; name: string }): User {
+  const existing = _findByEmail(data.email)
+  if (existing) throw new Error('Email already registered')
+
+  const now = Date.now()
+  const id = `user_${now}_${Math.random().toString(36).substring(7)}`
+  _createUser({
+    id,
+    email: data.email,
+    password_hash: data.passwordHash,
+    name: data.name,
+    email_verified: 0,
+    terms_accepted: 0,
+    paid: 0,
+    role: 'user',
+    disabled: 0,
+    created_at: now,
+    updated_at: now,
+  } as any)
+  return toUser(_findById(id))!
+}
+
 export function updateUser(id: string, updates: Partial<User>): User | null {
-  const users = loadUsers()
-  const userIndex = users.findIndex(u => u.id === id)
-  
-  if (userIndex < 0) {
-    return null
-  }
-  
-  users[userIndex] = {
-    ...users[userIndex],
-    ...updates,
-    updatedAt: Date.now()
-  }
-  
-  saveUsers(users)
-  return users[userIndex]
+  const dbUpdates = toDbUpdates(updates)
+  const result = _updateById(id, dbUpdates)
+  return result ? toUser(result) ?? null : null
+}
+
+export function deleteUser(id: string): boolean {
+  return _deleteById(id)
 }

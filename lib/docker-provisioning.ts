@@ -125,9 +125,9 @@ async function runProvisionScript(
 }
 
 /**
- * Check if an instance is healthy
+ * Check if a Docker instance is healthy
  */
-export async function checkInstanceHealth(subdomain: string): Promise<boolean> {
+export async function checkDockerInstanceHealth(subdomain: string): Promise<boolean> {
   try {
     const response = await fetch(`https://${subdomain}/healthz`, {
       signal: AbortSignal.timeout(5000),

@@ -9,6 +9,7 @@ import { installOpenClawViaSSH, testSSHConnection } from './ssh-installer-v2'
 import { createSubdomain, waitForDNSPropagation } from './cloudflare'
 
 const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const SSH_KEY_PATH = process.env.SSH_KEY_PATH || '/root/.ssh/id_ed25519'
 const HETZNER_SSH_KEY_ID = 107615133 // clawdet-provisioning key
 
@@ -72,8 +73,8 @@ export async function provisionUserInstance(userId: string): Promise<void> {
       throw new Error(`User ${userId} not found`)
     }
 
-    if (!XAI_API_KEY) {
-      throw new Error('XAI_API_KEY is not configured')
+    if (!XAI_API_KEY && !ANTHROPIC_API_KEY) {
+      throw new Error('XAI_API_KEY or ANTHROPIC_API_KEY must be configured')
     }
     
     addLog(userId, 'Configuration validated successfully', 'success')

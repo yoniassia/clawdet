@@ -80,7 +80,7 @@ export default function Home() {
     }
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
@@ -131,7 +131,7 @@ export default function Home() {
               className={styles.input}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               placeholder="Ask me anything... (try: 'What can you help me with?')"
               rows={1}
               disabled={isLoading}

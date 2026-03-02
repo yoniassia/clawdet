@@ -132,7 +132,7 @@ export const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline'", // Allow inline styles for Tailwind
     "img-src 'self' data: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://api.x.ai https://api.stripe.com",
+    "connect-src 'self' https://api.x.ai https://api.anthropic.com https://api.stripe.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'"

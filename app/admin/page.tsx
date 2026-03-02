@@ -178,6 +178,12 @@ export default function AdminPage() {
           <div className={styles.section}>
             <h2>Quick Actions</h2>
             <div className={styles.quickActions}>
+              <a href="/admin/users" className={styles.actionButton}>
+                👥 User Management
+              </a>
+              <a href="/admin/health" className={styles.actionButton}>
+                🏥 Instance Health
+              </a>
               <a href="/admin/feedback" className={styles.actionButton}>
                 📝 View Feedback
               </a>

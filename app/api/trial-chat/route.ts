@@ -4,6 +4,7 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const MAX_MESSAGES = 5
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+const TRIAL_MODEL = process.env.TRIAL_CHAT_MODEL || 'claude-sonnet-4-5'
 const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY })
 
 const SYSTEM_PROMPT = `You are Clawdet, an AI assistant helping users understand our platform.
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: TRIAL_MODEL,
       max_tokens: 300,
       system: SYSTEM_PROMPT,
       messages: [

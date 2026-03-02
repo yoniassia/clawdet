@@ -49,10 +49,24 @@ export function getDb(): Database.Database {
       hetzner_vps_ip TEXT,
       session_token TEXT,
       session_created_at INTEGER,
+      coolify_app_uuid TEXT,
       disabled INTEGER DEFAULT 0,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
+
+    -- Migration: add coolify_app_uuid if missing (safe to re-run)
+    -- SQLite doesn't support IF NOT EXISTS for ALTER TABLE, so we check via pragma
+  `)
+
+  // Safe migration for existing databases
+  const columns = _db.pragma('table_info(users)') as Array<{ name: string }>
+  const columnNames = new Set(columns.map(c => c.name))
+  if (!columnNames.has('coolify_app_uuid')) {
+    _db.exec('ALTER TABLE users ADD COLUMN coolify_app_uuid TEXT')
+  }
+
+  _db.exec(`
 
     CREATE TABLE IF NOT EXISTS accounts (
       id TEXT PRIMARY KEY,
