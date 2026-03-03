@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     console.log('[Signup Complete] Request received')
     
     // Verify authentication
-    const user = requireAuth(request)
+    const user = await requireAuth(request)
     if (user instanceof NextResponse) {
       console.error('[Signup Complete] Auth failed')
       return user // Return auth error

@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify authentication
-    const authResult = requireAuth(request)
+    const authResult = await requireAuth(request)
     if (authResult instanceof NextResponse) {
       return authResult
     }

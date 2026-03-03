@@ -6,26 +6,7 @@ import { SECURITY_HEADERS } from '@/lib/security'
 
 export async function GET(request: NextRequest) {
   try {
-    // Test mode: return mock authenticated user
-    if (process.env.TEST_MODE === 'mock') {
-      const mockUsername = request.cookies.get('test-username')?.value || 'test-user'
-      return NextResponse.json({
-        authenticated: true,
-        user: {
-          userId: 'mock-user-id',
-          username: mockUsername,
-          name: `Test User ${mockUsername}`,
-          profileImage: null,
-          email: `${mockUsername}@test.clawdet.com`,
-          paid: false,
-          provisioningStatus: null,
-          instanceUrl: null,
-          hetznerVpsIp: null
-        }
-      }, { headers: SECURITY_HEADERS })
-    }
-
-    const authResult = getOptionalAuth(request)
+    const authResult = await getOptionalAuth(request)
     
     if (!authResult) {
       return NextResponse.json({ 
@@ -34,7 +15,6 @@ export async function GET(request: NextRequest) {
       }, { headers: SECURITY_HEADERS })
     }
     
-    // Get full user details from database
     const fullUser = findUserById(authResult.id)
     
     if (!fullUser) {

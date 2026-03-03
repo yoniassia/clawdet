@@ -19,7 +19,7 @@ const PROVISIONER = process.env.PROVISIONER ?? 'coolify'
 export async function GET(request: NextRequest) {
   try {
     // Require authentication
-    const authenticatedUser = requireAuth(request)
+    const authenticatedUser = await requireAuth(request)
     if (authenticatedUser instanceof NextResponse) {
       return authenticatedUser
     }
