@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 /**
  * API: Get Provisioning Status
  * GET /api/provisioning/status?userId=xxx

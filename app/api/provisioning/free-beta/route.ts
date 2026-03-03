@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 /**
  * Free Beta Provisioning - First 20 Users
  * Skips payment, provisions directly

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit, getClientIP, sanitizeInput, SECURITY_HEADERS } from '@/lib/security'
 import Anthropic from '@anthropic-ai/sdk'

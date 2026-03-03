@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { NextRequest, NextResponse } from 'next/server'
 import { getOptionalAuth } from '@/lib/auth-middleware'
 import { findUserById } from '@/lib/db'

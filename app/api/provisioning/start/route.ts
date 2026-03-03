@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 /**
  * API: Start Provisioning
  * POST /api/provisioning/start
