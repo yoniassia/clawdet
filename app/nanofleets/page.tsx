@@ -28,7 +28,7 @@ export default function NanoFleets() {
         <div className={styles.heroGlow} />
         <div className={styles.heroBadge}>
           <span className={styles.heroBadgeDot} />
-          Built on OpenClaw
+          Built on NanoClaw
         </div>
         <h1 className={styles.heroTitle}>
           <span className={styles.heroTitleGreen}>NanoFleets</span>
@@ -40,7 +40,7 @@ export default function NanoFleets() {
         <p className={styles.heroDesc}>
           Deploy, manage, and scale fleets of personalized AI agents. 
           Each agent gets its own identity, memory, and skills — orchestrated 
-          from a single dashboard. Powered by OpenClaw, hosted on dedicated infrastructure.
+          from a single dashboard. Powered by NanoClaw, hosted on dedicated infrastructure.
         </p>
         <div className={styles.heroActions}>
           <a href="mailto:nanofleets@clawdet.com" className={styles.ctaPrimary}>
@@ -139,8 +139,8 @@ export default function NanoFleets() {
                         <span className={styles.archTag}>{agent.model}</span>
                       </div>
                       <div className={styles.archAgentStack}>
-                        <div className={styles.archMicro}>OpenClaw Gateway</div>
-                        <div className={styles.archMicro}>SOUL.md + Memory</div>
+                        <div className={styles.archMicro}>NanoClaw Container</div>
+                        <div className={styles.archMicro}>CLAUDE.md + Memory</div>
                         <div className={styles.archMicro}>Skills + Tools</div>
                       </div>
                     </div>
@@ -172,14 +172,14 @@ export default function NanoFleets() {
           {/* Architecture Details */}
           <div className={styles.archDetails}>
             <div className={styles.archDetail}>
-              <h3>🐳 Multi-Docker Isolation</h3>
-              <p>Each agent runs in its own Docker container with dedicated 
-                 OpenClaw gateway, workspace, and memory. No shared state between agents.
+              <h3>🐳 Container-Level Isolation</h3>
+              <p>Each agent runs in its own Linux container with dedicated 
+                 NanoClaw instance, isolated filesystem, and persistent memory. No shared state between agents.
                  Resource limits per container prevent any single agent from starving others.</p>
             </div>
             <div className={styles.archDetail}>
               <h3>📦 Git-Synced Configuration</h3>
-              <p>Every agent's config — SOUL.md, skills, tools, memory — lives in a 
+              <p>Every agent's config — CLAUDE.md, skills, tools, memory — lives in a 
                  Git repository. Push changes to deploy. Roll back mistakes. Audit every 
                  edit. Branch and test before going live.</p>
             </div>
@@ -410,7 +410,7 @@ export default function NanoFleets() {
             <div className={styles.securityItem}>
               <span className={styles.securityIcon}>🛡️</span>
               <h3>Auto-Patching</h3>
-              <p>Automated security updates for the host OS, Docker, and OpenClaw. 
+              <p>Automated security updates for the host OS, Docker, and NanoClaw. 
                  Zero-downtime rolling updates for agent containers.</p>
             </div>
           </div>
@@ -462,7 +462,7 @@ export default function NanoFleets() {
             {[
               {
                 q: 'What AI models can my agents use?',
-                a: 'Any model supported by OpenClaw — Claude (Anthropic), GPT-4 (OpenAI), Grok (xAI), Gemini (Google), or local models via Ollama. Each agent can use a different model. You bring your own API keys — we never see or markup your AI spend.'
+                a: 'Any model supported by NanoClaw — Claude (Anthropic), GPT-4 (OpenAI), Grok (xAI), Gemini (Google), or local models via Ollama. Each agent can use a different model. You bring your own API keys — we never see or markup your AI spend.'
               },
               {
                 q: 'What channels can agents connect to?',
@@ -486,7 +486,7 @@ export default function NanoFleets() {
               },
               {
                 q: 'How do updates work?',
-                a: 'Push to your Git repo → Fleet Agent pulls changes → rolling restart of affected agents. Zero downtime. You can also update via the dashboard. OpenClaw updates are applied automatically during maintenance windows.'
+                a: 'Push to your Git repo → Fleet Agent pulls changes → rolling restart of affected agents. Zero downtime. You can also update via the dashboard. NanoClaw updates are applied automatically during maintenance windows.'
               },
             ].map((faq, i) => (
               <div 
@@ -534,10 +534,10 @@ export default function NanoFleets() {
           </div>
           <div className={styles.footerLinks}>
             <Link href="/">Clawdet Home</Link>
-            <a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">OpenClaw</a>
+            <a href="https://github.com/qwibitai/nanoclaw" target="_blank" rel="noopener">NanoClaw</a>
             <a href="mailto:nanofleets@clawdet.com">Contact</a>
           </div>
-          <p className={styles.footerCopy}>© 2026 Clawdet. Built with OpenClaw.</p>
+          <p className={styles.footerCopy}>© 2026 Clawdet. Built with NanoClaw.</p>
         </div>
       </footer>
     </div>
