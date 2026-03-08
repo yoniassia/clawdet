@@ -52,18 +52,18 @@ export default function NanoFleets() {
         </div>
         <div className={styles.heroStats}>
           <div className={styles.stat}>
-            <span className={styles.statNum}>~$4</span>
-            <span className={styles.statLabel}>per agent / month</span>
+            <span className={styles.statNum}>~2s</span>
+            <span className={styles.statLabel}>deploy time</span>
           </div>
           <div className={styles.statDivider} />
           <div className={styles.stat}>
-            <span className={styles.statNum}>30+</span>
-            <span className={styles.statLabel}>agents per VPS</span>
+            <span className={styles.statNum}>90+</span>
+            <span className={styles.statLabel}>agents per server</span>
           </div>
           <div className={styles.statDivider} />
           <div className={styles.stat}>
-            <span className={styles.statNum}>0</span>
-            <span className={styles.statLabel}>shared data</span>
+            <span className={styles.statNum}>Tools</span>
+            <span className={styles.statLabel}>bash + web + files</span>
           </div>
         </div>
       </section>
@@ -75,21 +75,24 @@ export default function NanoFleets() {
           <div className={styles.problemGrid}>
             <div className={styles.problemCard}>
               <span className={styles.problemIcon}>💸</span>
-              <h3>One VM Per Agent is Expensive</h3>
-              <p>Running a dedicated VPS for each AI agent costs $4–8/month. 
-                 A fleet of 50 agents? That's $200–400/month in infrastructure alone.</p>
+              <h3>Chat-Only AI is Limiting</h3>
+              <p>Most AI agents can only chat. They can't run code, search the web, 
+                 or manage files. NanoFleets agents have real tools — bash, python, curl, 
+                 file I/O — and use them proactively.</p>
             </div>
             <div className={styles.problemCard}>
               <span className={styles.problemIcon}>🔧</span>
               <h3>Managing Agents is Manual</h3>
-              <p>SSH into each server. Update configs. Restart services. Check logs. 
-                 Repeat 50 times. There's no fleet-level control plane.</p>
+              <p>Creating agents one by one. Configuring each. No fleet-level overview. 
+                 NanoFleets gives you a control plane: deploy, monitor, and manage 
+                 all agents from a single dashboard.</p>
             </div>
             <div className={styles.problemCard}>
               <span className={styles.problemIcon}>🔓</span>
-              <h3>Security is an Afterthought</h3>
-              <p>Agents with access to company data, APIs, and messaging channels 
-                 running on shared infrastructure with no isolation? Risky.</p>
+              <h3>No Isolation Between Agents</h3>
+              <p>Agents sharing the same context, memory, and permissions? Risky. 
+                 Each NanoFleets agent runs in its own Docker container with 
+                 isolated filesystem, memory, and auth tokens.</p>
             </div>
           </div>
         </div>
@@ -100,7 +103,7 @@ export default function NanoFleets() {
         <div className={styles.sectionInner}>
           <h2 className={styles.sectionTitle}>Architecture</h2>
           <p className={styles.sectionDesc}>
-            One VPS per company. Multiple isolated agents per VPS. Full fleet control.
+            Docker containers with real tool use. ~2 second deploy. Full fleet control.
           </p>
 
           {/* Architecture Diagram */}
