@@ -8,11 +8,11 @@ interface UserData {
   userId: string
   username: string
   name: string
+  email?: string
   profileImage?: string
   paid?: boolean
   provisioningStatus?: string
   instanceUrl?: string
-  hetznerVpsIp?: string
 }
 
 interface LogEntry {
@@ -39,15 +39,11 @@ interface ProvisioningStatus {
   steps: StepInfo[]
 }
 
-const DEFAULT_STEPS: StepInfo[] = [
+const DOCKER_STEPS: StepInfo[] = [
   { name: 'Validation', icon: '🔍', description: 'Validating configuration...' },
-  { name: 'VPS Creation', icon: '🖥️', description: 'Creating your VPS server...' },
+  { name: 'Container Setup', icon: '🐳', description: 'Creating your AI container...' },
   { name: 'DNS Configuration', icon: '🌐', description: 'Setting up your domain...' },
-  { name: 'SSH Setup', icon: '🔑', description: 'Establishing secure connection...' },
-  { name: 'Dependencies Install', icon: '📦', description: 'Installing system packages...' },
-  { name: 'OpenClaw Install', icon: '🧠', description: 'Installing OpenClaw...' },
-  { name: 'SSL Setup', icon: '🔒', description: 'Configuring HTTPS...' },
-  { name: 'Startup & Verify', icon: '🚀', description: 'Starting services...' },
+  { name: 'Health Check', icon: '✅', description: 'Verifying your agent is live...' },
 ]
 
 export default function DashboardPage() {
@@ -66,7 +62,7 @@ export default function DashboardPage() {
         window.location.reload()
       }
     } catch {
-      // Silent fail — user sees manual button as fallback
+      // Silent — fallback button shown
     }
   }
 
@@ -101,7 +97,7 @@ export default function DashboardPage() {
       }
       
       if (data.status !== 'complete' && data.status !== 'failed') {
-        setTimeout(() => fetchProvisioningStatus(userId), 3000)
+        setTimeout(() => fetchProvisioningStatus(userId), 2000)
       }
     } catch (error) {
       console.error('Failed to fetch provisioning status:', error)
@@ -119,7 +115,7 @@ export default function DashboardPage() {
       <div className={styles.container}>
         <div className={styles.loadingScreen}>
           <div className={styles.spinner} />
-          <p>Loading...</p>
+          <p>Deploying your agent...</p>
         </div>
       </div>
     )
@@ -127,15 +123,16 @@ export default function DashboardPage() {
 
   if (!user) return null
 
-  const steps = provisioning?.steps || DEFAULT_STEPS
+  const steps = provisioning?.steps || DOCKER_STEPS
   const currentStep = provisioning?.step ?? 0
   const isComplete = provisioning?.status === 'complete'
   const isFailed = provisioning?.status === 'failed'
 
-  // Success view
+  // ============ SUCCESS VIEW ============
   if (user.paid && isComplete && (user.instanceUrl || provisioning?.instanceUrl)) {
     const instanceUrl = user.instanceUrl || provisioning?.instanceUrl || ''
-    const subdomain = user.username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    const username = user.username || user.email?.split('@')[0] || ''
+    const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
 
     return (
       <div className={styles.container}>
@@ -145,21 +142,29 @@ export default function DashboardPage() {
             <div className={styles.successCheckWrap}>
               <div className={styles.successCheck}>✓</div>
             </div>
-            <h1 className={styles.heroTitle}>Your AI is Ready! 🎉</h1>
+            <h1 className={styles.heroTitle}>Your Agent is Live! 🐾</h1>
             <p className={styles.heroSub}>
-              Live at <span className={styles.accentText}>{subdomain}.clawdet.com</span>
+              Running at <span className={styles.accentText}>{subdomain}.clawdet.com</span>
             </p>
 
             <div className={styles.glassCard}>
               <div className={styles.urlDisplay}>
-                <span className={styles.urlLabel}>Agent Endpoint</span>
+                <span className={styles.urlLabel}>Chat</span>
                 <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.urlLink}>
                   {instanceUrl}
                 </a>
               </div>
               <div className={styles.infoRow}>
+                <span>Engine</span>
+                <span className={styles.mono}>NanoClaw Docker</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span>Model</span>
+                <span className={styles.mono}>Claude Sonnet 4.5</span>
+              </div>
+              <div className={styles.infoRow}>
                 <span>Status</span>
-                <span className={styles.statusBadge}>● Active</span>
+                <span className={styles.statusBadge}>● Running</span>
               </div>
             </div>
 
@@ -167,19 +172,31 @@ export default function DashboardPage() {
               <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
                 Chat with Your Agent →
               </a>
-              <a href={`https://t.me/BotFather`} target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>
-                ✈️ Connect Telegram Bot
-              </a>
             </div>
 
             <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
-              <h3 className={styles.cardTitle}>Your Agent</h3>
+              <h3 className={styles.cardTitle}>What You Get</h3>
               <div className={styles.featureGrid}>
-                <div className={styles.featureItem}>✅ Docker container (isolated)</div>
-                <div className={styles.featureItem}>✅ Claude Sonnet 4.5</div>
-                <div className={styles.featureItem}>✅ REST API + MCP</div>
-                <div className={styles.featureItem}>✅ Custom personality</div>
+                <div className={styles.featureItem}>🐳 Isolated Docker container</div>
+                <div className={styles.featureItem}>🧠 Claude Sonnet 4.5</div>
+                <div className={styles.featureItem}>🔌 REST API + MCP</div>
+                <div className={styles.featureItem}>✏️ Custom personality (CLAUDE.md)</div>
+                <div className={styles.featureItem}>📡 Telegram / Slack / Web</div>
+                <div className={styles.featureItem}>🔒 Fully isolated workspace</div>
               </div>
+            </div>
+
+            <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
+              <h3 className={styles.cardTitle}>API Access</h3>
+              <div className={styles.codeBlock}>
+                <pre className={styles.code}>{`curl -X POST ${instanceUrl}/v1/chat/completions \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"messages":[{"role":"user","content":"Hello!"}]}'`}</pre>
+              </div>
+              <p style={{ fontSize: '0.85rem', color: '#666', margin: '8px 0 0' }}>
+                Manage agents via <a href="/api/mcp" style={{ color: '#2EE68A' }}>MCP</a> or <a href="/api/agents" style={{ color: '#2EE68A' }}>REST API</a>
+              </p>
             </div>
           </div>
         </div>
@@ -187,20 +204,19 @@ export default function DashboardPage() {
     )
   }
 
-  // Provisioning in progress
+  // ============ PROVISIONING IN PROGRESS ============
   if (user.paid && provisioning) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.buildView}>
-            {/* Header */}
             <div className={styles.buildHeader}>
               <div className={styles.buildSpinner}>
                 <div className={styles.spinnerRing} />
-                <span className={styles.spinnerIcon}>{isFailed ? '❌' : (steps[currentStep]?.icon || '🚀')}</span>
+                <span className={styles.spinnerIcon}>{isFailed ? '❌' : (steps[currentStep]?.icon || '🐳')}</span>
               </div>
               <h1 className={styles.heroTitle}>
-                {isFailed ? 'Provisioning Failed' : 'Building Your Instance...'}
+                {isFailed ? 'Deploy Failed' : 'Deploying Your Agent...'}
               </h1>
               <p className={styles.heroSub}>{provisioning.message}</p>
             </div>
@@ -247,7 +263,7 @@ export default function DashboardPage() {
                   <span className={styles.terminalDot} style={{ background: '#ff5f57' }} />
                   <span className={styles.terminalDot} style={{ background: '#ffbd2e' }} />
                   <span className={styles.terminalDot} style={{ background: '#28c840' }} />
-                  <span className={styles.terminalTitle}>build log</span>
+                  <span className={styles.terminalTitle}>deploy log</span>
                 </div>
                 <div className={styles.terminalBody} ref={logRef}>
                   {provisioning.logs.map((log, i) => (
@@ -264,13 +280,13 @@ export default function DashboardPage() {
 
             {isFailed && (
               <div className={styles.errorBanner}>
-                ❌ Provisioning failed. Please contact support@clawdet.com
+                ❌ Deploy failed. Try refreshing or contact support.
               </div>
             )}
 
             {!isFailed && (
               <p className={styles.waitNote}>
-                ⏱️ Estimated time: 5-10 minutes • This page updates automatically
+                ⏱️ Usually takes ~10 seconds • This page updates automatically
               </p>
             )}
           </div>
@@ -279,20 +295,19 @@ export default function DashboardPage() {
     )
   }
 
-  // Free beta prompt (default)
-  const handleFreeBeta = async () => {
+  // ============ FALLBACK: manual deploy button ============
+  const handleDeploy = async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/provisioning/free-beta', { method: 'POST' })
-      const data = await res.json()
       if (res.ok) {
-        alert(`🎉 Success! Your instance is being provisioned. (Spot ${data.instanceNumber}/${data.totalLimit})`)
         window.location.reload()
       } else {
-        alert(data.message || data.error || 'Failed to start provisioning')
+        const data = await res.json()
+        alert(data.message || data.error || 'Failed to deploy')
       }
     } catch {
-      alert('Failed to start provisioning. Please try again.')
+      alert('Deploy failed. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -301,42 +316,32 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.heroTitle}>Welcome, {user.name}! 🎉</h1>
-        <p className={styles.heroSub}>@{user.username}</p>
+        <h1 className={styles.heroTitle}>Welcome, {user.name || user.email?.split('@')[0]}! 🐾</h1>
+        <p className={styles.heroSub}>Let's deploy your AI agent</p>
         
         <div className={styles.glassCard}>
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ color: '#2EE68A', marginBottom: '0.5rem' }}>🎉 Limited Time: Free Beta!</h2>
-            <p style={{ fontSize: '1.1rem', marginBottom: '0' }}>
-              <strong>First 20 users get a FREE instance!</strong>
+            <h2 style={{ color: '#2EE68A', marginBottom: '0.5rem' }}>🐳 Your NanoClaw Agent</h2>
+            <p style={{ fontSize: '1rem', color: '#8899a6', marginBottom: '0' }}>
+              Isolated Docker container • Claude Sonnet 4.5 • Ready in seconds
             </p>
           </div>
           
-          <p style={{ color: '#a0a0a0', lineHeight: 1.6 }}>
-            Get your own dedicated OpenClaw instance at{' '}
-            <strong style={{ color: '#2EE68A' }}>{user.username}.clawdet.com</strong>
-          </p>
-          
-          <div style={{ textAlign: 'center', margin: '2rem 0' }}>
-            <div style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '1.2rem', color: '#888' }}>$20/month</div>
-            <div style={{ fontSize: '2.5rem', color: '#2EE68A', fontWeight: 900 }}>FREE <span style={{ fontSize: '1rem', fontWeight: 400 }}>(Beta)</span></div>
-          </div>
-          
           <div className={styles.featureGrid}>
-            <div className={styles.featureItem}>✅ Dedicated VPS (4GB RAM, 2 vCPU)</div>
-            <div className={styles.featureItem}>✅ Your own subdomain</div>
-            <div className={styles.featureItem}>✅ Automatic SSL & DNS</div>
-            <div className={styles.featureItem}>✅ Pre-configured with Grok AI</div>
-            <div className={styles.featureItem}>✅ Advanced mode enabled</div>
-            <div className={styles.featureItem}>✅ Full tool integrations</div>
+            <div className={styles.featureItem}>🐳 Docker container (isolated)</div>
+            <div className={styles.featureItem}>🧠 Claude Sonnet 4.5</div>
+            <div className={styles.featureItem}>🔌 REST API + MCP</div>
+            <div className={styles.featureItem}>✏️ Custom personality</div>
+            <div className={styles.featureItem}>📡 Telegram / Slack / Web</div>
+            <div className={styles.featureItem}>🔒 Private workspace</div>
           </div>
           
-          <button className={styles.ctaPrimary} onClick={handleFreeBeta} disabled={loading} style={{ width: '100%', marginTop: '1.5rem' }}>
-            {loading ? 'Starting Provisioning...' : '🚀 Get My Free Instance Now'}
+          <button className={styles.ctaPrimary} onClick={handleDeploy} disabled={loading} style={{ width: '100%', marginTop: '1.5rem' }}>
+            {loading ? 'Deploying...' : '🚀 Deploy My Agent'}
           </button>
           
-          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#666' }}>
-            No credit card required • Provisioned in 10 minutes
+          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#555' }}>
+            Free beta • No credit card • ~10 seconds
           </p>
         </div>
       </div>
