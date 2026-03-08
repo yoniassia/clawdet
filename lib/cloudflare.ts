@@ -37,7 +37,7 @@ interface CloudflareResponse {
 export async function createSubdomain(
   username: string,
   ipAddress: string,
-  proxied: boolean = true // Use Cloudflare proxy for free SSL
+  proxied: boolean = false // DNS-only: Caddy handles SSL, Cloudflare proxy causes 525 errors
 ): Promise<{ success: boolean; subdomain?: string; error?: string }> {
   try {
     const subdomain = `${username}.${BASE_DOMAIN}`;
@@ -101,7 +101,7 @@ export async function createSubdomain(
 async function updateSubdomain(
   username: string,
   ipAddress: string,
-  proxied: boolean = true
+  proxied: boolean = false // DNS-only: Caddy handles SSL
 ): Promise<{ success: boolean; subdomain?: string; error?: string }> {
   try {
     const existingRecord = await getRecord(username);
