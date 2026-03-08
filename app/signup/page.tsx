@@ -44,7 +44,7 @@ export default function SignupPage() {
       if (result?.error) {
         setError(result.error)
       } else {
-        window.location.href = '/signup/details'
+        window.location.href = '/dashboard'
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -54,7 +54,7 @@ export default function SignupPage() {
   }
 
   const handleXAuth = () => {
-    signIn('twitter', { callbackUrl: '/signup/details' })
+    signIn('twitter', { callbackUrl: '/dashboard' })
   }
 
   return (

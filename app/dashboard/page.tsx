@@ -56,7 +56,19 @@ export default function DashboardPage() {
   const [provisioning, setProvisioning] = useState<ProvisioningStatus | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
+  const autoProvisionTriggered = useRef(false)
   const router = useRouter()
+
+  const autoProvision = async () => {
+    try {
+      const res = await fetch('/api/provisioning/free-beta', { method: 'POST' })
+      if (res.ok) {
+        window.location.reload()
+      }
+    } catch {
+      // Silent fail — user sees manual button as fallback
+    }
+  }
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -66,6 +78,9 @@ export default function DashboardPage() {
           setUser(data.user)
           if (data.user.paid) {
             fetchProvisioningStatus(data.user.userId)
+          } else if (!autoProvisionTriggered.current) {
+            autoProvisionTriggered.current = true
+            autoProvision()
           }
         } else {
           router.push('/signup')
@@ -137,14 +152,10 @@ export default function DashboardPage() {
 
             <div className={styles.glassCard}>
               <div className={styles.urlDisplay}>
-                <span className={styles.urlLabel}>Instance URL</span>
+                <span className={styles.urlLabel}>Agent Endpoint</span>
                 <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.urlLink}>
                   {instanceUrl}
                 </a>
-              </div>
-              <div className={styles.infoRow}>
-                <span>Server IP</span>
-                <span className={styles.mono}>{user.hetznerVpsIp || '—'}</span>
               </div>
               <div className={styles.infoRow}>
                 <span>Status</span>
@@ -154,7 +165,7 @@ export default function DashboardPage() {
 
             <div className={styles.ctaGroup}>
               <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
-                Open Your Instance →
+                Chat with Your Agent →
               </a>
               <a href={`https://t.me/BotFather`} target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>
                 ✈️ Connect Telegram Bot
@@ -162,12 +173,12 @@ export default function DashboardPage() {
             </div>
 
             <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
-              <h3 className={styles.cardTitle}>What&apos;s Included</h3>
+              <h3 className={styles.cardTitle}>Your Agent</h3>
               <div className={styles.featureGrid}>
-                <div className={styles.featureItem}>✅ Dedicated VPS (4GB RAM)</div>
-                <div className={styles.featureItem}>✅ Pre-configured Grok AI</div>
-                <div className={styles.featureItem}>✅ HTTPS with Cloudflare SSL</div>
-                <div className={styles.featureItem}>✅ Your own subdomain</div>
+                <div className={styles.featureItem}>✅ Docker container (isolated)</div>
+                <div className={styles.featureItem}>✅ Claude Sonnet 4.5</div>
+                <div className={styles.featureItem}>✅ REST API + MCP</div>
+                <div className={styles.featureItem}>✅ Custom personality</div>
               </div>
             </div>
           </div>
