@@ -85,9 +85,10 @@ export async function provisionDockerAgent(userId: string): Promise<void> {
     setStep(userId, 1, 'creating_container', 'Container running ✓')
     await sleep(500)
 
-    // === Step 2: DNS ===
+    // === Step 2: DNS + Caddy reverse proxy ===
     setStep(userId, 2, 'configuring_dns', `Setting up ${subdomain}.clawdet.com...`)
     
+    // DNS record
     try {
       const { createSubdomain } = await import('./cloudflare')
       const dnsResult = await createSubdomain(subdomain, HOST_IP, true)
@@ -99,8 +100,26 @@ export async function provisionDockerAgent(userId: string): Promise<void> {
     } catch (e: any) {
       addLog(userId, `DNS note: ${e.message} (may already exist)`, 'warn')
     }
+
+    // Add Caddy reverse proxy route
+    try {
+      addLog(userId, 'Adding Https reverse proxy...', 'info')
+      const { execSync } = await import('child_process')
+      const caddyBlock = `\n${subdomain}.clawdet.com {\n\treverse_proxy localhost:${agent.port}\n}\n`
+      const currentCaddyfile = execSync('cat /etc/caddy/Caddyfile', { encoding: 'utf8' })
+      
+      if (!currentCaddyfile.includes(`${subdomain}.clawdet.com`)) {
+        execSync(`echo '${caddyBlock}' >> /etc/caddy/Caddyfile`)
+        execSync('caddy reload --config /etc/caddy/Caddyfile 2>&1')
+        addLog(userId, `Caddy route added: ${subdomain}.clawdet.com → :${agent.port}`, 'success')
+      } else {
+        addLog(userId, `Caddy route already exists`, 'info')
+      }
+    } catch (e: any) {
+      addLog(userId, `Caddy config: ${e.message}`, 'warn')
+    }
     
-    setStep(userId, 2, 'configuring_dns', 'Domain configured ✓')
+    setStep(userId, 2, 'configuring_dns', 'Domain + HTTPS configured ✓')
     await sleep(500)
 
     // === Step 3: Health Check ===
