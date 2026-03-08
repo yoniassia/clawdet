@@ -13,7 +13,7 @@ import { updateUser, findUserById, getAllUsers, getUserCount } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-middleware'
 
 const FREE_BETA_LIMIT = 20
-const PROVISIONER = process.env.PROVISIONER ?? 'coolify'
+const PROVISIONER = process.env.PROVISIONER ?? 'docker'
 
 /**
  * GET - Check free beta eligibility
@@ -113,7 +113,11 @@ export async function POST(request: NextRequest) {
     const username = user.xUsername || user.email?.split('@')[0] || user.id
     console.log(`[FREE BETA] Starting ${PROVISIONER} provisioning for ${username} (${provisionedCount + 1}/${FREE_BETA_LIMIT})`)
 
-    if (PROVISIONER === 'coolify') {
+    if (PROVISIONER === 'docker') {
+      // Docker-based NanoClaw provisioning (default)
+      const { startDockerProvisioning } = await import('@/lib/provisioner-docker')
+      startDockerProvisioning(userId)
+    } else if (PROVISIONER === 'coolify') {
       // Coolify-based provisioning — inline to avoid .js import issues with webpack
       const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
       const baseDomain = process.env.CLAWDET_DOMAIN ?? 'clawdet.com'

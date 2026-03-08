@@ -178,6 +178,9 @@ export default function AdminPage() {
           <div className={styles.section}>
             <h2>Quick Actions</h2>
             <div className={styles.quickActions}>
+              <a href="/admin/fleet" className={styles.actionButton}>
+                🐳 NanoFleet Dashboard
+              </a>
               <a href="/admin/users" className={styles.actionButton}>
                 👥 User Management
               </a>
