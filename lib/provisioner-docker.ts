@@ -91,7 +91,7 @@ export async function provisionDockerAgent(userId: string): Promise<void> {
     // DNS record
     try {
       const { createSubdomain } = await import('./cloudflare')
-      const dnsResult = await createSubdomain(subdomain, HOST_IP, true)
+      const dnsResult = await createSubdomain(subdomain, HOST_IP, false) // DNS-only: Caddy handles SSL
       if (dnsResult.success) {
         addLog(userId, `DNS record created: ${subdomain}.clawdet.com → ${HOST_IP}`, 'success')
       } else {
