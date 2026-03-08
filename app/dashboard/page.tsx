@@ -51,6 +51,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [provisioning, setProvisioning] = useState<ProvisioningStatus | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [botToken, setBotToken] = useState('')
+  const [telegramStatus, setTelegramStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
+  const [telegramBot, setTelegramBot] = useState<{ username: string; link: string } | null>(null)
+  const [telegramError, setTelegramError] = useState('')
   const logRef = useRef<HTMLDivElement>(null)
   const autoProvisionTriggered = useRef(false)
   const router = useRouter()
@@ -176,35 +180,108 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className={styles.ctaGroup}>
-              <a href={instanceUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
-                Chat with Your Agent →
-              </a>
+            {/* Connect Telegram */}
+            <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
+              <h3 className={styles.cardTitle}>📱 Connect Telegram</h3>
+              
+              {telegramStatus === 'connected' && telegramBot ? (
+                <div style={{ textAlign: 'center', padding: '12px 0' }}>
+                  <p style={{ color: '#2EE68A', fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>
+                    ✅ Bot Connected!
+                  </p>
+                  <a 
+                    href={telegramBot.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.ctaPrimary}
+                    style={{ display: 'inline-block', marginTop: '8px' }}
+                  >
+                    Open {telegramBot.username} on Telegram →
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <p style={{ fontSize: '13px', color: '#8899a6', margin: '0 0 12px', lineHeight: 1.5 }}>
+                    1. Open <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" style={{ color: '#2EE68A' }}>@BotFather</a> on Telegram
+                    <br />2. Send <code style={{ background: '#1a1a1a', padding: '2px 6px', borderRadius: '4px' }}>/newbot</code> and follow the prompts
+                    <br />3. Paste the bot token below
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={botToken}
+                      onChange={e => setBotToken(e.target.value)}
+                      placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                      disabled={telegramStatus === 'connecting'}
+                      style={{
+                        flex: 1,
+                        padding: '12px',
+                        background: '#0a0a0a',
+                        border: '1px solid #2f3336',
+                        borderRadius: '8px',
+                        color: '#e7e9ea',
+                        fontSize: '14px',
+                        fontFamily: 'monospace',
+                        outline: 'none',
+                      }}
+                    />
+                    <button
+                      onClick={async () => {
+                        if (!botToken.trim()) return
+                        setTelegramStatus('connecting')
+                        setTelegramError('')
+                        try {
+                          const res = await fetch('/api/agents/telegram', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ botToken: botToken.trim() })
+                          })
+                          const data = await res.json()
+                          if (res.ok) {
+                            setTelegramStatus('connected')
+                            setTelegramBot({ username: data.bot.username, link: data.bot.link })
+                          } else {
+                            setTelegramStatus('error')
+                            setTelegramError(data.error)
+                          }
+                        } catch {
+                          setTelegramStatus('error')
+                          setTelegramError('Connection failed')
+                        }
+                      }}
+                      disabled={telegramStatus === 'connecting' || !botToken.trim()}
+                      style={{
+                        padding: '12px 20px',
+                        background: '#2EE68A',
+                        color: '#0a0a0a',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        opacity: telegramStatus === 'connecting' ? 0.6 : 1,
+                      }}
+                    >
+                      {telegramStatus === 'connecting' ? '...' : 'Connect'}
+                    </button>
+                  </div>
+                  {telegramError && (
+                    <p style={{ color: '#ff6b6b', fontSize: '13px', margin: '8px 0 0' }}>⚠️ {telegramError}</p>
+                  )}
+                </>
+              )}
             </div>
 
+            {/* Features + API */}
             <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
-              <h3 className={styles.cardTitle}>What You Get</h3>
+              <h3 className={styles.cardTitle}>Your Agent</h3>
               <div className={styles.featureGrid}>
-                <div className={styles.featureItem}>🐳 Isolated Docker container</div>
+                <div className={styles.featureItem}>🐳 Docker container</div>
                 <div className={styles.featureItem}>🧠 Claude Sonnet 4.5</div>
                 <div className={styles.featureItem}>🔌 REST API + MCP</div>
-                <div className={styles.featureItem}>✏️ Custom personality (CLAUDE.md)</div>
-                <div className={styles.featureItem}>📡 Telegram / Slack / Web</div>
-                <div className={styles.featureItem}>🔒 Fully isolated workspace</div>
+                <div className={styles.featureItem}>🔒 Isolated workspace</div>
               </div>
-            </div>
-
-            <div className={styles.glassCard} style={{ marginTop: '1rem' }}>
-              <h3 className={styles.cardTitle}>API Access</h3>
-              <div className={styles.codeBlock}>
-                <pre className={styles.code}>{`curl -X POST ${instanceUrl}/v1/chat/completions \\
-  -H "Authorization: Bearer YOUR_TOKEN" \\
-  -H "Content-Type: application/json" \\
-  -d '{"messages":[{"role":"user","content":"Hello!"}]}'`}</pre>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: '#666', margin: '8px 0 0' }}>
-                Manage agents via <a href="/api/mcp" style={{ color: '#2EE68A' }}>MCP</a> or <a href="/api/agents" style={{ color: '#2EE68A' }}>REST API</a>
-              </p>
             </div>
           </div>
         </div>
