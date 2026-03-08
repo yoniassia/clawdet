@@ -75,8 +75,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // If provisioning is actively in progress, don't restart
-    if (user.provisioningStatus && !['failed', 'complete', 'pending'].includes(user.provisioningStatus) && user.provisioningStatus !== null) {
+    // If provisioning is actively in progress (not null, not pending, not failed), don't restart
+    const activeStatuses = ['validating', 'creating_container', 'creating_vps', 'configuring_dns', 'installing', 'health_check']
+    if (user.provisioningStatus && activeStatuses.includes(user.provisioningStatus)) {
       return NextResponse.json({
         success: true,
         message: 'Provisioning already in progress',

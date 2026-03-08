@@ -72,9 +72,17 @@ export default function DashboardPage() {
       .then(data => {
         if (data.user) {
           setUser(data.user)
-          if (data.user.paid) {
-            fetchProvisioningStatus(data.user.userId)
+          const u = data.user
+          const needsProvision = !u.provisioningStatus || u.provisioningStatus === 'pending' || (!u.instanceUrl && u.provisioningStatus !== 'failed')
+          
+          if (u.instanceUrl && u.provisioningStatus === 'complete') {
+            // Already done
+            fetchProvisioningStatus(u.userId)
+          } else if (u.paid && !needsProvision) {
+            // In progress
+            fetchProvisioningStatus(u.userId)
           } else if (!autoProvisionTriggered.current) {
+            // Need to provision (new user or stuck)
             autoProvisionTriggered.current = true
             autoProvision()
           }

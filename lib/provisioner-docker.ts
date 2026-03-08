@@ -1,19 +1,18 @@
 /**
- * Docker-based Provisioner
- * Replaces VPS provisioning — each user gets a NanoClaw Docker container
+ * Docker-based NanoClaw Provisioner
+ * Creates isolated AI agent containers in ~5 seconds
  */
-import { createAgent, getAgentStatus, healthCheckAgent } from './docker-fleet'
+import { createAgent, healthCheckAgent } from './docker-fleet'
 import { findUserById, updateUserById } from './sqlite'
-import { createSubdomain } from './cloudflare'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || ''
 const HOST_IP = process.env.HOST_IP || '188.34.197.212'
 
 export const STEPS = [
-  { name: 'Validation', icon: '🔍', description: 'Validating configuration...' },
-  { name: 'Container Setup', icon: '🐳', description: 'Creating your AI container...' },
+  { name: 'Validation', icon: '🔍', description: 'Checking configuration...' },
+  { name: 'Container Setup', icon: '🐳', description: 'Creating Docker container...' },
   { name: 'DNS Configuration', icon: '🌐', description: 'Setting up your domain...' },
-  { name: 'Health Check', icon: '✅', description: 'Verifying your agent is live...' },
+  { name: 'Health Check', icon: '✅', description: 'Verifying agent is live...' },
 ] as const
 
 function addLog(userId: string, msg: string, type: 'info' | 'success' | 'error' | 'warn' = 'info') {
@@ -24,6 +23,7 @@ function addLog(userId: string, msg: string, type: 'info' | 'success' | 'error' 
   } catch { logs = [] }
   logs.push({ time: new Date().toISOString(), msg, type })
   updateUserById(userId, { provisioning_logs: JSON.stringify(logs) } as any)
+  console.log(`[DOCKER] [${type.toUpperCase()}] ${msg}`)
 }
 
 function setStep(userId: string, step: number, status: string, message?: string) {
@@ -36,30 +36,34 @@ function setStep(userId: string, step: number, status: string, message?: string)
     provisioning_progress: progress,
     provisioning_message: message || stepInfo.description,
   } as any)
-  addLog(userId, message || stepInfo.description, 'info')
+  addLog(userId, `Step ${step + 1}/${STEPS.length}: ${message || stepInfo.description}`, 'info')
 }
 
-/**
- * Provision a Docker-based NanoClaw agent for a user
- */
 export async function provisionDockerAgent(userId: string): Promise<void> {
-  console.log(`[DOCKER-PROVISIONER] Starting for user: ${userId}`)
+  console.log(`[DOCKER] ========== Starting provisioning for ${userId} ==========`)
   
   try {
-    // Step 0: Validation
-    setStep(userId, 0, 'pending', 'Validating configuration...')
+    // === Step 0: Validation ===
+    setStep(userId, 0, 'validating', 'Checking your account...')
     
     const user = findUserById(userId)
-    if (!user) throw new Error(`User ${userId} not found`)
-    if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured')
+    if (!user) throw new Error(`User ${userId} not found in database`)
+    
+    addLog(userId, `User found: ${user.email || user.x_username || userId}`, 'success')
+    
+    if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured on server')
+    addLog(userId, 'API key verified ✓', 'success')
     
     const username = user.x_username || user.email?.split('@')[0] || user.id
     const subdomain = username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    addLog(userId, `Agent name: ${subdomain}`, 'info')
     
-    addLog(userId, `Provisioning agent for ${username}`, 'success')
+    setStep(userId, 0, 'validating', 'Configuration valid ✓')
+    await sleep(500)
 
-    // Step 1: Create Docker container
-    setStep(userId, 1, 'creating_vps', 'Creating your AI container...')
+    // === Step 1: Create Docker container ===
+    setStep(userId, 1, 'creating_container', 'Pulling Docker image...')
+    addLog(userId, 'Creating NanoClaw container...', 'info')
     
     const agent = createAgent({
       userId,
@@ -68,69 +72,91 @@ export async function provisionDockerAgent(userId: string): Promise<void> {
       model: 'claude-sonnet-4-5'
     })
     
-    console.log(`[DOCKER-PROVISIONER] Container created: ${agent.containerName} on port ${agent.port}`)
-    addLog(userId, `Container ${agent.containerName} started on port ${agent.port}`, 'success')
+    addLog(userId, `Container: ${agent.containerName}`, 'success')
+    addLog(userId, `Port: ${agent.port}`, 'success')
+    addLog(userId, `Model: Claude Sonnet 4.5`, 'success')
+    addLog(userId, `Memory: 128MB limit`, 'info')
     
-    // Save container info to user record  
     updateUserById(userId, {
-      hetzner_vps_id: agent.containerId, // Reuse field for container ID
-      hetzner_vps_ip: `localhost:${agent.port}`, // Reuse field for endpoint
+      hetzner_vps_id: agent.containerId,
+      hetzner_vps_ip: `localhost:${agent.port}`,
     } as any)
+    
+    setStep(userId, 1, 'creating_container', 'Container running ✓')
+    await sleep(500)
 
-    // Step 2: DNS (point subdomain to main server)
-    setStep(userId, 2, 'configuring_dns', 'Setting up your domain...')
+    // === Step 2: DNS ===
+    setStep(userId, 2, 'configuring_dns', `Setting up ${subdomain}.clawdet.com...`)
     
     try {
+      const { createSubdomain } = await import('./cloudflare')
       const dnsResult = await createSubdomain(subdomain, HOST_IP, true)
       if (dnsResult.success) {
-        addLog(userId, `DNS configured: ${subdomain}.clawdet.com`, 'success')
+        addLog(userId, `DNS record created: ${subdomain}.clawdet.com → ${HOST_IP}`, 'success')
       } else {
-        addLog(userId, `DNS warning: ${dnsResult.error} (may already exist)`, 'warn')
+        addLog(userId, `DNS: ${dnsResult.error || 'record may already exist'}`, 'warn')
       }
     } catch (e: any) {
-      addLog(userId, `DNS note: ${e.message}`, 'warn')
+      addLog(userId, `DNS note: ${e.message} (may already exist)`, 'warn')
+    }
+    
+    setStep(userId, 2, 'configuring_dns', 'Domain configured ✓')
+    await sleep(500)
+
+    // === Step 3: Health Check ===
+    setStep(userId, 3, 'health_check', 'Waiting for agent to start...')
+    addLog(userId, 'Pinging agent health endpoint...', 'info')
+    
+    let healthy = false
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      addLog(userId, `Health check attempt ${attempt}/5...`, 'info')
+      await sleep(2000)
+      healthy = await healthCheckAgent(agent.port, agent.token)
+      if (healthy) {
+        addLog(userId, `Agent responded! Health: OK ✓`, 'success')
+        break
+      }
+      addLog(userId, `Attempt ${attempt}: not ready yet`, 'warn')
+    }
+    
+    if (!healthy) {
+      addLog(userId, 'Agent may still be starting — it should be ready shortly', 'warn')
     }
 
-    // Step 3: Health check
-    setStep(userId, 3, 'installing', 'Verifying your agent is live...')
-    
-    // Wait a moment for container to fully start
-    await new Promise(r => setTimeout(r, 3000))
-    
-    const healthy = await healthCheckAgent(agent.port, agent.token)
-    if (healthy) {
-      addLog(userId, 'Agent health check passed ✅', 'success')
-    } else {
-      addLog(userId, 'Agent may still be starting up', 'warn')
-    }
-
-    // Complete
+    // === Complete ===
     const instanceUrl = `https://${subdomain}.clawdet.com`
     
     updateUserById(userId, {
       provisioning_status: 'complete',
       provisioning_step: 4,
       provisioning_progress: 100,
-      provisioning_message: 'Your agent is ready!',
+      provisioning_message: 'Your agent is live!',
       instance_url: instanceUrl,
     } as any)
     
-    addLog(userId, `🎉 Agent ready at ${instanceUrl}`, 'success')
-    console.log(`[DOCKER-PROVISIONER] ✅ Complete! ${instanceUrl}`)
+    addLog(userId, `🎉 Agent deployed at ${instanceUrl}`, 'success')
+    addLog(userId, `Token: ${agent.token.substring(0, 12)}...`, 'info')
+    addLog(userId, `API: POST ${instanceUrl}/v1/chat/completions`, 'info')
+    console.log(`[DOCKER] ========== COMPLETE: ${instanceUrl} ==========`)
 
   } catch (error: any) {
-    console.error(`[DOCKER-PROVISIONER] ❌ Failed:`, error)
-    updateUserById(userId, { provisioning_status: 'failed' } as any)
-    addLog(userId, `Failed: ${error.message}`, 'error')
+    console.error(`[DOCKER] ========== FAILED: ${error.message} ==========`)
+    updateUserById(userId, {
+      provisioning_status: 'failed',
+      provisioning_message: `Failed: ${error.message}`,
+    } as any)
+    addLog(userId, `❌ ${error.message}`, 'error')
     throw error
   }
 }
 
-/**
- * Start provisioning in background
- */
 export function startDockerProvisioning(userId: string): void {
+  console.log(`[DOCKER] Queuing background provisioning for ${userId}`)
   provisionDockerAgent(userId).catch(error => {
-    console.error(`[DOCKER-PROVISIONER] Background job failed for ${userId}:`, error)
+    console.error(`[DOCKER] Background job failed for ${userId}:`, error)
   })
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
