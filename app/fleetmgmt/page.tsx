@@ -169,7 +169,7 @@ const capacityModel = [
 ];
 
 /* ── tab type ─────────────────────────────────────── */
-type Tab = 'current' | 'clawx' | 'scripts' | 'roadmap' | 'capacity';
+type Tab = 'current' | 'clawx' | 'scripts' | 'roadmap' | 'capacity' | 'paperclip';
 
 export default function FleetMgmtPage() {
   const [tab, setTab] = useState<Tab>('current');
@@ -226,6 +226,7 @@ export default function FleetMgmtPage() {
           ['scripts', '📜 Migration Scripts'],
           ['roadmap', '🗺️ Roadmap'],
           ['capacity', '📊 Capacity & Cost'],
+          ['paperclip', '🤖 Paperclip'],
         ] as [Tab, string][]).map(([t, label]) => (
           <button key={t} onClick={() => setTab(t)} style={{
             padding: '10px 18px',
@@ -718,6 +719,261 @@ export default function FleetMgmtPage() {
                     ))}
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* ═══════════════ PAPERCLIP ═══════════════ */}
+        {tab === 'paperclip' && (
+          <div>
+            {/* Header / What is Paperclip */}
+            <div style={glass({ marginBottom: 24, borderColor: `${G}33` })}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '2.2rem' }}>📎</span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.3rem' }}>
+                    Paperclip
+                    <a href="https://github.com/paperclipai/paperclip" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 12, textDecoration: 'none' }}>
+                      <span style={{ ...badge(YELLOW), fontSize: '.65rem', verticalAlign: 'middle' }}>⭐ 10.9K</span>
+                    </a>
+                    <span style={{ ...badge(G), fontSize: '.6rem', marginLeft: 8, verticalAlign: 'middle' }}>MIT</span>
+                    <span style={{ ...badge(PURPLE), fontSize: '.6rem', marginLeft: 8, verticalAlign: 'middle' }}>OPENCLAW BRANCH</span>
+                  </h3>
+                  <p style={{ margin: '6px 0 0', color: MUTED, fontSize: '.88rem' }}>
+                    Open-source orchestration platform for <strong style={{ color: TEXT }}>&ldquo;zero-human companies&rdquo;</strong>
+                  </p>
+                </div>
+              </div>
+              <div style={{ background: `linear-gradient(135deg, rgba(46,230,138,.08), rgba(210,168,255,.06))`, border: `1px solid ${G}33`, borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, textAlign: 'center', lineHeight: 1.7 }}>
+                  <span style={{ color: MUTED }}>If</span>{' '}
+                  <span style={{ color: BLUE }}>OpenClaw is an employee</span>
+                  <span style={{ color: MUTED }}>,</span>{' '}
+                  <span style={{ color: G }}>Paperclip is the company.</span>
+                </div>
+              </div>
+              <p style={{ color: MUTED, fontSize: '.88rem', lineHeight: 1.7, margin: 0 }}>
+                Paperclip is <strong style={{ color: TEXT }}>not a container orchestrator</strong> — it&apos;s a <strong style={{ color: G }}>control plane for AI agent teams</strong>. It orchestrates teams of AI agents toward business goals with org charts, budgets, governance, goal alignment, heartbeat-based task scheduling, cost control, ticket systems, and multi-company isolation. Stack: Node.js + React UI + PostgreSQL. Port 3100. Docker compose available.
+              </p>
+              <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+                {['OpenClaw', 'Claude Code', 'Codex', 'Cursor', 'Bash', 'HTTP'].map(a => (
+                  <span key={a} style={{ padding: '4px 12px', borderRadius: 20, fontSize: '.72rem', fontWeight: 600, color: TEXT, background: 'rgba(255,255,255,.06)', border: `1px solid ${BORDER}` }}>
+                    {a}
+                  </span>
+                ))}
+                <span style={{ color: MUTED, fontSize: '.72rem', alignSelf: 'center' }}>← supported agent runtimes</span>
+              </div>
+            </div>
+
+            {/* Architecture Diagram */}
+            <div style={glass({ marginBottom: 24 })}>
+              <h3 style={{ margin: '0 0 20px', fontSize: '1.05rem' }}>🏗️ Architecture — Paperclip as Orchestration Layer</h3>
+              <div style={{ ...mono, background: '#0d1117', borderRadius: 10, padding: 24, overflowX: 'auto', lineHeight: 2 }}>
+                <div style={{ color: YELLOW, fontWeight: 700 }}>{'                    👤 User / Business Owner'}</div>
+                <div style={{ color: MUTED }}>{'                           │'}</div>
+                <div style={{ color: MUTED }}>{'                    Goals, Budgets, Org Chart'}</div>
+                <div style={{ color: MUTED }}>{'                           │'}</div>
+                <div style={{ color: MUTED }}>{'              ┌────────────▼────────────┐'}</div>
+                <div style={{ color: G, fontWeight: 700 }}>{'              │   📎 PAPERCLIP (:3100)   │'}</div>
+                <div style={{ color: G }}>{'              │  ┌─────────────────────┐ │'}</div>
+                <div style={{ color: G }}>{'              │  │  Company Brain      │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Org Chart        │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Goal Alignment   │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Budget Control   │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Ticket System    │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Heartbeat Sched  │ │'}</div>
+                <div style={{ color: G }}>{'              │  │  • Governance       │ │'}</div>
+                <div style={{ color: G }}>{'              │  └─────────────────────┘ │'}</div>
+                <div style={{ color: G }}>{'              │       React UI + PG      │'}</div>
+                <div style={{ color: MUTED }}>{'              └──┬─────────┬─────────┬──┘'}</div>
+                <div style={{ color: MUTED }}>{'                 │         │         │'}</div>
+                <div style={{ color: MUTED }}>{'          openclawgateway  │    HTTP adapters'}</div>
+                <div style={{ color: MUTED }}>{'                 │         │         │'}</div>
+                <div style={{ color: BLUE }}>{'           ┌─────▼──┐ ┌────▼───┐ ┌───▼────┐'}</div>
+                <div style={{ color: BLUE }}>{'           │NanoClaw│ │NanoClaw│ │NanoClaw│'}</div>
+                <div style={{ color: BLUE }}>{'           │Agent 1 │ │Agent 2 │ │Agent 3 │'}</div>
+                <div style={{ color: BLUE }}>{'           │:18810  │ │:18811  │ │:18812  │'}</div>
+                <div style={{ color: BLUE }}>{'           └────────┘ └────────┘ └────────┘'}</div>
+                <div style={{ color: MUTED, marginTop: 12 }}>{'// Paperclip = Company Brain (goals, budgets, governance)'}</div>
+                <div style={{ color: MUTED }}>{'// NanoClaw  = Agent Hands  (execution, tools, code)'}</div>
+                <div style={{ color: MUTED }}>{'// openclawgateway branch: direct OpenClaw integration'}</div>
+              </div>
+            </div>
+
+            {/* Key Insight Cards */}
+            <div style={glass({ marginBottom: 24 })}>
+              <h3 style={{ margin: '0 0 16px', fontSize: '1.05rem' }}>🧠 Why Paperclip Fits Clawdet / NanoClaw</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+                {[
+                  { icon: '🎯', title: 'Agent Orchestration Layer', desc: 'Paperclip sits ABOVE our Docker containers and manages them as a team. Instead of individual agents doing random tasks, they work toward coordinated business goals.', color: G },
+                  { icon: '📋', title: 'Goal-Driven Tasks', desc: 'Instead of just chat, agents get assigned goals from the org chart. Product manager agent delegates to developer agent, who delegates to QA agent. Like a real company.', color: BLUE },
+                  { icon: '💰', title: 'Cost Control', desc: 'Monthly budgets per agent, auto-pause when budget hit. Solves our Anthropic credit burnout problem — set $50/mo per agent and never overspend.', color: YELLOW },
+                  { icon: '💓', title: 'Heartbeat System', desc: 'Agents check in on schedule, get new tasks, report progress. No more "fire and forget" — every agent has a heartbeat cadence and task queue.', color: PURPLE },
+                  { icon: '🏢', title: 'Multi-Company', desc: 'Each Clawdet user could run their own "company" of agents. Full isolation: separate org charts, budgets, goals, and governance per company.', color: ORANGE },
+                  { icon: '🔌', title: 'OpenClaw Integration', desc: 'Already has an openclawgateway branch on GitHub — direct integration with OpenClaw. Adapters system (packages/adapters/) for plugging in agent runtimes.', color: G },
+                ].map(c => (
+                  <div key={c.title} style={{ background: 'rgba(255,255,255,.03)', border: `1px solid ${BORDER}`, borderRadius: 10, padding: 16 }}>
+                    <div style={{ fontSize: '1.1rem', marginBottom: 8 }}>{c.icon} <strong style={{ color: c.color }}>{c.title}</strong></div>
+                    <div style={{ color: MUTED, fontSize: '.82rem', lineHeight: 1.6 }}>{c.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Feature Comparison */}
+            <div style={glass({ overflowX: 'auto', marginBottom: 24 })}>
+              <h3 style={{ margin: '0 0 16px', fontSize: '1.05rem' }}>📊 What Paperclip Adds vs What We Have</h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.82rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: `2px solid ${G}33` }}>
+                    <th style={{ textAlign: 'left', padding: '10px 12px', color: MUTED, fontWeight: 700, fontSize: '.72rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, width: '25%' }}>Capability</th>
+                    <th style={{ textAlign: 'center', padding: '10px 12px', color: ORANGE, fontWeight: 700, fontSize: '.72rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, width: '20%' }}>NanoClaw Today</th>
+                    <th style={{ textAlign: 'center', padding: '10px 12px', color: BLUE, fontWeight: 700, fontSize: '.72rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, width: '20%' }}>ClawX Fleet Plan</th>
+                    <th style={{ textAlign: 'center', padding: '10px 12px', color: G, fontWeight: 700, fontSize: '.72rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, width: '35%' }}>+ Paperclip</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { cap: 'Agent Coordination', nano: '❌ None', clawx: '❌ None', paper: '✅ Org chart, role hierarchy, delegation chains' },
+                    { cap: 'Task Assignment', nano: '💬 Chat-based', clawx: '💬 Chat-based', paper: '✅ Goal → ticket → agent assignment' },
+                    { cap: 'Budget Management', nano: '❌ None', clawx: '❌ None', paper: '✅ Per-agent monthly budgets, auto-pause' },
+                    { cap: 'Cost Visibility', nano: '❌ Unknown', clawx: '📊 LLM metrics', paper: '✅ Per-agent, per-goal cost tracking' },
+                    { cap: 'Heartbeat / Scheduling', nano: '⚙️ Per-agent config', clawx: '⚙️ Per-agent config', paper: '✅ Centralized heartbeat cadence + task queue' },
+                    { cap: 'Multi-Tenant', nano: '✅ Per-container', clawx: '✅ Per-container', paper: '✅ Full company isolation + governance' },
+                    { cap: 'Goal Alignment', nano: '❌ None', clawx: '❌ None', paper: '✅ Business goals cascade to agent tasks' },
+                    { cap: 'Agent-to-Agent Comms', nano: '❌ None', clawx: '❌ None', paper: '✅ Internal ticket system + delegation' },
+                    { cap: 'Container Orchestration', nano: '✅ Docker', clawx: '✅ Docker + migration', paper: '🔄 Delegates to existing Docker infra' },
+                    { cap: 'Observability', nano: '❌ Manual', clawx: '✅ Prometheus + Grafana', paper: '✅ + agent performance dashboards' },
+                  ].map((r, i) => (
+                    <tr key={i} style={{ borderBottom: `1px solid ${BORDER}33` }}>
+                      <td style={{ padding: '12px', fontWeight: 600, fontSize: '.83rem' }}>{r.cap}</td>
+                      <td style={{ padding: '12px', textAlign: 'center', fontSize: '.8rem' }}>{r.nano}</td>
+                      <td style={{ padding: '12px', textAlign: 'center', fontSize: '.8rem' }}>{r.clawx}</td>
+                      <td style={{ padding: '12px', textAlign: 'center', fontSize: '.8rem', color: G }}>{r.paper}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Integration Plan */}
+            <div style={glass({ marginBottom: 24 })}>
+              <h3 style={{ margin: '0 0 20px', fontSize: '1.05rem' }}>🔧 Integration Plan: Paperclip + NanoClaw Fleet</h3>
+              <div style={{ position: 'relative', paddingLeft: 36 }}>
+                <div style={{ position: 'absolute', left: 14, top: 0, bottom: 0, width: 2, background: `linear-gradient(to bottom, ${BLUE}, ${G}, ${PURPLE}, ${ORANGE})` }} />
+                {[
+                  { step: 'Step 1', title: 'Deploy Paperclip alongside Clawdet', color: BLUE, items: [
+                    'docker-compose up on port 3100 with PostgreSQL',
+                    'Caddy reverse proxy: paperclip.clawdet.com → :3100',
+                    'Create first "company" with org chart',
+                    'Initial cost: 0 (self-hosted, ~256MB RAM)',
+                  ]},
+                  { step: 'Step 2', title: 'Connect via openclawgateway adapter', color: G, items: [
+                    'Use the openclawgateway branch for native OpenClaw integration',
+                    'Register each NanoClaw container as an "agent" in Paperclip',
+                    'Map Docker containers → Paperclip agent roster',
+                    'Configure heartbeat endpoints per agent',
+                  ]},
+                  { step: 'Step 3', title: 'Define goals + org chart', color: PURPLE, items: [
+                    'Create agent roles: Developer, Researcher, Ops, QA',
+                    'Set business goals that cascade to agent tasks',
+                    'Configure budget limits per agent ($50-200/mo)',
+                    'Set up delegation chains (product → dev → QA)',
+                  ]},
+                  { step: 'Step 4', title: 'Full production workflow', color: ORANGE, items: [
+                    'User sets business goal in Paperclip UI',
+                    'Paperclip decomposes into tickets, assigns to agents',
+                    'Agents execute via NanoClaw containers (tools, code, web)',
+                    'Results flow back through heartbeat check-ins',
+                    'Budget tracking prevents overspend, auto-pause on limit',
+                  ]},
+                ].map((p, i) => (
+                  <div key={i} style={{ marginBottom: 20, position: 'relative' }}>
+                    <div style={{
+                      position: 'absolute', left: -29, top: 6, width: 16, height: 16, borderRadius: '50%',
+                      background: p.color, border: `3px solid ${BG}`, boxShadow: `0 0 12px ${p.color}44`,
+                    }} />
+                    <div style={{ background: 'rgba(255,255,255,.03)', border: `1px solid ${BORDER}`, borderRadius: 12, padding: 20 }}>
+                      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 12 }}>
+                        <span style={badge(p.color)}>{p.step}</span>
+                        <strong style={{ fontSize: '.95rem' }}>{p.title}</strong>
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 2, fontSize: '.85rem' }}>
+                        {p.items.map(item => (
+                          <li key={item} style={{ color: MUTED }}>
+                            <span style={{ color: TEXT }}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Visual Flow */}
+            <div style={glass({ marginBottom: 24 })}>
+              <h3 style={{ margin: '0 0 20px', fontSize: '1.05rem' }}>🔄 Full Flow: User → Paperclip → NanoClaw Agents</h3>
+              <div style={{ ...mono, background: '#0d1117', borderRadius: 10, padding: 24, overflowX: 'auto', lineHeight: 2 }}>
+                <div style={{ color: YELLOW, fontWeight: 700 }}>{'  👤 User: "Build me a landing page for product X"'}</div>
+                <div style={{ color: MUTED }}>{'     │'}</div>
+                <div style={{ color: MUTED }}>{'     ▼'}</div>
+                <div style={{ color: G, fontWeight: 700 }}>{'  📎 Paperclip (Company Brain)'}</div>
+                <div style={{ color: G }}>{'     ├── Decomposes goal into tickets'}</div>
+                <div style={{ color: G }}>{'     ├── Checks budget ($47/$200 used this month)'}</div>
+                <div style={{ color: G }}>{'     ├── Consults org chart for assignments'}</div>
+                <div style={{ color: G }}>{'     └── Dispatches to agents:'}</div>
+                <div style={{ color: MUTED }}>{'         │'}</div>
+                <div style={{ color: MUTED }}>{'         ├─────────────────┬─────────────────┐'}</div>
+                <div style={{ color: MUTED }}>{'         │                 │                 │'}</div>
+                <div style={{ color: BLUE }}>{'    ┌────▼─────┐    ┌─────▼────┐    ┌────▼─────┐'}</div>
+                <div style={{ color: BLUE }}>{'    │ 🎨 Agent │    │ 💻 Agent │    │ 🧪 Agent │'}</div>
+                <div style={{ color: BLUE }}>{'    │ Designer │    │   Dev    │    │    QA    │'}</div>
+                <div style={{ color: BLUE }}>{'    │  :18810  │    │  :18811  │    │  :18812  │'}</div>
+                <div style={{ color: BLUE }}>{'    └────┬─────┘    └─────┬────┘    └────┬─────┘'}</div>
+                <div style={{ color: MUTED }}>{'         │                 │                 │'}</div>
+                <div style={{ color: PURPLE }}>{'    Mockup done ✓    Code done ✓     Tests pass ✓'}</div>
+                <div style={{ color: MUTED }}>{'         │                 │                 │'}</div>
+                <div style={{ color: MUTED }}>{'         └─────────────────┴─────────────────┘'}</div>
+                <div style={{ color: MUTED }}>{'                          │'}</div>
+                <div style={{ color: MUTED }}>{'                          ▼'}</div>
+                <div style={{ color: G, fontWeight: 700 }}>{'  📎 Paperclip: Goal complete! Cost: $12.40'}</div>
+                <div style={{ color: G }}>{'     └── Updates budget, logs results, notifies user'}</div>
+              </div>
+            </div>
+
+            {/* Key Insight */}
+            <div style={glass({ borderColor: `${G}44` })}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+                <div style={{ textAlign: 'center', padding: 20 }}>
+                  <div style={{ fontSize: '3rem', marginBottom: 12 }}>📎</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: G, marginBottom: 8 }}>Paperclip</div>
+                  <div style={{ color: TEXT, fontWeight: 600, marginBottom: 8 }}>The Company Brain</div>
+                  <div style={{ color: MUTED, fontSize: '.82rem', lineHeight: 1.6 }}>
+                    Goals · Org Charts · Budgets · Governance · Task Decomposition · Agent Coordination · Cost Control
+                  </div>
+                  <div style={{ marginTop: 12 }}>
+                    <a href="https://github.com/paperclipai/paperclip" target="_blank" rel="noopener noreferrer" style={{ color: G, fontSize: '.82rem', textDecoration: 'none', fontWeight: 600 }}>
+                      github.com/paperclipai/paperclip →
+                    </a>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                  <div style={{ fontSize: '2rem', color: G }}>+</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: 20 }}>
+                  <div style={{ fontSize: '3rem', marginBottom: 12 }}>🐾</div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: BLUE, marginBottom: 8 }}>NanoClaw</div>
+                  <div style={{ color: TEXT, fontWeight: 600, marginBottom: 8 }}>The Agent Hands</div>
+                  <div style={{ color: MUTED, fontSize: '.82rem', lineHeight: 1.6 }}>
+                    Execution · Tools · Code · Web Browsing · File Ops · Shell Commands · Docker Containers
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginTop: 20, padding: 16, background: 'rgba(46,230,138,.06)', borderRadius: 10, textAlign: 'center' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: G }}>
+                  Together: A full AI company where the brain (Paperclip) directs the hands (NanoClaw) toward business outcomes — with budgets, governance, and accountability built in.
+                </div>
               </div>
             </div>
           </div>
