@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoneyClaw — Consolidated Strategic Analysis</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2333;--border:#30363d;--text:#e6edf3;--text-muted:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--accent3:#f0883e;--danger:#f85149;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+header{background:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#1a1e2e 100%);border-bottom:1px solid var(--border);padding:40px 0;text-align:center}
+header h1{font-size:2.4rem;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+header p{color:var(--text-muted);font-size:1.1rem}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;margin:4px}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent)}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent2)}
+.badge-orange{background:rgba(240,136,62,.15);color:var(--accent3)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-purple{background:rgba(188,140,255,.15);color:var(--purple)}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:100}
+nav .container{display:flex;gap:16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav a{color:var(--text-muted);font-size:.875rem;padding:6px 12px;border-radius:6px;transition:all .2s}
+nav a:hover{color:var(--text);background:var(--surface2);text-decoration:none}
+nav a.nav-page{color:var(--accent);font-weight:600;border:1px solid var(--accent);background:rgba(88,166,255,.08)}
+section{padding:48px 0;border-bottom:1px solid var(--border)}
+h2{font-size:1.8rem;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+h3{font-size:1.3rem;margin:24px 0 12px;color:var(--accent)}
+h4{font-size:1.1rem;margin:16px 0 8px;color:var(--text)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.card-grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:var(--surface2);color:var(--accent);font-weight:600;position:sticky;top:52px}
+tr:hover{background:rgba(88,166,255,.04)}
+.highlight-row{background:rgba(63,185,80,.08)!important}
+.rec{background:linear-gradient(135deg,rgba(63,185,80,.15),rgba(63,185,80,.05));border:1px solid rgba(63,185,80,.3);border-radius:12px;padding:20px 24px;margin:16px 0}
+.rec h4{color:var(--accent2);margin-top:0}
+.warn{background:linear-gradient(135deg,rgba(240,136,62,.15),rgba(240,136,62,.05));border:1px solid rgba(240,136,62,.3);border-radius:12px;padding:20px 24px;margin:16px 0}
+.danger-box{background:linear-gradient(135deg,rgba(248,81,73,.15),rgba(248,81,73,.05));border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:20px 24px;margin:16px 0}
+.danger-box h4{color:var(--danger);margin-top:0}
+ul{margin:8px 0 8px 24px}li{margin:4px 0}
+footer{padding:32px 0;text-align:center;color:var(--text-muted);font-size:.85rem}
+.verdict-box{background:linear-gradient(135deg,rgba(88,166,255,.1),rgba(188,140,255,.1));border:2px solid var(--accent);border-radius:16px;padding:32px;margin:24px 0;text-align:center}
+.verdict-box h3{color:var(--accent);font-size:1.6rem;margin-bottom:16px}
+.timeline{position:relative;padding:20px 0 20px 40px}
+.timeline::before{content:'';position:absolute;left:16px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:32px}
+.timeline-item::before{content:'';position:absolute;left:-32px;top:4px;width:14px;height:14px;border-radius:50%;border:2px solid var(--accent);background:var(--bg)}
+.timeline-item.active::before{background:var(--accent2);border-color:var(--accent2)}
+.timeline-item h4{margin:0 0 4px}
+.timeline-item p{color:var(--text-muted);margin:0}
+.dimension-card{text-align:center;padding:32px 24px}
+.dimension-card .icon{font-size:2.5rem;margin-bottom:12px}
+.dimension-card h3{color:var(--accent);margin:0 0 8px}
+.flowchart{display:flex;flex-direction:column;gap:12px;max-width:600px;margin:0 auto}
+.flow-q{background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:16px 20px;text-align:center;font-weight:600}
+.flow-opts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.flow-opt{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:.9rem;cursor:default;transition:border-color .2s}
+.flow-opt:hover{border-color:var(--accent)}
+.flow-arrow{text-align:center;color:var(--text-muted);font-size:1.2rem}
+.risk-grid{display:grid;grid-template-columns:auto 1fr auto;gap:8px 16px;align-items:center}
+.risk-level{padding:4px 10px;border-radius:4px;font-size:.8rem;font-weight:600;text-align:center;min-width:70px}
+.risk-low{background:rgba(63,185,80,.15);color:var(--accent2)}
+.risk-med{background:rgba(240,136,62,.15);color:var(--accent3)}
+.risk-high{background:rgba(248,81,73,.15);color:var(--danger)}
+@media(max-width:768px){
+.card-grid,.card-grid-3{grid-template-columns:1fr}
+nav .container{gap:8px}
+header h1{font-size:1.6rem}
+h2{font-size:1.4rem}
+table{font-size:.8rem}
+th,td{padding:8px}
+.flow-opts{flex-direction:column}
+}
+#auth-wall{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#auth-wall h2{color:var(--accent)}
+#auth-wall input{padding:12px 20px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:1rem;width:280px;text-align:center}
+#auth-wall button{padding:12px 32px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:1rem}
+#auth-wall button:hover{opacity:.9}
+#auth-wall .err{color:var(--danger);font-size:.85rem;min-height:20px}
+</style>
+</head>
+<body>
+
+<div id="auth-wall">
+<h2>🎯 MoneyClaw Strategic Analysis</h2>
+<p style="color:var(--text-muted)">Enter password to access</p>
+<input type="password" id="pw" placeholder="Password" autofocus>
+<button onclick="checkPw()">Access Report</button>
+<div class="err" id="err"></div>
+</div>
+<script>
+function checkPw(){const p=document.getElementById('pw').value;if(p==='moneyclaw2026'){document.getElementById('auth-wall').style.display='none'}else{document.getElementById('err').textContent='Incorrect password'}}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw()})
+</script>
+
+<header>
+<div class="container">
+<h1>🎯 MoneyClaw — Consolidated Strategic Analysis</h1>
+<p>Infrastructure × Architecture × Claw Model — One Decision Framework</p>
+<div style="margin-top:12px">
+<span class="badge badge-blue">Feb 2026</span>
+<span class="badge badge-green">v1.0</span>
+<span class="badge badge-purple">CEO Brief</span>
+</div>
+</div>
+</header>
+
+<nav>
+<div class="container">
+<a href="index.html" class="nav-page">📊 Cost Analysis</a>
+<a href="security.html" class="nav-page">🛡️ Security</a>
+<a href="models.html" class="nav-page">🐾 Claw Models</a>
+<a href="moneyclawv1.html" class="nav-page">🏗️ MoneyClaw V1</a>
+<a href="#executive-summary">Executive Summary</a>
+<a href="#three-dimensions">Three Dimensions</a>
+<a href="#moneyclaw-v1">MoneyClaw V1</a>
+<a href="#decision-matrix">Decision Matrix</a>
+<a href="#flowchart">Decision Flow</a>
+<a href="#tco">TCO</a>
+<a href="#roadmap">Roadmap</a>
+<a href="#risks">Risks</a>
+<a href="#verdict">Verdict</a>
+</div>
+    <a href="orchestration.html">🔧 Orchestration</a>
+  </nav>
+
+<main>
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="executive-summary">
+<div class="container">
+<h2>📋 Executive Summary</h2>
+
+<div class="verdict-box">
+<h3>The One Path</h3>
+<p style="font-size:1.2rem;margin-bottom:16px"><strong>OpenClaw</strong> on <strong>Hetzner</strong> with <strong>K3s</strong> + custom provisioner</p>
+<p style="color:var(--text-muted)">Best ecosystem × lowest cost × production-proven security (with hardening layers)</p>
+</div>
+
+<div class="card-grid">
+<div class="card">
+<h4>🏗️ Infrastructure: Hetzner</h4>
+<p>5-10x cheaper than AWS/Azure/GCP. EU data centers. Full API. Scales from $50/mo to $12K/mo covering 5K → 500K agents.</p>
+</div>
+<div class="card">
+<h4>🔧 Architecture: K3s + Cilium</h4>
+<p>Lightweight Kubernetes (75% less overhead than vanilla K8s). eBPF network policies. Namespace isolation per tenant. KEDA auto-scaling.</p>
+</div>
+<div class="card">
+<h4>🐾 Claw Model: OpenClaw</h4>
+<p>11+ platforms, 5,700+ skills, 200K+ community. Memory overhead (1.5GB) is amortized across thousands of agents via shared gateway.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- THREE DIMENSIONS -->
+<section id="three-dimensions">
+<div class="container">
+<h2>🎲 The Three Dimensions</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">Every AI agent platform decision has three independent axes. Most teams only evaluate one.</p>
+
+<div class="card-grid-3">
+<div class="card dimension-card">
+<div class="icon">🌐</div>
+<h3>WHERE</h3>
+<h4>Infrastructure</h4>
+<p>Which cloud? Managed vs self-hosted? Pricing model?</p>
+<p style="color:var(--accent2);margin-top:12px;font-weight:600">→ Hetzner</p>
+<p style="color:var(--text-muted);font-size:.85rem"><a href="index.html">Full analysis →</a></p>
+</div>
+<div class="card dimension-card">
+<div class="icon">🏗️</div>
+<h3>HOW</h3>
+<h4>Architecture</h4>
+<p>Container runtime? Orchestration? Isolation? Networking?</p>
+<p style="color:var(--accent2);margin-top:12px;font-weight:600">→ K3s + Cilium + Podman</p>
+<p style="color:var(--text-muted);font-size:.85rem"><a href="security.html">Full analysis →</a></p>
+</div>
+<div class="card dimension-card">
+<div class="icon">🐾</div>
+<h3>WHAT</h3>
+<h4>Claw Model</h4>
+<p>Which agent framework? What trade-offs? Which ecosystem?</p>
+<p style="color:var(--accent2);margin-top:12px;font-weight:600">→ OpenClaw</p>
+<p style="color:var(--text-muted);font-size:.85rem"><a href="models.html">Full analysis →</a></p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- MONEYCLAW V1 TOPOLOGY -->
+<section id="moneyclaw-v1">
+<div class="container">
+<h2>🏗️ MoneyClaw V1 — 1,000 Instances (Current Container Topology)</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">Existing production architecture + the best cost/perf Hetzner sizing to reach ~1,000 OpenClaw instances with headroom.</p>
+
+<div class="card-grid">
+<div class="card">
+<h4>✅ Existing Topology (Today)</h4>
+<ul>
+<li><strong>3-node cluster:</strong> main + worker1 + worker2 (WireGuard 10.10.0.1/2/3)</li>
+<li><strong>Main:</strong> provisioner, auth-proxy, Redis, Postgres, LiteLLM, nginx</li>
+<li><strong>Workers:</strong> OpenClaw tenant containers + worker-api</li>
+<li><strong>Per-tenant containers:</strong> 1GB limit, ~330–356MB avg</li>
+<li><strong>Gateway heap:</strong> 768MB minimum for stability</li>
+</ul>
+<pre style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;white-space:pre-wrap;color:var(--text-muted)">Main (control plane)
+  ├─ Provisioner
+  ├─ Auth-Proxy
+  ├─ Redis / Postgres
+  ├─ LiteLLM proxy
+  └─ Nginx + DNS
+Workers (agent containers)
+  ├─ worker1: tenant containers
+  └─ worker2: tenant containers</pre>
+</div>
+
+<div class="card">
+<h4>💡 Hetzner V1 Plan (Best Perf/Cost)</h4>
+<ul>
+<li><strong>Control plane (HA):</strong> 2× AX52 (Ryzen 7700, 64GB)</li>
+<li><strong>Workers:</strong> 10× AX102 (Ryzen 7950X, 128GB)</li>
+<li><strong>Capacity:</strong> ~100 instances per worker with 30–40% headroom</li>
+<li><strong>Network:</strong> Hetzner private network + NVMe on all nodes</li>
+<li><strong>Monthly range:</strong> ~$2.6k–$3.0k total (control + workers)</li>
+</ul>
+<div class="rec">
+<h4>Why this mix?</h4>
+<p>AX102 gives the best CPU/RAM/$ for agent containers. Two smaller control nodes keep the gateway + provisioner stable under spikes while workers scale horizontally.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- CLAW ALTERNATIVES OVERVIEW -->
+<section id="claws-overview">
+<div class="container">
+<h2>🐾 Claw Alternatives at a Glance</h2>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr><th>Claw</th><th>Language</th><th>Memory</th><th>Platforms</th><th>Security</th><th>Best For</th><th>Our Take</th></tr>
+</thead>
+<tbody>
+<tr class="highlight-row"><td><strong>OpenClaw ⭐</strong></td><td>TypeScript</td><td>1.5GB</td><td>11+</td><td>Medium</td><td>Production SaaS</td><td><span class="badge badge-green">CHOSEN</span></td></tr>
+<tr><td>NanoClaw</td><td>TypeScript</td><td>50MB</td><td>1</td><td>High</td><td>Personal secure</td><td><span class="badge badge-blue">Niche</span></td></tr>
+<tr><td>Nanobot</td><td>Python</td><td>100MB</td><td>9+</td><td>Medium</td><td>Dev/research</td><td><span class="badge badge-blue">Watch</span></td></tr>
+<tr><td>IronClaw</td><td>Rust</td><td>7.8MB</td><td>5+</td><td>Highest</td><td>Enterprise</td><td><span class="badge badge-orange">Future enterprise tier</span></td></tr>
+<tr><td>PicoClaw</td><td>Go</td><td>&lt;10MB</td><td>6</td><td>Low ⚠️</td><td>IoT/edge</td><td><span class="badge badge-red">Too early</span></td></tr>
+<tr><td>ZeroClaw</td><td>Rust</td><td>&lt;5MB</td><td>8+</td><td>Medium</td><td>Vendor-neutral</td><td><span class="badge badge-blue">Watch</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- COMBINED DECISION MATRIX -->
+<section id="decision-matrix">
+<div class="container">
+<h2>🧮 Combined Decision Matrix</h2>
+<p style="color:var(--text-muted);margin-bottom:16px">All options across all three dimensions, scored 1-5 per criterion.</p>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr><th>Option</th><th>Cost (5=cheap)</th><th>Security (5=best)</th><th>Ecosystem (5=rich)</th><th>Scale (5=most)</th><th>Ops Burden (5=low)</th><th>Total /25</th></tr>
+</thead>
+<tbody>
+<tr class="highlight-row"><td><strong>Hetzner + K3s + OpenClaw</strong></td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td><strong>21</strong></td></tr>
+<tr><td>AWS EKS + IronClaw</td><td>⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>19</td></tr>
+<tr><td>Hetzner + K3s + Nanobot</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>18</td></tr>
+<tr><td>Azure AKS + OpenClaw</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>20</td></tr>
+<tr><td>DO DOKS + ZeroClaw</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>16</td></tr>
+<tr><td>Self-hosted + NanoClaw</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐</td><td>⭐</td><td>⭐⭐</td><td>13</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- DECISION FLOWCHART -->
+<section id="flowchart">
+<div class="container">
+<h2>🔀 Decision Flowchart</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">Answer these questions to find your ideal stack:</p>
+
+<div class="flowchart">
+<div class="flow-q">❓ What's your primary need?</div>
+<div class="flow-opts">
+<div class="flow-opt" style="border-color:var(--accent2)">🏢 Multi-platform SaaS → <strong>OpenClaw</strong></div>
+<div class="flow-opt">🔒 Maximum security → <strong>IronClaw</strong></div>
+<div class="flow-opt">🔬 Research/hacking → <strong>Nanobot</strong></div>
+<div class="flow-opt">📟 Edge/IoT → <strong>PicoClaw</strong></div>
+</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-q">❓ What's your budget?</div>
+<div class="flow-opts">
+<div class="flow-opt" style="border-color:var(--accent2)">💰 Cost-conscious → <strong>Hetzner</strong></div>
+<div class="flow-opt">💳 Enterprise budget → <strong>AWS/Azure</strong></div>
+<div class="flow-opt">🆓 Minimal spend → <strong>Single VPS</strong></div>
+</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-q">❓ How many agents?</div>
+<div class="flow-opts">
+<div class="flow-opt">&lt;1K → <strong>Docker Compose</strong></div>
+<div class="flow-opt" style="border-color:var(--accent2)">1K-100K → <strong>K3s</strong></div>
+<div class="flow-opt">100K+ → <strong>K8s + auto-scaling</strong></div>
+</div>
+<div class="flow-arrow">↓</div>
+<div class="flow-q" style="border-color:var(--accent2);background:rgba(63,185,80,.1)">✅ MoneyClaw answer: OpenClaw + Hetzner + K3s</div>
+</div>
+</div>
+</section>
+
+<!-- TOTAL COST OF OWNERSHIP -->
+<section id="tco">
+<div class="container">
+<h2>💰 Total Cost of Ownership</h2>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr><th>Component</th><th>5K Agents</th><th>50K Agents</th><th>500K Agents</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Hetzner Infrastructure</strong></td><td>$50-150/mo</td><td>$400-1,200/mo</td><td>$4,000-12,000/mo</td></tr>
+<tr><td><strong>OpenClaw Overhead</strong></td><td>~2GB (1 gateway)</td><td>~8GB (4 gateways)</td><td>~32GB (16 gateways)</td></tr>
+<tr><td><strong>K3s + Cilium</strong></td><td>~1GB overhead</td><td>~4GB overhead</td><td>~16GB overhead</td></tr>
+<tr><td><strong>LLM API Costs</strong></td><td>$500-5K/mo*</td><td>$5K-50K/mo*</td><td>$50K-500K/mo*</td></tr>
+<tr><td><strong>Ops/Engineering</strong></td><td>0.5 FTE</td><td>1-2 FTE</td><td>3-5 FTE</td></tr>
+<tr class="highlight-row"><td><strong>Total (excl. LLM)</strong></td><td><strong>$150-300/mo</strong></td><td><strong>$1,500-3,000/mo</strong></td><td><strong>$15K-30K/mo</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p style="color:var(--text-muted);font-size:.85rem">* LLM costs depend heavily on usage patterns and model choice. Use OpenRouter smart routing to minimize.</p>
+
+<div class="rec">
+<h4>💡 Cost Insight</h4>
+<p>Infrastructure is <strong>&lt;5% of total cost</strong> at scale — LLM API costs dominate. This is why Hetzner's 5-10x savings on infra matters less at 500K than smart LLM routing. Invest in the <a href="models.html">Quant Router</a> approach for real savings.</p>
+</div>
+</div>
+</section>
+
+<!-- MIGRATION ROADMAP -->
+<section id="roadmap">
+<div class="container">
+<h2>🗺️ Migration Roadmap</h2>
+
+<div class="timeline">
+<div class="timeline-item active">
+<h4>📍 Current — Single Server</h4>
+<p>1 Hetzner VPS, Docker Compose, OpenClaw, &lt;100 agents. Cost: ~$15/mo.</p>
+</div>
+<div class="timeline-item">
+<h4>🎯 Phase 1 — 5K Agents</h4>
+<p>2-3 Hetzner nodes, K3s cluster, Cilium network policies, hot/cold pools. Cost: ~$150/mo.</p>
+</div>
+<div class="timeline-item">
+<h4>🚀 Phase 2 — 50K Agents</h4>
+<p>8-16 Hetzner nodes, multi-zone K3s, KEDA auto-scaling, Falco monitoring, dedicated DB nodes. Cost: ~$2K/mo.</p>
+</div>
+<div class="timeline-item">
+<h4>🌍 Phase 3 — 500K Agents</h4>
+<p>64-128 nodes, multi-region, custom provisioner v2, potential IronClaw for enterprise tier, dedicated security team. Cost: ~$20K/mo.</p>
+</div>
+</div>
+
+<div class="warn">
+<h4>⚠️ Key Milestones</h4>
+<ul>
+<li><strong>At 1K agents:</strong> Must move from Docker Compose to K3s</li>
+<li><strong>At 10K agents:</strong> Must implement hot/cold architecture</li>
+<li><strong>At 50K agents:</strong> Must add multi-zone for availability</li>
+<li><strong>At 100K agents:</strong> Consider dedicated enterprise tier (IronClaw)</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- MONEYCLAW DIFFERENTIATION -->
+<section id="differentiation">
+<div class="container">
+<h2>🏆 MoneyClaw Differentiation</h2>
+
+<div class="card-grid">
+<div class="card" style="border-left:3px solid var(--accent2)">
+<h4>1. Cost Leadership</h4>
+<p>Hetzner + K3s = <strong>5-10x cheaper</strong> than competitors on AWS/Azure. We pass savings to customers or keep as margin.</p>
+</div>
+<div class="card" style="border-left:3px solid var(--accent)">
+<h4>2. Ecosystem Breadth</h4>
+<p>OpenClaw's 11+ platforms and 5,700+ skills give us <strong>instant capability</strong> that competitors building on leaner claws lack.</p>
+</div>
+<div class="card" style="border-left:3px solid var(--purple)">
+<h4>3. Security Layering</h4>
+<p>We compensate for OpenClaw's app-level security with <strong>infra-level hardening</strong>: K3s namespaces, Cilium, Podman, Falco.</p>
+</div>
+<div class="card" style="border-left:3px solid var(--accent3)">
+<h4>4. Smart LLM Routing</h4>
+<p>Quant Router auto-classifies queries and routes to cheapest capable model. <strong>94% cost savings</strong> vs premium-only.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- RISK ASSESSMENT -->
+<section id="risks">
+<div class="container">
+<h2>⚠️ Risk Assessment</h2>
+
+<div class="card">
+<div class="risk-grid">
+<span class="risk-level risk-med">MEDIUM</span>
+<span><strong>OpenClaw security vulnerability</strong> — 400K lines = large attack surface</span>
+<span style="color:var(--text-muted)">Mitigated by K3s isolation</span>
+
+<span class="risk-level risk-low">LOW</span>
+<span><strong>Hetzner availability</strong> — EU company, could face regulatory changes</span>
+<span style="color:var(--text-muted)">Multi-region + portability</span>
+
+<span class="risk-level risk-med">MEDIUM</span>
+<span><strong>OpenClaw project abandonment</strong> — Large open-source projects can stall</span>
+<span style="color:var(--text-muted)">200K+ stars = strong community</span>
+
+<span class="risk-level risk-low">LOW</span>
+<span><strong>K3s compatibility</strong> — Breaking changes from upstream K8s</span>
+<span style="color:var(--text-muted)">CNCF project, strong governance</span>
+
+<span class="risk-level risk-high">HIGH</span>
+<span><strong>LLM API cost spikes</strong> — Providers raise prices or change terms</span>
+<span style="color:var(--text-muted)">Multi-provider routing via OpenRouter</span>
+
+<span class="risk-level risk-med">MEDIUM</span>
+<span><strong>Competitor with better stack</strong> — Someone ships OpenClaw ecosystem on IronClaw security</span>
+<span style="color:var(--text-muted)">First-mover + switching cost</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ECOSYSTEM GAPS -->
+<section id="gaps">
+<div class="container">
+<h2>🔮 Ecosystem Gaps & Opportunities</h2>
+<div class="card-grid">
+<div class="card">
+<h4>1. Multi-Agent Collaboration</h4>
+<p style="color:var(--text-muted)">Primitive across all claws. First to crack agent-to-agent cooperation wins.</p>
+</div>
+<div class="card">
+<h4>2. Agent Testing Framework</h4>
+<p style="color:var(--text-muted)">No claw has proper testing tools. Huge opportunity for open-source contribution.</p>
+</div>
+<div class="card">
+<h4>3. Observability & Debugging</h4>
+<p style="color:var(--text-muted)">Afterthought everywhere. Need agent-specific tracing and debugging tools.</p>
+</div>
+<div class="card">
+<h4>4. Skill Quality & Safety</h4>
+<p style="color:var(--text-muted)">ClawHub has 5,700+ skills but no quality gate. Automated verification needed.</p>
+</div>
+<div class="card">
+<h4>5. Non-Developer Onramp</h4>
+<p style="color:var(--text-muted)">All claws require technical setup. Consumer-friendly onboarding = massive TAM unlock.</p>
+</div>
+<div class="card">
+<h4>6. Cross-Claw Skill Portability</h4>
+<p style="color:var(--text-muted)">No universal skill format. MCP is closest but incomplete. Standard needed.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FINAL VERDICT -->
+<section id="verdict">
+<div class="container">
+<h2>🏆 Final Verdict</h2>
+
+<div class="verdict-box">
+<h3>OpenClaw + Hetzner + K3s + Custom Provisioner</h3>
+<p style="font-size:1.1rem;margin-bottom:20px">The winning combination for MoneyClaw in 2026</p>
+<div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;text-align:left">
+<div>
+<strong style="color:var(--accent2)">Infrastructure</strong><br>
+Hetzner Cloud<br>
+<span style="color:var(--text-muted);font-size:.85rem">5-10x cost advantage</span>
+</div>
+<div>
+<strong style="color:var(--accent)">Orchestration</strong><br>
+K3s + Cilium + KEDA<br>
+<span style="color:var(--text-muted);font-size:.85rem">Lightweight, secure, auto-scaling</span>
+</div>
+<div>
+<strong style="color:var(--purple)">Agent Framework</strong><br>
+OpenClaw<br>
+<span style="color:var(--text-muted);font-size:.85rem">11+ platforms, 5,700+ skills</span>
+</div>
+<div>
+<strong style="color:var(--accent3)">Future Enterprise</strong><br>
+IronClaw (when needed)<br>
+<span style="color:var(--text-muted);font-size:.85rem">5-layer security for regulated</span>
+</div>
+</div>
+</div>
+
+<div class="rec" style="margin-top:24px">
+<h4>📌 Action Items</h4>
+<ol style="margin-left:24px">
+<li>Continue building on OpenClaw + Hetzner (current stack)</li>
+<li>Implement K3s cluster at 1K agents milestone</li>
+<li>Add Cilium network policies for tenant isolation</li>
+<li>Build hot/cold agent architecture for cost efficiency</li>
+<li>Evaluate IronClaw quarterly for enterprise tier readiness</li>
+<li>Contribute to OpenClaw upstream for security improvements</li>
+<li>Invest in Quant Router for LLM cost optimization (the real expense)</li>
+</ol>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer>
+<div class="container">
+<p>MoneyClaw Consolidated Strategic Analysis — Feb 2026</p>
+<p style="margin-top:4px">
+<a href="index.html">📊 Cost Analysis</a> · 
+<a href="security.html">🛡️ Security</a> · 
+<a href="models.html">🐾 Claw Models</a> · 
+<a href="alternatives.html">🎯 Consolidated</a>
+</p>
+</div>
+</footer>
+
+</body>
+</html>

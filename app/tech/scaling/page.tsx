@@ -1,0 +1,866 @@
+'use client';
+import Link from 'next/link';
+
+export default function ScalingPage() {
+  const cssContent = `
+:root{--bg:#0a0a0a;--surface:#161b22;--surface2:#1c2333;--border:#30363d;--text:#e6edf3;--text-muted:#8b949e;--accent:#2EE68A;--accent2:#3fb950;--accent3:#f0883e;--danger:#f85149;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+header{background:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#1a1e2e 100%);border-bottom:1px solid var(--border);padding:40px 0;text-align:center}
+header h1{font-size:2.4rem;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+header p{color:var(--text-muted);font-size:1.1rem}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;margin:4px}
+.badge-blue{background:rgba(46,230,138,.15);color:var(--accent)}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent2)}
+.badge-orange{background:rgba(240,136,62,.15);color:var(--accent3)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-purple{background:rgba(188,140,255,.15);color:var(--purple)}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:52px;z-index:100}
+nav .container{display:flex;gap:16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav a{color:var(--text-muted);font-size:.875rem;padding:6px 12px;border-radius:6px;transition:all .2s}
+nav a:hover{color:var(--text);background:var(--surface2);text-decoration:none}
+section{padding:48px 0;border-bottom:1px solid var(--border)}
+h2{font-size:1.8rem;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+h3{font-size:1.3rem;margin:24px 0 12px;color:var(--accent)}
+h4{font-size:1.1rem;margin:16px 0 8px;color:var(--text)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:var(--surface2);color:var(--accent);font-weight:600;position:sticky;top:52px}
+tr:hover{background:rgba(46,230,138,.04)}
+.highlight-row{background:rgba(63,185,80,.08)!important}
+.cost{font-weight:700;font-size:1.1rem}
+.cost-low{color:var(--accent2)}
+.cost-mid{color:var(--accent3)}
+.cost-high{color:var(--danger)}
+.bar{height:24px;border-radius:4px;display:inline-block;min-width:4px;transition:width .5s}
+.bar-container{background:var(--surface2);border-radius:4px;overflow:hidden;height:24px;position:relative}
+.rec{background:linear-gradient(135deg,rgba(63,185,80,.15),rgba(63,185,80,.05));border:1px solid rgba(63,185,80,.3);border-radius:12px;padding:20px 24px;margin:16px 0}
+.rec h4{color:var(--accent2);margin-top:0}
+.warn{background:linear-gradient(135deg,rgba(240,136,62,.15),rgba(240,136,62,.05));border:1px solid rgba(240,136,62,.3);border-radius:12px;padding:20px 24px;margin:16px 0}
+.tier-tabs{display:flex;gap:8px;margin-bottom:24px}
+.tier-tab{padding:10px 20px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);font-weight:600;transition:all .2s}
+.tier-tab.active,.tier-tab:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.provider-icon{width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;margin-right:8px;vertical-align:middle}
+.pi-hetzner{background:#d50c2d;color:#fff}
+.pi-azure{background:#0078d4;color:#fff}
+.pi-aws{background:#ff9900;color:#000}
+.pi-gcp{background:#4285f4;color:#fff}
+.pi-do{background:#0080ff;color:#fff}
+.pi-oc{background:var(--purple);color:#fff}
+ul{margin:8px 0 8px 24px}li{margin:4px 0}
+.chart-bar{display:flex;align-items:center;gap:12px;margin:6px 0}
+.chart-label{width:200px;font-size:.85rem;text-align:right;flex-shrink:0}
+.chart-value{font-size:.85rem;color:var(--text-muted);min-width:80px}
+.chart-fill{height:28px;border-radius:4px;transition:width .6s ease}
+.chart-track{flex:1;background:var(--surface2);border-radius:4px;overflow:hidden;height:28px}
+footer{padding:32px 0;text-align:center;color:var(--text-muted);font-size:.85rem}
+.toc{columns:2;column-gap:32px}
+.toc li{break-inside:avoid}
+@media(max-width:768px){
+.card-grid{grid-template-columns:1fr}
+.toc{columns:1}
+nav .container{gap:8px}
+header h1{font-size:1.6rem}
+h2{font-size:1.4rem}
+table{font-size:.8rem}
+th,td{padding:8px}
+.chart-label{width:120px;font-size:.75rem}
+}
+
+
+
+
+
+
+`;
+  
+  const bodyContent = `<header>
+<div class="container">
+<h1>🐾 OpenClaw Scaling Cost Analysis</h1>
+<p>Infrastructure comparison for 5K / 50K / 500K agent instances</p>
+<div style="margin-top:12px">
+<span class="badge badge-blue">Feb 2026</span>
+<span class="badge badge-green">v2.0</span>
+<span class="badge badge-purple">Technical Deep Dive</span>
+</div>
+</div>
+</header>
+
+
+
+<main>
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="executive-summary">
+<div class="container">
+<h2>📋 Executive Summary</h2>
+<div class="card">
+<p>This analysis evaluates 7 infrastructure options for scaling OpenClaw from our current ~60 containers to 5,000 / 50,000 / 500,000 agent instances. We compare cost, ops complexity, security posture, and management overhead for each.</p>
+<div style="margin-top:16px" class="card-grid">
+<div class="rec">
+<h4>🏆 5K Agents → Hetzner Dedicated + K3s</h4>
+<p><span class="cost cost-low">€1,200/mo</span> · 8 servers · Medium ops · 1 person + AI</p>
+</div>
+<div class="rec">
+<h4>🏆 50K Agents → Hetzner Dedicated + K8s</h4>
+<p><span class="cost cost-low">€12,000/mo</span> · 80 servers · Medium-High ops · 1 person + AI</p>
+</div>
+<div class="rec">
+<h4>🏆 500K Agents → Hybrid: Hetzner + Cloud Burst</h4>
+<p><span class="cost cost-mid">€85,000–120,000/mo</span> · 500+ nodes · High ops · 1 person + AI</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ASSUMPTIONS -->
+<section id="assumptions">
+<div class="container">
+<h2>📐 Assumptions & Resource Model</h2>
+<div class="card">
+<h3>Per-Container Resource Profile</h3>
+<table>
+<tr><th>Metric</th><th>Idle</th><th>Active</th></tr>
+<tr><td>Memory</td><td>380 MiB</td><td>550 MiB</td></tr>
+<tr><td>CPU</td><td>0.05 vCPU</td><td>0.5 vCPU</td></tr>
+<tr><td>Disk</td><td colspan="2">~200 MB</td></tr>
+</table>
+
+<h3>Concurrency Model</h3>
+<table>
+<tr><th>Tier</th><th>Total</th><th>Concurrent %</th><th>Active</th><th>Idle</th></tr>
+<tr><td>5K</td><td>5,000</td><td>10%</td><td>500</td><td>4,500</td></tr>
+<tr><td>50K</td><td>50,000</td><td>5%</td><td>2,500</td><td>47,500</td></tr>
+<tr><td>500K</td><td>500,000</td><td>2%</td><td>10,000</td><td>490,000</td></tr>
+</table>
+
+<h3>Aggregate Resource Requirements</h3>
+<table>
+<tr><th>Tier</th><th>RAM (all loaded)</th><th>RAM (hot/cold model)</th><th>CPU Peak</th><th>Disk</th></tr>
+<tr><td>5K</td><td>~2 TB</td><td>~275 GB active + snapshots</td><td>475 vCPU</td><td>1 TB</td></tr>
+<tr><td>50K</td><td>~20 TB</td><td>~1.4 TB active + snapshots</td><td>3,625 vCPU</td><td>10 TB</td></tr>
+<tr><td>500K</td><td>~192 TB</td><td>~5.5 TB active + snapshots</td><td>29,500 vCPU</td><td>100 TB</td></tr>
+</table>
+
+<div class="warn">
+<h4>⚡ Key Insight: Hot/Cold Container Architecture</h4>
+<p>At 50K+ scale, keeping all containers in RAM is impractical. The recommended approach is <strong>hot/cold scheduling</strong>: active containers run in RAM, idle containers are suspended to disk and restored on demand (~2-5s cold start). This reduces RAM requirements by 80-95% at the 500K tier.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 5K TIER -->
+<section id="tier-5k">
+<div class="container">
+<h2>🔷 Tier 1: 5,000 Agents</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">500 concurrent (10%) · ~2 TB total RAM · 475 vCPU peak</p>
+
+<table>
+<tr>
+<th>Provider</th>
+<th>Setup</th>
+<th>Servers/Nodes</th>
+<th>Monthly Cost</th>
+<th>Ops Complexity</th>
+<th>Scaling</th>
+<th>Team Size</th>
+</tr>
+<tr class="highlight-row">
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated + K3s</td>
+<td>AX162 (128GB, 12c)</td>
+<td>8</td>
+<td class="cost cost-low">€1,200</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>Add nodes</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-oc">OC</span>Current Setup</td>
+<td>AX42 (32GB, 8c) manual Docker</td>
+<td>~65</td>
+<td class="cost cost-mid">€3,250</td>
+<td><span class="badge badge-red">High</span></td>
+<td>Manual</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Cloud K8s</td>
+<td>CCX63 (192GB, 48v)</td>
+<td>12</td>
+<td class="cost cost-mid">€2,160</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>kubectl scale</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-azure">Az</span>Azure AKS</td>
+<td>D8s_v5 (32GB, 8v)</td>
+<td>~65</td>
+<td class="cost cost-high">€16,500</td>
+<td><span class="badge badge-blue">Low-Med</span></td>
+<td>Autoscaler</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS EKS + EC2</td>
+<td>m6i.2xlarge (32GB, 8v)</td>
+<td>~65</td>
+<td class="cost cost-high">€18,200</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>Cluster Autoscaler</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS Fargate</td>
+<td>0.5vCPU / 1GB per task</td>
+<td>Serverless</td>
+<td class="cost cost-high">€42,000</td>
+<td><span class="badge badge-green">Low</span></td>
+<td>Auto</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-gcp">G</span>GKE Autopilot</td>
+<td>Pod-based billing</td>
+<td>Managed</td>
+<td class="cost cost-high">€38,500</td>
+<td><span class="badge badge-green">Low</span></td>
+<td>Auto</td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-do">DO</span>DigitalOcean DOKS</td>
+<td>Dedicated 8vCPU/32GB</td>
+<td>~65</td>
+<td class="cost cost-high">€12,000</td>
+<td><span class="badge badge-blue">Low-Med</span></td>
+<td>Node pool scale</td>
+<td>1 + AI</td>
+</tr>
+</table>
+
+<div class="rec">
+<h4>🏆 5K Recommendation: Hetzner Dedicated + K3s</h4>
+<p>8× AX162 servers at €150/mo each. K3s provides lightweight orchestration with auto-restart, rolling updates, health checks, and namespace isolation. Best price-performance by far — 3× cheaper than next option, 14× cheaper than cloud providers.</p>
+<ul>
+<li><strong>Why not current setup:</strong> No auto-recovery, no load balancing, provisioner is SPOF, nginx tenant-map unmaintainable at 5K</li>
+<li><strong>Why not full K8s:</strong> Overkill for identical containers; K3s is simpler with same core features</li>
+<li><strong>Why not cloud:</strong> 10-30× more expensive for same compute</li>
+</ul>
+</div>
+
+<h3>5K Cost Visualization</h3>
+<div class="card">
+<div class="chart-bar"><span class="chart-label">Hetzner Dedicated + K3s</span><div class="chart-track"><div class="chart-fill" style="width:2.8%;background:var(--accent2)"></div></div><span class="chart-value">€1,200</span></div>
+<div class="chart-bar"><span class="chart-label">Hetzner Cloud K8s</span><div class="chart-track"><div class="chart-fill" style="width:5.1%;background:var(--accent)"></div></div><span class="chart-value">€2,160</span></div>
+<div class="chart-bar"><span class="chart-label">Current Setup</span><div class="chart-track"><div class="chart-fill" style="width:7.7%;background:var(--accent3)"></div></div><span class="chart-value">€3,250</span></div>
+<div class="chart-bar"><span class="chart-label">DigitalOcean DOKS</span><div class="chart-track"><div class="chart-fill" style="width:28.5%;background:var(--accent)"></div></div><span class="chart-value">€12,000</span></div>
+<div class="chart-bar"><span class="chart-label">Azure AKS</span><div class="chart-track"><div class="chart-fill" style="width:39.3%;background:#0078d4"></div></div><span class="chart-value">€16,500</span></div>
+<div class="chart-bar"><span class="chart-label">AWS EKS + EC2</span><div class="chart-track"><div class="chart-fill" style="width:43.3%;background:#ff9900"></div></div><span class="chart-value">€18,200</span></div>
+<div class="chart-bar"><span class="chart-label">GKE Autopilot</span><div class="chart-track"><div class="chart-fill" style="width:91.6%;background:#4285f4"></div></div><span class="chart-value">€38,500</span></div>
+<div class="chart-bar"><span class="chart-label">AWS Fargate</span><div class="chart-track"><div class="chart-fill" style="width:100%;background:var(--danger)"></div></div><span class="chart-value">€42,000</span></div>
+</div>
+</div>
+</section>
+
+<!-- 50K TIER -->
+<section id="tier-50k">
+<div class="container">
+<h2>🔶 Tier 2: 50,000 Agents</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">2,500 concurrent (5%) · Hot/cold model essential · 3,625 vCPU peak</p>
+
+<div class="warn">
+<h4>⚠️ Architecture Shift Required at 50K</h4>
+<p>At 50K, keeping all containers running (20TB RAM) is cost-prohibitive on any provider. A <strong>hot/cold scheduling</strong> layer is mandatory: active containers in RAM (~1.4TB), idle containers suspended to NVMe (~10TB disk). This requires a custom scheduler or KEDA-based auto-scaling. Cold start: 2-5 seconds.</p>
+</div>
+
+<h3>Option A: All Containers Running (Brute Force)</h3>
+<table>
+<tr><th>Provider</th><th>Setup</th><th>Nodes</th><th>Monthly Cost</th><th>Ops</th><th>Team</th></tr>
+<tr class="highlight-row">
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated + K8s</td>
+<td>AX162 (128GB)</td>
+<td>160</td>
+<td class="cost cost-mid">€24,000</td>
+<td><span class="badge badge-red">High</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-oc">OC</span>Current (manual Docker)</td>
+<td>AX42 (32GB)</td>
+<td>~650</td>
+<td class="cost cost-high">€32,500</td>
+<td><span class="badge badge-red">Extreme</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-azure">Az</span>Azure AKS</td>
+<td>D16s_v5 (64GB)</td>
+<td>~315</td>
+<td class="cost cost-high">€165,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS EKS + EC2</td>
+<td>m6i.4xlarge (64GB)</td>
+<td>~315</td>
+<td class="cost cost-high">€175,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-gcp">G</span>GKE Autopilot</td>
+<td>Pod-based</td>
+<td>Managed</td>
+<td class="cost cost-high">€385,000</td>
+<td><span class="badge badge-green">Low</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS Fargate</td>
+<td>0.5vCPU/1GB per task</td>
+<td>Serverless</td>
+<td class="cost cost-high">€420,000</td>
+<td><span class="badge badge-green">Low</span></td>
+<td>1 + AI</td>
+</tr>
+</table>
+
+<h3>Option B: Hot/Cold Architecture (Recommended)</h3>
+<p>Only active containers (2,500) in RAM. Idle containers stored on NVMe, loaded on demand.</p>
+<table>
+<tr><th>Provider</th><th>Setup</th><th>Nodes</th><th>Monthly Cost</th><th>Ops</th><th>Team</th></tr>
+<tr class="highlight-row">
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated + K8s + Custom Scheduler</td>
+<td>AX162 (128GB, NVMe) for hot; storage nodes for cold</td>
+<td>~20 hot + 10 storage</td>
+<td class="cost cost-low">€4,500</td>
+<td><span class="badge badge-red">High</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated (all warm)</td>
+<td>AX162 oversubscribed with swap</td>
+<td>80</td>
+<td class="cost cost-mid">€12,000</td>
+<td><span class="badge badge-orange">Med-High</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-azure">Az</span>Azure AKS + KEDA</td>
+<td>Scale-to-zero with blob storage</td>
+<td>~40 (auto)</td>
+<td class="cost cost-high">€28,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS EKS + Karpenter</td>
+<td>Scale-to-zero with S3 snapshots</td>
+<td>~40 (auto)</td>
+<td class="cost cost-high">€32,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+</table>
+
+<div class="rec">
+<h4>🏆 50K Recommendation: Hetzner Dedicated + K8s (Warm Oversubscription)</h4>
+<p><strong>€12,000/mo</strong> with 80 AX162 nodes. At 50K, K3s is replaced with full K8s for better multi-node management, network policies, and RBAC. Oversubscribe memory with swap — idle containers use ~50MB resident + swap. Custom scheduler gradually builds toward hot/cold architecture.</p>
+<ul>
+<li><strong>Phase 1 (quick):</strong> 80× AX162 with memory overcommit, cgroups limits, swap — €12,000/mo</li>
+<li><strong>Phase 2 (optimized):</strong> Hot/cold scheduler, reduces to 30 nodes — €4,500/mo</li>
+<li><strong>Why not cloud:</strong> At 50K, cloud costs are 10-30× higher; with 1 person + AI managing ops, the savings go straight to the bottom line</li>
+</ul>
+</div>
+
+<h3>50K Cost Visualization (Hot/Cold Model)</h3>
+<div class="card">
+<div class="chart-bar"><span class="chart-label">Hetzner Hot/Cold</span><div class="chart-track"><div class="chart-fill" style="width:1.1%;background:var(--accent2)"></div></div><span class="chart-value">€4,500</span></div>
+<div class="chart-bar"><span class="chart-label">Hetzner Warm</span><div class="chart-track"><div class="chart-fill" style="width:2.9%;background:var(--accent2)"></div></div><span class="chart-value">€12,000</span></div>
+<div class="chart-bar"><span class="chart-label">Hetzner Brute Force</span><div class="chart-track"><div class="chart-fill" style="width:5.7%;background:var(--accent3)"></div></div><span class="chart-value">€24,000</span></div>
+<div class="chart-bar"><span class="chart-label">Azure AKS Hot/Cold</span><div class="chart-track"><div class="chart-fill" style="width:6.7%;background:#0078d4"></div></div><span class="chart-value">€28,000</span></div>
+<div class="chart-bar"><span class="chart-label">AWS EKS Hot/Cold</span><div class="chart-track"><div class="chart-fill" style="width:7.6%;background:#ff9900"></div></div><span class="chart-value">€32,000</span></div>
+<div class="chart-bar"><span class="chart-label">Azure AKS (all running)</span><div class="chart-track"><div class="chart-fill" style="width:39.3%;background:#0078d4"></div></div><span class="chart-value">€165,000</span></div>
+<div class="chart-bar"><span class="chart-label">AWS EKS (all running)</span><div class="chart-track"><div class="chart-fill" style="width:41.7%;background:#ff9900"></div></div><span class="chart-value">€175,000</span></div>
+<div class="chart-bar"><span class="chart-label">GKE Autopilot</span><div class="chart-track"><div class="chart-fill" style="width:91.7%;background:#4285f4"></div></div><span class="chart-value">€385,000</span></div>
+<div class="chart-bar"><span class="chart-label">AWS Fargate</span><div class="chart-track"><div class="chart-fill" style="width:100%;background:var(--danger)"></div></div><span class="chart-value">€420,000</span></div>
+</div>
+</div>
+</section>
+
+<!-- 500K TIER -->
+<section id="tier-500k">
+<div class="container">
+<h2>🔴 Tier 3: 500,000 Agents</h2>
+<p style="color:var(--text-muted);margin-bottom:24px">10,000 concurrent (2%) · Custom orchestration mandatory · 29,500 vCPU peak</p>
+
+<div class="warn">
+<h4>⚠️ 500K Requires Purpose-Built Infrastructure</h4>
+<p>At half a million agents, no off-the-shelf solution works. You need: <strong>(1)</strong> custom container lifecycle management, <strong>(2)</strong> tiered storage (NVMe hot → HDD warm → object cold), <strong>(3)</strong> geographic distribution, <strong>(4)</strong> dedicated networking. This is platform engineering, not just ops.</p>
+</div>
+
+<h3>Resource Model (Hot/Cold — the only viable approach)</h3>
+<div class="card">
+<table>
+<tr><th>Layer</th><th>Containers</th><th>RAM</th><th>CPU</th><th>Storage</th></tr>
+<tr><td>🔥 Hot (active)</td><td>10,000</td><td>5.5 TB</td><td>5,000 vCPU</td><td>2 TB NVMe</td></tr>
+<tr><td>⏸️ Warm (recent, swapped)</td><td>40,000</td><td>~2 TB resident</td><td>~2,000 vCPU</td><td>8 TB NVMe</td></tr>
+<tr><td>❄️ Cold (suspended)</td><td>450,000</td><td>0</td><td>0</td><td>90 TB HDD/Object</td></tr>
+</table>
+</div>
+
+<table>
+<tr><th>Provider</th><th>Architecture</th><th>Monthly Cost</th><th>Ops</th><th>Team</th></tr>
+<tr class="highlight-row">
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated Fleet</td>
+<td>~100 AX162 (hot/warm) + 50 storage nodes + custom orchestrator</td>
+<td class="cost cost-mid">€22,500</td>
+<td><span class="badge badge-red">Very High</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-hetzner">H</span>Hybrid: Hetzner base + Cloud burst</td>
+<td>Hetzner for baseline + AWS/Azure for peak overflow</td>
+<td class="cost cost-mid">€85,000–120,000</td>
+<td><span class="badge badge-red">High</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-azure">Az</span>Azure AKS (full)</td>
+<td>D-series VMs + Blob for cold + KEDA</td>
+<td class="cost cost-high">€180,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS EKS + Karpenter + S3</td>
+<td>EC2 for hot + S3 for cold snapshots</td>
+<td class="cost cost-high">€200,000</td>
+<td><span class="badge badge-orange">Medium</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Brute Force (all running)</td>
+<td>1,500× AX162</td>
+<td class="cost cost-high">€225,000</td>
+<td><span class="badge badge-red">Extreme</span></td>
+<td>1 + AI</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-gcp">G</span>GKE / Fargate (all running)</td>
+<td>Managed serverless</td>
+<td class="cost cost-high">€3,500,000+</td>
+<td><span class="badge badge-green">Low</span></td>
+<td>1 + AI</td>
+</tr>
+</table>
+
+<div class="rec">
+<h4>🏆 500K Recommendation: Hetzner Dedicated Fleet (Phase 1) → Hybrid (Phase 2)</h4>
+<p><strong>Phase 1: €22,500/mo</strong> — Pure Hetzner with custom orchestrator. Build the hot/cold/frozen container lifecycle. With 1 person + AI managing operations, the infrastructure cost is 8-15× cheaper than cloud.</p>
+<p><strong>Phase 2: €85K-120K/mo</strong> — Once you hit geographic distribution needs or enterprise compliance requirements, add cloud regions (Azure/AWS) for specific markets while keeping Hetzner as the cost-efficient core.</p>
+<ul>
+<li><strong>Key engineering:</strong> Custom scheduler, container checkpointing (CRIU), tiered storage, geographic routing — AI agents automate most operational tasks</li>
+<li><strong>Alternative:</strong> If no engineer available, go Azure AKS at ~€180K/mo and trade $ for ops simplicity</li>
+</ul>
+</div>
+
+<h3>500K Cost Visualization (Hot/Cold)</h3>
+<div class="card">
+<div class="chart-bar"><span class="chart-label">Hetzner Fleet (custom)</span><div class="chart-track"><div class="chart-fill" style="width:0.6%;background:var(--accent2)"></div></div><span class="chart-value">€22,500</span></div>
+<div class="chart-bar"><span class="chart-label">Hybrid Hetzner+Cloud</span><div class="chart-track"><div class="chart-fill" style="width:3.4%;background:var(--accent3)"></div></div><span class="chart-value">€85K-120K</span></div>
+<div class="chart-bar"><span class="chart-label">Azure AKS</span><div class="chart-track"><div class="chart-fill" style="width:5.1%;background:#0078d4"></div></div><span class="chart-value">€180,000</span></div>
+<div class="chart-bar"><span class="chart-label">AWS EKS</span><div class="chart-track"><div class="chart-fill" style="width:5.7%;background:#ff9900"></div></div><span class="chart-value">€200,000</span></div>
+<div class="chart-bar"><span class="chart-label">Hetzner Brute Force</span><div class="chart-track"><div class="chart-fill" style="width:6.4%;background:var(--accent3)"></div></div><span class="chart-value">€225,000</span></div>
+<div class="chart-bar"><span class="chart-label">GKE/Fargate (lol)</span><div class="chart-track"><div class="chart-fill" style="width:100%;background:var(--danger)"></div></div><span class="chart-value">€3.5M+</span></div>
+</div>
+</div>
+</section>
+
+<!-- COST COMPARISON -->
+<section id="cost-comparison">
+<div class="container">
+<h2>💰 Cost Comparison Matrix</h2>
+<div class="card">
+<table>
+<tr>
+<th>Provider / Setup</th>
+<th>5K/mo</th>
+<th>50K/mo</th>
+<th>500K/mo</th>
+<th>Cost per Agent (5K)</th>
+<th>Cost per Agent (500K)</th>
+</tr>
+<tr class="highlight-row">
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated + K3s/K8s</td>
+<td class="cost-low">€1,200</td>
+<td class="cost-low">€12,000</td>
+<td class="cost-low">€22,500*</td>
+<td>€0.24</td>
+<td>€0.045</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-oc">OC</span>Current Setup (manual)</td>
+<td>€3,250</td>
+<td>€32,500</td>
+<td>€325,000</td>
+<td>€0.65</td>
+<td>€0.65</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-hetzner">H</span>Hetzner Cloud K8s</td>
+<td>€2,160</td>
+<td>€21,600</td>
+<td>€216,000</td>
+<td>€0.43</td>
+<td>€0.43</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-do">DO</span>DigitalOcean DOKS</td>
+<td>€12,000</td>
+<td>€120,000</td>
+<td>€1,200,000</td>
+<td>€2.40</td>
+<td>€2.40</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-azure">Az</span>Azure AKS</td>
+<td>€16,500</td>
+<td>€28,000†</td>
+<td>€180,000†</td>
+<td>€3.30</td>
+<td>€0.36</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS EKS + EC2</td>
+<td>€18,200</td>
+<td>€32,000†</td>
+<td>€200,000†</td>
+<td>€3.64</td>
+<td>€0.40</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-gcp">G</span>GKE Autopilot</td>
+<td>€38,500</td>
+<td>€385,000</td>
+<td>€3,500,000+</td>
+<td>€7.70</td>
+<td>€7.00</td>
+</tr>
+<tr>
+<td><span class="provider-icon pi-aws">AW</span>AWS Fargate</td>
+<td>€42,000</td>
+<td>€420,000</td>
+<td>€4,200,000+</td>
+<td>€8.40</td>
+<td>€8.40</td>
+</tr>
+</table>
+<p style="color:var(--text-muted);font-size:.85rem;margin-top:8px">* With custom hot/cold orchestrator &nbsp; † With hot/cold + scale-to-zero</p>
+</div>
+</div>
+</section>
+
+<!-- SECURITY -->
+<section id="security">
+<div class="container">
+<h2>🔒 Security Comparison</h2>
+<div class="card">
+<table>
+<tr>
+<th>Dimension</th>
+<th><span class="provider-icon pi-hetzner">H</span>Hetzner + K8s</th>
+<th><span class="provider-icon pi-azure">Az</span>Azure AKS</th>
+<th><span class="provider-icon pi-aws">AW</span>AWS EKS</th>
+<th><span class="provider-icon pi-gcp">G</span>GKE</th>
+</tr>
+<tr>
+<td><strong>Tenant Isolation</strong></td>
+<td>Namespace + NetworkPolicy + seccomp</td>
+<td>Namespace + Azure Policy + Pod Sandboxing</td>
+<td>Namespace + Security Groups for Pods</td>
+<td>GKE Sandbox (gVisor) + Workload Identity</td>
+</tr>
+<tr>
+<td><strong>Network Segmentation</strong></td>
+<td>Calico/Cilium NetworkPolicy, WireGuard</td>
+<td>Azure CNI + NSGs + Private Link</td>
+<td>VPC CNI + Security Groups + PrivateLink</td>
+<td>VPC-native + Dataplane V2</td>
+</tr>
+<tr>
+<td><strong>Secrets Management</strong></td>
+<td>K8s Secrets + Vault (self-managed)</td>
+<td>Azure Key Vault integration</td>
+<td>AWS Secrets Manager / SSM</td>
+<td>Secret Manager + Workload Identity</td>
+</tr>
+<tr>
+<td><strong>Compliance</strong></td>
+<td>ISO 27001 (Hetzner DCs), GDPR ✅</td>
+<td>SOC2, ISO, HIPAA, FedRAMP ✅</td>
+<td>SOC2, ISO, HIPAA, FedRAMP ✅</td>
+<td>SOC2, ISO, HIPAA ✅</td>
+</tr>
+<tr>
+<td><strong>Container Runtime</strong></td>
+<td>containerd + optional gVisor</td>
+<td>containerd + Kata Containers option</td>
+<td>containerd + Firecracker (Fargate)</td>
+<td>containerd + gVisor (Autopilot default)</td>
+</tr>
+<tr>
+<td><strong>Data Residency</strong></td>
+<td>EU (Germany/Finland) ✅</td>
+<td>Any Azure region ✅</td>
+<td>Any AWS region ✅</td>
+<td>Any GCP region ✅</td>
+</tr>
+</table>
+
+<div class="rec">
+<h4>Security Verdict</h4>
+<p><strong>For enterprise/compliance-heavy customers:</strong> Azure AKS or AWS EKS offer the richest compliance certifications and managed security tools. <strong>For cost-optimized with good security:</strong> Hetzner + K8s with Cilium network policies, gVisor runtime sandboxing, and HashiCorp Vault provides strong isolation at a fraction of the cost. Hetzner DCs are ISO 27001 certified and GDPR compliant.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- MANAGEMENT -->
+<section id="management">
+<div class="container">
+<h2>👥 Management Complexity</h2>
+<div class="card">
+<table>
+<tr>
+<th>Provider</th>
+<th>5K Team</th>
+<th>50K Team</th>
+<th>500K Team</th>
+<th>Key Ops Tasks</th>
+<th>On-Call Burden</th>
+</tr>
+<tr class="highlight-row">
+<td>Hetzner + K3s/K8s</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>Server provisioning, K8s upgrades, monitoring, custom scheduler — AI handles routine ops, alerting, and auto-remediation</td>
+<td>Low (AI-managed)</td>
+</tr>
+<tr>
+<td>Azure AKS</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>AKS config, KEDA tuning, cost optimization, IaC</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>AWS EKS</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>EKS upgrades, Karpenter, IAM, networking</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>GKE Autopilot</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>Minimal — Google manages nodes, scaling, upgrades</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>AWS Fargate</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>1 + AI</td>
+<td>Task definitions, networking, IAM</td>
+<td>Low</td>
+</tr>
+</table>
+</div>
+
+<div class="rec">
+<h4>💡 The 1 Person + AI Model</h4>
+<p>With AI agents handling monitoring, auto-remediation, scaling decisions, log analysis, and routine ops tasks 24/7, <strong>one skilled engineer + AI replaces traditional 4-6 person SRE teams</strong>. The AI handles the toil; the human handles architecture decisions and edge cases. This makes Hetzner's cost advantage even more decisive — no need to factor in large team salaries.</p>
+</div>
+</div>
+</section>
+
+<!-- MIGRATION -->
+<section id="migration">
+<div class="container">
+<h2>🛤️ Migration Path</h2>
+<div class="card">
+<h3>Phase 0: Current (Now — 60 agents)</h3>
+<ul>
+<li>3× Hetzner AX42, manual Docker, custom provisioner</li>
+<li>Cost: €150/mo</li>
+<li>Keep as-is for alpha users</li>
+</ul>
+
+<h3>Phase 1: Beta (Next 3 months — 500 agents)</h3>
+<ul>
+<li>Add 2× AX162 servers, install K3s</li>
+<li>Migrate provisioner to Helm chart deployments</li>
+<li>Set up monitoring (Prometheus + Grafana)</li>
+<li>Test namespace isolation, resource limits</li>
+<li>Cost: ~€450/mo</li>
+</ul>
+
+<h3>Phase 2: Production 5K (Month 3-6)</h3>
+<ul>
+<li>Scale to 8× AX162 K3s cluster</li>
+<li>Replace nginx tenant-map with K8s Ingress (Traefik)</li>
+<li>Implement proper CI/CD pipeline</li>
+<li>Add Cilium for network policies</li>
+<li>Cost: ~€1,200/mo</li>
+</ul>
+
+<h3>Phase 3: Scale 50K (Month 6-12)</h3>
+<ul>
+<li>Migrate K3s → full K8s for better multi-node management</li>
+<li>Scale to 80× AX162</li>
+<li>Build hot/cold container scheduler (swap-based initially)</li>
+<li>Add HashiCorp Vault for secrets</li>
+<li>AI agents handle monitoring, auto-scaling, incident response</li>
+<li>Cost: ~€12,000/mo</li>
+</ul>
+
+<h3>Phase 4: Scale 500K (Year 2+)</h3>
+<ul>
+<li>Custom orchestration layer with CRIU checkpointing</li>
+<li>Tiered storage: NVMe → HDD → object storage</li>
+<li>Geographic distribution (EU + US regions)</li>
+<li>Consider hybrid cloud for enterprise compliance needs</li>
+<li>1 platform engineer + AI agents for ops automation</li>
+<li>Cost: €22,500-120,000/mo depending on architecture</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recommendations">
+<div class="container">
+<h2>🏆 Final Recommendations</h2>
+<div class="card-grid">
+<div class="card" style="border-color:var(--accent2)">
+<h3 style="color:var(--accent2)">5K Agents</h3>
+<h4>Hetzner Dedicated + K3s</h4>
+<p class="cost cost-low" style="font-size:1.5rem;margin:12px 0">€1,200/mo</p>
+<ul>
+<li>8× AX162 servers (128GB RAM each)</li>
+<li>K3s lightweight orchestration</li>
+<li>1 person + AI can manage</li>
+<li>Best price-performance, 14× cheaper than cloud</li>
+<li>Migration: 3-6 months from current setup</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--accent3)">
+<h3 style="color:var(--accent3)">50K Agents</h3>
+<h4>Hetzner Dedicated + K8s</h4>
+<p class="cost cost-mid" style="font-size:1.5rem;margin:12px 0">€12,000/mo</p>
+<ul>
+<li>80× AX162 with memory overcommit</li>
+<li>Full K8s for advanced scheduling</li>
+<li>1 person + AI, build toward hot/cold arch</li>
+<li>Optimize down to €4,500/mo with custom scheduler</li>
+<li>13× cheaper than Azure equivalent</li>
+</ul>
+</div>
+<div class="card" style="border-color:var(--purple)">
+<h3 style="color:var(--purple)">500K Agents</h3>
+<h4>Hetzner Fleet → Hybrid</h4>
+<p class="cost" style="font-size:1.5rem;margin:12px 0;color:var(--purple)">€22K–120K/mo</p>
+<ul>
+<li>Custom hot/cold/frozen container lifecycle</li>
+<li>CRIU checkpointing, tiered storage</li>
+<li>1 platform engineer + AI agents</li>
+<li>Add cloud regions for enterprise compliance</li>
+<li>8-15× cheaper core than pure cloud</li>
+</ul>
+</div>
+</div>
+
+<div class="card" style="margin-top:24px">
+<h3>When to Choose Cloud Instead</h3>
+<ul>
+<li><strong>No engineer available:</strong> If you have zero technical staff, managed cloud (AKS/GKE) trades money for ops simplicity</li>
+<li><strong>Enterprise sales:</strong> Some enterprises require SOC2/HIPAA cloud hosting — offer Azure/AWS as premium tier</li>
+<li><strong>Geographic expansion:</strong> Cloud regions are faster to deploy than colocating in new DCs</li>
+<li><strong>Burst capacity:</strong> Use cloud for overflow during usage spikes, Hetzner for steady-state</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- REFERENCES -->
+<section id="references">
+<div class="container">
+<h2>📚 References & Pricing Pages</h2>
+<div class="card">
+<table>
+<tr><th>Provider</th><th>Pricing Page</th><th>Notes</th></tr>
+<tr><td><span class="provider-icon pi-hetzner">H</span>Hetzner Dedicated</td><td><a href="https://www.hetzner.com/dedicated-rootserver/" target="_blank">hetzner.com/dedicated-rootserver</a></td><td>AX162: €149/mo (12c, 128GB, 2×1TB NVMe)</td></tr>
+<tr><td><span class="provider-icon pi-hetzner">H</span>Hetzner Cloud</td><td><a href="https://www.hetzner.com/cloud/" target="_blank">hetzner.com/cloud</a></td><td>CCX63: ~€180/mo (48vCPU, 192GB)</td></tr>
+<tr><td><span class="provider-icon pi-azure">Az</span>Azure AKS</td><td><a href="https://azure.microsoft.com/pricing/details/kubernetes-service/" target="_blank">azure.microsoft.com/pricing/.../kubernetes-service</a></td><td>Free tier + VM costs; Standard: $0.10/cluster/hr</td></tr>
+<tr><td><span class="provider-icon pi-aws">AW</span>AWS EKS</td><td><a href="https://aws.amazon.com/eks/pricing/" target="_blank">aws.amazon.com/eks/pricing</a></td><td>$0.10/hr cluster + EC2/Fargate costs</td></tr>
+<tr><td><span class="provider-icon pi-aws">AW</span>AWS Fargate</td><td><a href="https://aws.amazon.com/fargate/pricing/" target="_blank">aws.amazon.com/fargate/pricing</a></td><td>$0.04048/vCPU-hr + $0.004445/GB-hr</td></tr>
+<tr><td><span class="provider-icon pi-gcp">G</span>GKE</td><td><a href="https://cloud.google.com/kubernetes-engine/pricing" target="_blank">cloud.google.com/kubernetes-engine/pricing</a></td><td>$0.10/cluster/hr + Autopilot pod pricing</td></tr>
+<tr><td><span class="provider-icon pi-do">DO</span>DigitalOcean</td><td><a href="https://www.digitalocean.com/pricing" target="_blank">digitalocean.com/pricing</a></td><td>DOKS: free control plane + droplet costs</td></tr>
+</table>
+<p style="margin-top:16px;color:var(--text-muted);font-size:.85rem">Prices as of Feb 2026. All estimates include compute, storage, and networking. Excludes: monitoring tools, CI/CD, domain/SSL. Team: 1 person + AI at all tiers. Currency conversions at ~1 EUR = 1.05 USD.</p>
+</div>
+</div>
+</section>
+
+</main>`;
+
+  return (
+    <div style={{ background: '#0a0a0a', minHeight: '100vh' }}>
+      <style dangerouslySetInnerHTML={{ __html: cssContent }} />
+      
+      {/* Clawdet Nav */}
+      <nav style={{ background: '#161b22', borderBottom: '1px solid #30363d', padding: '12px 0', position: 'sticky', top: 0, zIndex: 200 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 16, alignItems: 'center', overflowX: 'auto', whiteSpace: 'nowrap' as const }}>
+          <Link href="/" style={{ color: '#2EE68A', fontWeight: 700, fontSize: '1.1rem', textDecoration: 'none', flexShrink: 0 }}>🐾 Clawdet</Link>
+          <Link href="/dashboard" style={{ color: '#8b949e', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>Dashboard</Link>
+          <Link href="/nanofleets" style={{ color: '#8b949e', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>NanoFleets</Link>
+          <Link href="/tech" style={{ color: '#2EE68A', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none', fontWeight: 600, border: '1px solid #2EE68A', background: 'rgba(46,230,138,.08)' }}>Tech</Link>
+          <span style={{ color: '#30363d', flexShrink: 0 }}>|</span>
+          <Link href="/tech/scaling" style={{ color: '#2EE68A', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>📊 Scaling</Link>
+          <Link href="/tech/security" style={{ color: '#8b949e', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>🛡️ Security</Link>
+          <Link href="/tech/models" style={{ color: '#8b949e', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>🐾 Models</Link>
+          <Link href="/tech/strategy" style={{ color: '#8b949e', fontSize: '.875rem', padding: '6px 12px', borderRadius: 6, textDecoration: 'none' }}>🎯 Strategy</Link>
+        </div>
+      </nav>
+
+      {/* Page Content */}
+      <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
+
+      {/* Clawdet Footer */}
+      <footer style={{ padding: '32px 0', textAlign: 'center' as const, color: '#8b949e', fontSize: '.85rem', borderTop: '1px solid #30363d' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <p>Clawdet Technical Research · 2026</p>
+          <p style={{ marginTop: 4 }}>
+            <a href="/" style={{ color: '#2EE68A', textDecoration: 'none' }}>clawdet.com</a>
+            {' · '}
+            <a href="/tech" style={{ color: '#2EE68A', textDecoration: 'none' }}>← All Reports</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
