@@ -126,3 +126,21 @@ export async function requireAdmin(request: NextRequest): Promise<AuthResult | N
 export async function getOptionalAuth(request: NextRequest): Promise<AuthResult | null> {
   return getAuthenticatedUser(request)
 }
+
+/**
+ * Verify ownership — checks if authenticated user matches target userId
+ * Returns NextResponse error if mismatch, null if OK
+ */
+export function requireOwnership(authenticatedUserId: string, targetUserId: string): NextResponse | null {
+  if (authenticatedUserId !== targetUserId) {
+    // Allow admins to view anyone's status
+    const user = findUserById(authenticatedUserId)
+    if (user?.role === 'admin') return null
+    
+    return NextResponse.json(
+      { error: 'Access denied' },
+      { status: 403, headers: SECURITY_HEADERS }
+    )
+  }
+  return null
+}
