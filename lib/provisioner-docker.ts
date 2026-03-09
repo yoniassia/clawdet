@@ -1,3 +1,4 @@
+import { execSync } from 'child_process'
 /**
  * Docker-based NanoClaw Provisioner
  * Creates isolated AI agent containers in ~5 seconds
@@ -83,6 +84,33 @@ export async function provisionDockerAgent(userId: string): Promise<void> {
     } as any)
     
     setStep(userId, 1, 'creating_container', 'Container running ✓')
+    
+    // Install shared skills (trading + marketing) to new agent
+    try {
+      const agentKnowledge = `/root/nanoclaw-fleet/agents/\${subdomain}/knowledge`
+      execSync(`mkdir -p \${agentKnowledge}/trading \${agentKnowledge}/marketing`, { timeout: 5000 })
+      execSync(`cp -r /root/nanoclaw-fleet/shared-skills/trading/* \${agentKnowledge}/trading/ 2>/dev/null; cp -r /root/nanoclaw-fleet/shared-skills/marketing/* \${agentKnowledge}/marketing/ 2>/dev/null`, { timeout: 15000 })
+      
+      // Add skills index to CLAUDE.md
+      const skillsIndexPath = '/root/nanoclaw-fleet/skills-index.md'
+      if (fs.existsSync(skillsIndexPath)) {
+        const skillsIndex = fs.readFileSync(skillsIndexPath, 'utf8')
+        const claudePath = `/root/nanoclaw-fleet/agents/\${subdomain}/CLAUDE.md`
+        let claude = fs.readFileSync(claudePath, 'utf8')
+        if (!claude.includes('Skill Library')) {
+          if (claude.includes('## 🛠️ Your Full Skill Set')) {
+            claude = claude.replace('## 🛠️ Your Full Skill Set', skillsIndex + '\n\n## 🛠️ Your Full Skill Set')
+          } else {
+            claude += '\n\n' + skillsIndex
+          }
+          fs.writeFileSync(claudePath, claude)
+        }
+      }
+      addLog(userId, 'Skills installed: 9 trading + 30 marketing', 'success')
+    } catch (e) {
+      addLog(userId, 'Skills copy warning: ' + String(e), 'warn')
+    }
+    
     await sleep(500)
 
     // === Step 2: DNS + Caddy reverse proxy ===
