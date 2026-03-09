@@ -83,3 +83,8 @@ temp/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Fleet agent user data (contains tokens, personal data)
+nanoclaw-fleet/agents/
+# Backup files
+*.bak
