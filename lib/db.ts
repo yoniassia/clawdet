@@ -1,9 +1,6 @@
 /**
  * Database compatibility shim
  * Delegates all operations to sqlite.ts
- * 
- * This file exists so that imports from '@/lib/db' continue to work.
- * New code should import from '@/lib/sqlite' directly.
  */
 
 import {
@@ -12,6 +9,8 @@ import {
   findUserByXId as _findByXId,
   findUserBySessionToken as _findByToken,
   findUserByUsername as _findByUsername,
+  findUserByStripeCustomerId as _findByStripeCustomerId,
+  findUserByStripeSubscriptionId as _findByStripeSubscriptionId,
   createUser as _createUser,
   updateUserById as _updateById,
   deleteUserById as _deleteById,
@@ -20,7 +19,6 @@ import {
   type DbUser,
 } from './sqlite'
 
-// Re-export the User type that routes expect
 export interface User {
   id: string
   xId?: string
@@ -35,8 +33,8 @@ export interface User {
   paid?: boolean
   paidAt?: string
   paymentMethod?: string
-  subscriptionStatus?: 'active' | 'inactive' | 'cancelled'
-  subscriptionPlan?: 'free_beta' | 'paid' | 'trial'
+  subscriptionStatus?: 'active' | 'inactive' | 'cancelled' | 'past_due' | 'trialing' | 'unpaid'
+  subscriptionPlan?: 'starter' | 'growth' | 'pro' | 'free_beta' | 'paid' | 'trial'
   provisioningStatus?: 'pending' | 'creating_vps' | 'configuring_dns' | 'installing' | 'complete' | 'failed'
   provisioningStep?: number
   provisioningStepName?: string
@@ -49,12 +47,17 @@ export interface User {
   coolifyAppUuid?: string
   sessionToken?: string
   sessionCreatedAt?: number
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+  stripePriceId?: string
+  billingCycle?: 'monthly' | 'annual'
+  currentPeriodEnd?: string
+  tokensLimit?: number
   role?: string
   createdAt: number
   updatedAt: number
 }
 
-/** Convert DbUser (snake_case SQLite row) → User (camelCase app model) */
 function toUser(row: DbUser | undefined): User | undefined {
   if (!row) return undefined
   return {
@@ -82,16 +85,21 @@ function toUser(row: DbUser | undefined): User | undefined {
     instanceUrl: row.instance_url ?? undefined,
     hetznerVpsId: row.hetzner_vps_id ?? undefined,
     hetznerVpsIp: row.hetzner_vps_ip ?? undefined,
-    coolifyAppUuid: (row as any).coolify_app_uuid ?? undefined,
+    coolifyAppUuid: row.coolify_app_uuid ?? undefined,
     sessionToken: row.session_token ?? undefined,
     sessionCreatedAt: row.session_created_at ?? undefined,
+    stripeCustomerId: row.stripe_customer_id ?? undefined,
+    stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
+    stripePriceId: row.stripe_price_id ?? undefined,
+    billingCycle: (row.billing_cycle as User['billingCycle']) ?? undefined,
+    currentPeriodEnd: row.current_period_end ?? undefined,
+    tokensLimit: row.tokens_limit ?? undefined,
     role: row.role ?? 'user',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
 }
 
-/** Convert camelCase updates → snake_case for SQLite */
 function toDbUpdates(updates: Partial<User>): Partial<DbUser> {
   const map: Record<string, string> = {
     xId: 'x_id',
@@ -117,13 +125,18 @@ function toDbUpdates(updates: Partial<User>): Partial<DbUser> {
     coolifyAppUuid: 'coolify_app_uuid',
     sessionToken: 'session_token',
     sessionCreatedAt: 'session_created_at',
+    stripeCustomerId: 'stripe_customer_id',
+    stripeSubscriptionId: 'stripe_subscription_id',
+    stripePriceId: 'stripe_price_id',
+    billingCycle: 'billing_cycle',
+    currentPeriodEnd: 'current_period_end',
+    tokensLimit: 'tokens_limit',
   }
 
   const result: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(updates)) {
     if (key === 'id' || key === 'createdAt' || key === 'updatedAt') continue
     const dbKey = map[key] || key
-    // Convert booleans to integers for SQLite
     if (typeof value === 'boolean') {
       result[dbKey] = value ? 1 : 0
     } else if (key === 'provisioningLogs' && Array.isArray(value)) {
@@ -135,47 +148,30 @@ function toDbUpdates(updates: Partial<User>): Partial<DbUser> {
   return result as Partial<DbUser>
 }
 
-// ── Public API (matches old JSON-based interface) ──
-
-export function findUserById(id: string): User | undefined {
-  return toUser(_findById(id))
-}
-
-export function findUserByEmail(email: string): User | undefined {
-  return toUser(_findByEmail(email))
-}
-
-export function findUserByXId(xId: string): User | undefined {
-  return toUser(_findByXId(xId))
-}
-
-export function findUserBySessionToken(token: string): User | undefined {
-  return toUser(_findByToken(token))
-}
+export function findUserById(id: string): User | undefined { return toUser(_findById(id)) }
+export function findUserByEmail(email: string): User | undefined { return toUser(_findByEmail(email)) }
+export function findUserByXId(xId: string): User | undefined { return toUser(_findByXId(xId)) }
+export function findUserBySessionToken(token: string): User | undefined { return toUser(_findByToken(token)) }
+export function findUserByUsername(username: string): User | undefined { return toUser(_findByUsername(username)) }
+export function findUserByStripeCustomerId(customerId: string): User | undefined { return toUser(_findByStripeCustomerId(customerId)) }
+export function findUserByStripeSubscriptionId(subscriptionId: string): User | undefined { return toUser(_findByStripeSubscriptionId(subscriptionId)) }
 
 export function getAllUsers(): User[] {
   const { users } = _getAllUsers()
   return users.map(u => toUser(u)!)
 }
 
-export function getUserCount(): number {
-  return _getUserCount()
-}
-
-export function loadUsers(): User[] {
-  return getAllUsers()
-}
+export function getUserCount(): number { return _getUserCount() }
+export function loadUsers(): User[] { return getAllUsers() }
 
 export function upsertUser(userData: Partial<User> & { xId: string }): User {
   const existing = _findByXId(userData.xId)
   const now = Date.now()
-
   if (existing) {
     const updates = toDbUpdates(userData)
     _updateById(existing.id, updates)
     return toUser(_findById(existing.id))!
   }
-
   const id = `user_${now}_${Math.random().toString(36).substring(7)}`
   const dbData: Record<string, unknown> = {
     id,
@@ -190,6 +186,12 @@ export function upsertUser(userData: Partial<User> & { xId: string }): User {
     instance_url: userData.instanceUrl || null,
     hetzner_vps_id: userData.hetznerVpsId || null,
     hetzner_vps_ip: userData.hetznerVpsIp || null,
+    stripe_customer_id: userData.stripeCustomerId || null,
+    stripe_subscription_id: userData.stripeSubscriptionId || null,
+    stripe_price_id: userData.stripePriceId || null,
+    billing_cycle: userData.billingCycle || null,
+    current_period_end: userData.currentPeriodEnd || null,
+    tokens_limit: userData.tokensLimit || null,
     created_at: now,
     updated_at: now,
   }
@@ -200,7 +202,6 @@ export function upsertUser(userData: Partial<User> & { xId: string }): User {
 export function createEmailUser(data: { email: string; passwordHash: string; name: string }): User {
   const existing = _findByEmail(data.email)
   if (existing) throw new Error('Email already registered')
-
   const now = Date.now()
   const id = `user_${now}_${Math.random().toString(36).substring(7)}`
   _createUser({
@@ -225,6 +226,4 @@ export function updateUser(id: string, updates: Partial<User>): User | null {
   return result ? toUser(result) ?? null : null
 }
 
-export function deleteUser(id: string): boolean {
-  return _deleteById(id)
-}
+export function deleteUser(id: string): boolean { return _deleteById(id) }

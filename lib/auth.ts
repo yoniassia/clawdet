@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 /**
  * Auth.js v5 Configuration
  * Supports: Email/Password + X/Twitter OAuth
@@ -13,6 +15,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Twitter({
       clientId: process.env.TWITTER_CLIENT_ID || '',
       clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
+      authorization: {
+        params: {
+          scope: 'users.read tweet.read tweet.write offline.access',
+        },
+      },
     }),
 
     // Email + Password
@@ -103,9 +110,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.sub = user.id
+      }
+      // Capture X/Twitter OAuth tokens for API access (posting, etc.)
+      if (account?.provider === 'twitter' && account.access_token) {
+        token.xAccessToken = account.access_token
+        token.xRefreshToken = account.refresh_token
+        // Save tokens to file for server-side API use
+        try {
+          const tokenData = {
+            access_token: account.access_token,
+            refresh_token: account.refresh_token,
+            token_type: account.token_type,
+            scope: account.scope,
+            expires_at: account.expires_at,
+            provider_account_id: account.providerAccountId,
+            saved_at: new Date().toISOString(),
+          }
+          const tokenDir = path.join(process.cwd(), 'data')
+          fs.mkdirSync(tokenDir, { recursive: true })
+          fs.writeFileSync(
+            path.join(tokenDir, 'x-oauth-tokens.json'),
+            JSON.stringify(tokenData, null, 2)
+          )
+          console.log('[Auth] X OAuth tokens saved for API access')
+        } catch (e) {
+          console.error('[Auth] Failed to save X tokens:', e)
+        }
       }
       return token
     },

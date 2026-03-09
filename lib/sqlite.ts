@@ -7,6 +7,14 @@ const DB_PATH = path.join(DATA_DIR, 'clawdet.db')
 
 let _db: Database.Database | null = null
 
+function ensureColumn(db: Database.Database, table: string, column: string, definition: string) {
+  const columns = db.pragma(`table_info(${table})`) as Array<{ name: string }>
+  const columnNames = new Set(columns.map(c => c.name))
+  if (!columnNames.has(column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`)
+  }
+}
+
 export function getDb(): Database.Database {
   if (_db) return _db
 
@@ -18,7 +26,6 @@ export function getDb(): Database.Database {
   _db.pragma('journal_mode = WAL')
   _db.pragma('foreign_keys = ON')
 
-  // Create tables
   _db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
@@ -54,20 +61,17 @@ export function getDb(): Database.Database {
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
-
-    -- Migration: add coolify_app_uuid if missing (safe to re-run)
-    -- SQLite doesn't support IF NOT EXISTS for ALTER TABLE, so we check via pragma
   `)
 
-  // Safe migration for existing databases
-  const columns = _db.pragma('table_info(users)') as Array<{ name: string }>
-  const columnNames = new Set(columns.map(c => c.name))
-  if (!columnNames.has('coolify_app_uuid')) {
-    _db.exec('ALTER TABLE users ADD COLUMN coolify_app_uuid TEXT')
-  }
+  ensureColumn(_db, 'users', 'coolify_app_uuid', 'TEXT')
+  ensureColumn(_db, 'users', 'stripe_customer_id', 'TEXT')
+  ensureColumn(_db, 'users', 'stripe_subscription_id', 'TEXT')
+  ensureColumn(_db, 'users', 'stripe_price_id', 'TEXT')
+  ensureColumn(_db, 'users', 'billing_cycle', 'TEXT')
+  ensureColumn(_db, 'users', 'current_period_end', 'TEXT')
+  ensureColumn(_db, 'users', 'tokens_limit', 'INTEGER DEFAULT 0')
 
   _db.exec(`
-
     CREATE TABLE IF NOT EXISTS accounts (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
@@ -83,10 +87,23 @@ export function getDb(): Database.Database {
       UNIQUE(provider, provider_account_id)
     );
 
+    CREATE TABLE IF NOT EXISTS usage_events (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      tokens_used INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_users_x_id ON users(x_id);
     CREATE INDEX IF NOT EXISTS idx_users_session_token ON users(session_token);
+    CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);
+    CREATE INDEX IF NOT EXISTS idx_users_stripe_subscription_id ON users(stripe_subscription_id);
     CREATE INDEX IF NOT EXISTS idx_accounts_user_id ON accounts(user_id);
+    CREATE INDEX IF NOT EXISTS idx_usage_events_user_id ON usage_events(user_id);
+    CREATE INDEX IF NOT EXISTS idx_usage_events_user_date ON usage_events(user_id, date);
   `)
 
   return _db
@@ -121,12 +138,26 @@ export interface DbUser {
   hetzner_vps_ip: string | null
   session_token: string | null
   session_created_at: number | null
+  coolify_app_uuid?: string | null
+  stripe_customer_id?: string | null
+  stripe_subscription_id?: string | null
+  stripe_price_id?: string | null
+  billing_cycle?: string | null
+  current_period_end?: string | null
+  tokens_limit?: number | null
   disabled: number
   created_at: number
   updated_at: number
 }
 
-// User CRUD operations
+export interface UsageEvent {
+  id: string
+  user_id: string
+  tokens_used: number
+  date: string
+  created_at: number
+}
+
 export function findUserByEmail(email: string): DbUser | undefined {
   const db = getDb()
   return db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(email) as DbUser | undefined
@@ -152,12 +183,22 @@ export function findUserBySessionToken(token: string): DbUser | undefined {
   return db.prepare('SELECT * FROM users WHERE session_token = ?').get(token) as DbUser | undefined
 }
 
+export function findUserByStripeCustomerId(customerId: string): DbUser | undefined {
+  const db = getDb()
+  return db.prepare('SELECT * FROM users WHERE stripe_customer_id = ?').get(customerId) as DbUser | undefined
+}
+
+export function findUserByStripeSubscriptionId(subscriptionId: string): DbUser | undefined {
+  const db = getDb()
+  return db.prepare('SELECT * FROM users WHERE stripe_subscription_id = ?').get(subscriptionId) as DbUser | undefined
+}
+
 export function createUser(data: Partial<DbUser> & { id: string; created_at: number; updated_at: number }): DbUser {
   const db = getDb()
   const columns = Object.keys(data)
   const placeholders = columns.map(() => '?').join(', ')
   const values = columns.map(k => (data as Record<string, unknown>)[k])
-  
+
   db.prepare(`INSERT INTO users (${columns.join(', ')}) VALUES (${placeholders})`).run(...values)
   return findUserById(data.id)!
 }
@@ -166,10 +207,10 @@ export function updateUserById(id: string, updates: Partial<DbUser>): DbUser | n
   const db = getDb()
   const entries = Object.entries(updates).filter(([k]) => k !== 'id')
   if (entries.length === 0) return findUserById(id) || null
-  
+
   const setClause = entries.map(([k]) => `${k} = ?`).join(', ')
   const values = entries.map(([, v]) => v)
-  
+
   db.prepare(`UPDATE users SET ${setClause}, updated_at = ? WHERE id = ?`).run(...values, Date.now(), id)
   return findUserById(id) || null
 }
@@ -183,19 +224,19 @@ export function deleteUserById(id: string): boolean {
 export function getAllUsers(opts?: { search?: string; limit?: number; offset?: number }): { users: DbUser[]; total: number } {
   const db = getDb()
   const { search, limit = 50, offset = 0 } = opts || {}
-  
+
   let whereClause = ''
   const params: unknown[] = []
-  
+
   if (search) {
     whereClause = 'WHERE username LIKE ? OR email LIKE ? OR name LIKE ? OR x_username LIKE ?'
     const s = `%${search}%`
     params.push(s, s, s, s)
   }
-  
+
   const total = (db.prepare(`SELECT COUNT(*) as count FROM users ${whereClause}`).get(...params) as { count: number }).count
   const users = db.prepare(`SELECT * FROM users ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`).all(...params, limit, offset) as DbUser[]
-  
+
   return { users, total }
 }
 
@@ -204,7 +245,32 @@ export function getUserCount(): number {
   return (db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }).count
 }
 
-// Account linking
+export function createUsageEvent(data: { user_id: string; tokens_used: number; date?: string }): UsageEvent {
+  const db = getDb()
+  const now = Date.now()
+  const date = data.date || new Date().toISOString().slice(0, 10)
+  const id = `usage_${now}_${Math.random().toString(36).slice(2, 8)}`
+  db.prepare('INSERT INTO usage_events (id, user_id, tokens_used, date, created_at) VALUES (?, ?, ?, ?, ?)').run(
+    id,
+    data.user_id,
+    data.tokens_used,
+    date,
+    now
+  )
+  return db.prepare('SELECT * FROM usage_events WHERE id = ?').get(id) as UsageEvent
+}
+
+export function getCurrentMonthTokenUsage(userId: string, month = new Date().toISOString().slice(0, 7)): number {
+  const db = getDb()
+  const row = db.prepare("SELECT COALESCE(SUM(tokens_used), 0) as total FROM usage_events WHERE user_id = ? AND substr(date, 1, 7) = ?").get(userId, month) as { total: number }
+  return row.total || 0
+}
+
+export function getUsageEventsByUserId(userId: string, limit = 100): UsageEvent[] {
+  const db = getDb()
+  return db.prepare('SELECT * FROM usage_events WHERE user_id = ? ORDER BY date DESC, created_at DESC LIMIT ?').all(userId, limit) as UsageEvent[]
+}
+
 export function linkAccount(data: { user_id: string; provider: string; provider_account_id: string; access_token?: string; refresh_token?: string; expires_at?: number; token_type?: string; scope?: string }) {
   const db = getDb()
   const id = `acc_${Date.now()}_${Math.random().toString(36).substring(7)}`

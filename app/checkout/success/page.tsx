@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import styles from './success.module.css'
 
@@ -8,22 +8,19 @@ function CheckoutSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
-  const [countdown, setCountdown] = useState(5)
+  const [countdown, setCountdown] = useState(8)
 
+  const sessionId = searchParams.get('session_id')
   const isMock = searchParams.get('mock') === 'true'
 
   useEffect(() => {
-    // Fetch user info
     fetch('/api/auth/me')
       .then(res => res.json())
       .then(data => {
-        if (data.authenticated) {
-          setUser(data.user)
-        }
+        if (data.authenticated) setUser(data.user)
       })
       .catch(console.error)
 
-    // Countdown to redirect
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -48,74 +45,36 @@ function CheckoutSuccessContent() {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Payment Successful! 🎉</h1>
-        
-        {isMock && (
-          <div className={styles.mockBadge}>
-            Test Mode
-          </div>
-        )}
+        <h1 className={styles.title}>Subscription confirmed</h1>
+        <p className={styles.message}>Stripe accepted your checkout and Clawdet is now preparing your billing-backed workspace.</p>
 
-        <p className={styles.message}>
-          Thank you for signing up for Clawdet!
-        </p>
+        {isMock && <div className={styles.mockBadge}>Test Mode</div>}
 
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>What's Next?</h2>
-          
+          <h2 className={styles.cardTitle}>What happens next</h2>
           <div className={styles.steps}>
-            <div className={styles.step}>
-              <div className={styles.stepNumber}>1</div>
-              <div className={styles.stepContent}>
-                <h3>Provisioning Your Instance</h3>
-                <p>
-                  We're setting up your dedicated VPS with OpenClaw installed.
-                  This usually takes 5-10 minutes.
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.step}>
-              <div className={styles.stepNumber}>2</div>
-              <div className={styles.stepContent}>
-                <h3>Configuration</h3>
-                <p>
-                  Your instance will be pre-configured with Grok 4.2 AI and
-                  your X/Twitter integration.
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.step}>
-              <div className={styles.stepNumber}>3</div>
-              <div className={styles.stepContent}>
-                <h3>Access Your Instance</h3>
-                <p>
-                  You'll receive an email with your subdomain URL and setup
-                  instructions once provisioning is complete.
-                </p>
-              </div>
-            </div>
+            <div className={styles.step}><div className={styles.stepNumber}>1</div><div className={styles.stepContent}><h3>Subscription activated</h3><p>Your billing status is now tied to Stripe and future renewals will be tracked via webhooks.</p></div></div>
+            <div className={styles.step}><div className={styles.stepNumber}>2</div><div className={styles.stepContent}><h3>Provisioning queued</h3><p>If your instance is not already live, Clawdet will continue provisioning it in the background.</p></div></div>
+            <div className={styles.step}><div className={styles.stepNumber}>3</div><div className={styles.stepContent}><h3>Usage tracking enabled</h3><p>Your dashboard now shows current-month token consumption against your plan limit.</p></div></div>
           </div>
+
+          {sessionId && (
+            <div className={styles.urlPreview}>
+              <p className={styles.urlLabel}>Stripe checkout session</p>
+              <code className={styles.url}>{sessionId}</code>
+            </div>
+          )}
 
           {user?.username && (
             <div className={styles.urlPreview}>
-              <p className={styles.urlLabel}>Your instance URL (once ready):</p>
-              <code className={styles.url}>https://{user.username}.clawdet.com</code>
+              <p className={styles.urlLabel}>Pricing page</p>
+              <code className={styles.url}>https://clawdet.com/pricing</code>
             </div>
           )}
         </div>
 
-        <div className={styles.redirectNote}>
-          Redirecting to dashboard in {countdown} seconds...
-        </div>
-
-        <button
-          onClick={() => router.push('/dashboard')}
-          className={styles.dashboardButton}
-        >
-          Go to Dashboard Now
-        </button>
+        <div className={styles.redirectNote}>Redirecting to dashboard in {countdown} seconds...</div>
+        <button onClick={() => router.push('/dashboard')} className={styles.dashboardButton}>Go to Dashboard Now</button>
       </div>
     </div>
   )
@@ -123,13 +82,7 @@ function CheckoutSuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <div className={styles.loading}>Loading...</div>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<div className={styles.container}><div className={styles.content}><div className={styles.loading}>Loading...</div></div></div>}>
       <CheckoutSuccessContent />
     </Suspense>
   )

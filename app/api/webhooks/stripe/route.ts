@@ -1,132 +1,129 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateUser, findUserById } from '@/lib/db'
+import Stripe from 'stripe'
+import { findUserById, findUserByStripeCustomerId, findUserByStripeSubscriptionId, updateUser } from '@/lib/db'
+import { getBillingCycleFromPriceId, getPlanByPriceId } from '@/lib/billing'
 import { startProvisioningJob } from '@/lib/provisioner-v2'
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')
 
-    let event: any
-
-    // Real Stripe webhook with signature verification
-    if (STRIPE_SECRET_KEY && STRIPE_WEBHOOK_SECRET && signature) {
-      try {
-        const stripe = require('stripe')(STRIPE_SECRET_KEY)
-        event = stripe.webhooks.constructEvent(
-          body,
-          signature,
-          STRIPE_WEBHOOK_SECRET
-        )
-        console.log('✅ Stripe webhook signature verified')
-      } catch (err: any) {
-        console.error('⚠️ Webhook signature verification failed:', err.message)
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 400 }
-        )
-      }
+    let event: Stripe.Event
+    if (stripe && webhookSecret && signature) {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } else {
-      // Mock mode: parse the JSON directly (for testing)
-      console.log('⚠️ Mock mode: No signature verification')
       event = JSON.parse(body)
     }
 
-    // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutComplete(event.data.object)
+        await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session)
         break
-      
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpsert(event.data.object as Stripe.Subscription)
+        break
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object)
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
         break
-      
       case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object)
+        await handlePaymentFailed(event.data.object as Stripe.Invoice)
         break
-      
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        console.log(`Unhandled Stripe event: ${event.type}`)
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Webhook error:', error)
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error?.message || 'Webhook handler failed' }, { status: 500 })
   }
 }
 
-async function handleCheckoutComplete(session: any) {
-  console.log('🎉 Payment successful for session:', session.id)
-  
+async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId
-  if (!userId) {
-    console.error('❌ No userId in metadata')
-    return
-  }
+  if (!userId) return
 
   const user = findUserById(userId)
-  if (!user) {
-    console.error(`❌ User not found: ${userId}`)
-    return
-  }
+  if (!user) return
 
-  console.log(`💰 Marking user ${user.xUsername} as paid`)
+  const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
+  const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
 
-  // Update user: mark as paid and set provisioning to pending
-  const updatedUser = updateUser(userId, {
+  updateUser(userId, {
     paid: true,
-    provisioningStatus: 'pending'
+    paidAt: new Date().toISOString(),
+    paymentMethod: 'stripe',
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscriptionId,
   })
 
-  if (!updatedUser) {
-    console.error(`❌ Failed to update user: ${userId}`)
+  if (stripe && subscriptionId) {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+    await handleSubscriptionUpsert(subscription, userId)
+  }
+
+  if (!user.instanceUrl && user.provisioningStatus !== 'complete') {
+    updateUser(userId, { provisioningStatus: 'pending' })
+    await startProvisioningJob(userId)
+  }
+}
+
+async function handleSubscriptionUpsert(subscription: Stripe.Subscription, fallbackUserId?: string) {
+  const priceId = subscription.items.data[0]?.price?.id
+  const plan = getPlanByPriceId(priceId)
+  const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
+  const user =
+    (fallbackUserId ? findUserById(fallbackUserId) : undefined) ||
+    findUserByStripeSubscriptionId(subscription.id) ||
+    findUserByStripeCustomerId(customerId)
+
+  if (!user) {
+    console.warn('No user found for subscription', subscription.id)
     return
   }
 
-  console.log(`✅ User ${user.xUsername} marked as paid. Provisioning status: pending`)
-
-  // Trigger provisioning workflow in background
-  console.log('🚀 Triggering VPS provisioning...')
-  await startProvisioningJob(userId)
-  
-  // Optional: Send confirmation notification
-  // await sendConfirmationNotification(updatedUser)
-  
-  console.log('📋 Provisioning started in background')
+  updateUser(user.id, {
+    paid: subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'past_due',
+    paymentMethod: 'stripe',
+    subscriptionStatus: subscription.status as any,
+    subscriptionPlan: (plan?.id || user.subscriptionPlan || 'starter') as any,
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscription.id,
+    stripePriceId: priceId,
+    billingCycle: getBillingCycleFromPriceId(priceId),
+    currentPeriodEnd: subscription.current_period_end
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : user.currentPeriodEnd,
+    tokensLimit: plan?.monthlyTokens || user.tokensLimit || 100_000,
+  })
 }
 
-async function handleSubscriptionDeleted(subscription: any) {
-  console.log('⚠️ Subscription cancelled:', subscription.id)
-  
-  // TODO: Handle subscription cancellation
-  // - Mark user as unpaid
-  // - Optionally pause/delete their VPS
-  // - Send notification
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id
+  const user = findUserByStripeSubscriptionId(subscription.id) || findUserByStripeCustomerId(customerId)
+  if (!user) return
+
+  updateUser(user.id, {
+    paid: false,
+    subscriptionStatus: 'cancelled',
+    currentPeriodEnd: new Date().toISOString(),
+  })
 }
 
-async function handlePaymentFailed(invoice: any) {
-  console.log('❌ Payment failed for invoice:', invoice.id)
-  
-  // TODO: Handle payment failure
-  // - Send notification to user
-  // - Grace period before shutting down instance
-}
+async function handlePaymentFailed(invoice: Stripe.Invoice) {
+  const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id
+  if (!customerId) return
+  const user = findUserByStripeCustomerId(customerId)
+  if (!user) return
 
-// Optional: Send confirmation via X DM or email
-async function sendConfirmationNotification(user: any) {
-  // TODO: Implement notification
-  // Options:
-  // 1. X DM using message tool
-  // 2. Email using Resend/SendGrid
-  // 3. Telegram notification
-  
-  console.log(`📬 Would send confirmation to ${user.xUsername} (${user.email})`)
+  updateUser(user.id, {
+    paid: false,
+    subscriptionStatus: 'past_due',
+  })
 }

@@ -39,6 +39,14 @@ interface ProvisioningStatus {
   steps: StepInfo[]
 }
 
+interface UsageSummary {
+  planId: string
+  tokensUsed: number
+  tokenLimit: number
+  remainingTokens: number
+  percentUsed: number
+}
+
 const DOCKER_STEPS: StepInfo[] = [
   { name: 'Validation', icon: '🔍', description: 'Validating configuration...' },
   { name: 'Container Setup', icon: '🐳', description: 'Creating your AI container...' },
@@ -55,6 +63,7 @@ export default function DashboardPage() {
   const [telegramStatus, setTelegramStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
   const [telegramBot, setTelegramBot] = useState<{ username: string; link: string } | null>(null)
   const [telegramError, setTelegramError] = useState('')
+  const [usage, setUsage] = useState<UsageSummary | null>(null)
   const logRef = useRef<HTMLDivElement>(null)
   const autoProvisionTriggered = useRef(false)
   const router = useRouter()
@@ -115,6 +124,15 @@ export default function DashboardPage() {
       console.error('Failed to fetch provisioning status:', error)
     }
   }
+
+  useEffect(() => {
+    if (user?.paid) {
+      fetch('/api/usage')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => data && setUsage(data))
+        .catch(() => {})
+    }
+  }, [user?.paid])
 
   useEffect(() => {
     if (logRef.current) {
@@ -179,6 +197,26 @@ export default function DashboardPage() {
                 <span className={styles.statusBadge}>● Running</span>
               </div>
             </div>
+
+            {usage && (
+              <div className={styles.glassCard} style={{ marginTop: '1rem', textAlign: 'left' }}>
+                <h3 className={styles.cardTitle}>📊 Monthly token usage</h3>
+                <div className={styles.infoRow}>
+                  <span>Plan</span>
+                  <span className={styles.mono}>{usage.planId}</span>
+                </div>
+                <div className={styles.infoRow}>
+                  <span>Used</span>
+                  <span className={styles.mono}>{usage.tokensUsed.toLocaleString()} / {usage.tokenLimit.toLocaleString()}</span>
+                </div>
+                <div style={{ marginTop: '12px', background: '#0a0a0a', borderRadius: '999px', height: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ width: `${usage.percentUsed}%`, height: '100%', background: usage.percentUsed > 85 ? '#ff6b6b' : '#2EE68A', transition: 'width 0.25s ease' }} />
+                </div>
+                <p style={{ marginTop: '10px', color: '#8899a6', fontSize: '13px' }}>
+                  {usage.remainingTokens.toLocaleString()} tokens remaining this month
+                </p>
+              </div>
+            )}
 
             {/* Connect Telegram */}
             <div className={styles.glassCard} style={{ marginTop: '1rem' }}>

@@ -1,0 +1,171 @@
+.page {
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+  background:
+    radial-gradient(circle at top, rgba(29, 155, 240, 0.18), transparent 35%),
+    linear-gradient(180deg, #05070d 0%, #0b1020 45%, #040507 100%);
+  color: #f5f7fb;
+}
+.hero {
+  max-width: 920px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+.badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(46, 230, 138, 0.12);
+  border: 1px solid rgba(46, 230, 138, 0.25);
+  color: #7ff4b5;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.05;
+  margin-bottom: 14px;
+}
+.hero p {
+  color: #99a3b3;
+  font-size: 1.08rem;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.toggleWrap {
+  display: inline-flex;
+  gap: 8px;
+  padding: 8px;
+  margin-top: 28px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.toggleButton {
+  border: none;
+  background: transparent;
+  color: #c7d0dc;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.toggleButton span { color: #7ff4b5; margin-left: 6px; }
+.toggleButtonActive {
+  background: linear-gradient(135deg, #1d9bf0, #5b7cff);
+  color: #fff;
+}
+.cardGrid {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.card, .compareCard {
+  position: relative;
+  border-radius: 24px;
+  background: rgba(8, 12, 22, 0.82);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.32);
+  backdrop-filter: blur(18px);
+}
+.card { padding: 28px; }
+.cardFeatured {
+  border-color: rgba(46, 230, 138, 0.4);
+  box-shadow: 0 28px 100px rgba(46,230,138,0.14);
+  transform: translateY(-8px);
+}
+.popular {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #2ee68a;
+  color: #04110a;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cardHeader h2 { font-size: 1.7rem; margin-bottom: 6px; }
+.cardHeader p, .description { color: #95a0b1; }
+.priceBlock { margin: 24px 0 16px; }
+.priceLine { display: flex; align-items: baseline; gap: 4px; }
+.currency { font-size: 1.4rem; color: #78b8ff; font-weight: 700; }
+.price { font-size: 3.4rem; line-height: 1; font-weight: 900; }
+.period, .subPrice { color: #90a0b9; }
+.featureList {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.featureList li {
+  color: #e6ebf3;
+  padding-left: 24px;
+  position: relative;
+}
+.featureList li::before {
+  content: ✓;
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #2ee68a;
+  font-weight: 800;
+}
+.cta {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 800;
+}
+.ctaPrimary { background: linear-gradient(135deg, #2ee68a, #12c56b); color: #03130c; }
+.ctaSecondary { background: linear-gradient(135deg, #15243a, #111827); color: #eef4ff; border: 1px solid rgba(255,255,255,0.09); }
+.error {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #ffb6b6;
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+.compareCard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 26px;
+}
+.compareCard h3 { font-size: 1.4rem; margin-bottom: 18px; }
+.compareTable { display: grid; gap: 10px; }
+.compareHead, .compareRow {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+.compareHead {
+  background: rgba(255,255,255,0.05);
+  color: #dfe8f3;
+  font-weight: 800;
+}
+.compareRow {
+  background: rgba(255,255,255,0.025);
+  color: #aeb9ca;
+}
+@media (max-width: 960px) {
+  .cardGrid { grid-template-columns: 1fr; }
+  .cardFeatured { transform: none; }
+  .compareHead, .compareRow { grid-template-columns: 1.2fr repeat(3, 1fr); font-size: 0.92rem; }
+}
+@media (max-width: 640px) {
+  .page { padding: 32px 16px 56px; }
+  .toggleWrap { width: 100%; display: grid; }
+  .compareCard { overflow-x: auto; }
+  .compareTable { min-width: 640px; }
+}
