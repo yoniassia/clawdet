@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { updateUser, findUserById, getAllUsers, getUserCount } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-middleware'
 
-const FREE_BETA_LIMIT = 20
+const FREE_BETA_LIMIT = 100
 const PROVISIONER = process.env.PROVISIONER ?? 'docker'
 
 /**
